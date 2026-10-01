@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Dureza de minerales | EcoLab IA</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lil-gui@0.18"></script>
+<link rel="stylesheet" href="asistente.css">
+
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    overflow:hidden;
+    font-family:Arial,sans-serif;
+    background:#07121c;
+}
+
+/* =========================================
+   PANEL DE INFORMACIÓN
+========================================= */
+
+#info-card{
+    position:absolute;
+    top:15px;
+    left:15px;
+    z-index:10;
+    width:350px;
+    max-height:calc(100vh - 30px);
+    overflow-y:auto;
+    padding:17px;
+    background:rgba(0,0,0,.88);
+    color:white;
+    border-radius:15px;
+    box-shadow:0 5px 25px rgba(0,0,0,.5);
+}
+
+#info-card h2{
+    margin:0 0 15px;
+    color:#19cfff;
+    font-size:21px;
+}
+
+.dato{
+    color:#00ffcc;
+    font-weight:bold;
+}
+
+.prueba{
+    margin:9px 0;
+    padding:10px;
+    background:rgba(255,255,255,.05);
+    border-left:3px solid #19cfff;
+    border-radius:5px;
+    font-size:13px;
+}
+
+.prueba b{
+    color:#19cfff;
+}
+
+#resultado{
+    margin-top:12px;
+    padding:12px;
+    background:rgba(25,207,255,.08);
+    border-radius:8px;
+    line-height:1.5;
+}
+
+#formula{
+    margin-top:13px;
+    padding-top:12px;
+    border-top:1px solid #444;
+    color:#aaa;
+    font-size:11px;
+    line-height:1.5;
+}
+
+/* =========================================
+   INSTRUCCIÓN
+========================================= */
+
+#instruction{
+    position:absolute;
+    bottom:18px;
+    left:50%;
+    transform:translateX(-50%);
+    z-index:10;
+    padding:11px 18px;
+    background:rgba(0,0,0,.82);
+    color:white;
+    border-radius:10px;
+    font-size:13px;
+    text-align:center;
+}
+
+#instruction span{
+    color:#19cfff;
+    font-weight:bold;
+}
+
+/* =========================================
+   EVALUACIÓN
+========================================= */
+
+#evaluation-overlay{
+    display:none;
+    position:fixed;
+    inset:0;
+    z-index:1000;
+    background:rgba(0,0,0,.78);
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+}
+
+#evaluation-modal{
+    width:650px;
+    max-width:95vw;
+    max-height:90vh;
+    overflow-y:auto;
+    background:#0c1b27;
+    color:white;
+    border:2px solid #19cfff;
+    border-radius:18px;
+    padding:25px;
+    box-shadow:0 10px 40px rgba(0,0,0,.7);
+}
+
+#evaluation-modal h2{
+    margin-top:0;
+    color:#19cfff;
+    text-align:center;
+}
+
+.question{
+    margin:18px 0;
+    padding:15px;
+    background:rgba(255,255,255,.05);
+    border-radius:10px;
+    border-left:3px solid #19cfff;
+}
+
+.question p{
+    margin-top:0;
+    font-weight:bold;
+}
+
+.option{
+    display:block;
+    margin:9px 0;
+    padding:9px;
+    border-radius:7px;
+    cursor:pointer;
+    background:rgba(255,255,255,.04);
+}
+
+.option:hover{
+    background:rgba(25,207,255,.12);
+}
+
+.option input{
+    margin-right:8px;
+}
+
+#submit-evaluation{
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:9px;
+    background:#19cfff;
+    color:#02111d;
+    font-weight:bold;
+    font-size:15px;
+    cursor:pointer;
+}
+
+#submit-evaluation:hover{
+    background:white;
+}
+
+#evaluation-result{
+    display:none;
+    margin-top:20px;
+    padding:18px;
+    text-align:center;
+    border-radius:10px;
+    background:rgba(25,207,255,.08);
+    border:1px solid #19cfff;
+}
+
+#evaluation-result h3{
+    color:#19cfff;
+    font-size:24px;
+}
+
+.evaluation-buttons{
+    display:flex;
+    gap:10px;
+    margin-top:15px;
+}
+
+.evaluation-buttons button{
+    flex:1;
+    padding:11px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+#retry-evaluation{
+    background:#00d9a5;
+    color:#001c16;
+}
+
+#close-evaluation{
+    background:#555;
+    color:white;
+}
+
+#retry-evaluation:hover{
+    background:#6fffe5;
+}
+
+#close-evaluation:hover{
+    background:#777;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- =========================================
+     INFORMACIÓN
+========================================= -->
+
+<div id="info-card">
+
+<h2>🪨 Dureza de minerales</h2>
+
+<div class="prueba">
+<b>Mineral seleccionado:</b>
+<br>
+<span id="mineralNombre" class="dato">Calcita</span>
+<br>
+Dureza aproximada:
+<span id="dureza" class="dato">3</span>
+</div>
+
+<div class="prueba">
+<b>🔩 Clavo</b>
+<br>
+Dureza aproximada: 4.5
+<br>
+Resultado:
+<span id="resultadoClavo" class="dato">Pendiente</span>
+</div>
+
+<div class="prueba">
+<b>🪙 Moneda</b>
+<br>
+Dureza aproximada: 3
+<br>
+Resultado:
+<span id="resultadoMoneda" class="dato">Pendiente</span>
+</div>
+
+<div class="prueba">
+<b>🪟 Vidrio</b>
+<br>
+Dureza aproximada: 5.5
+<br>
+Resultado:
+<span id="resultadoVidrio" class="dato">Pendiente</span>
+</div>
+
+<div id="resultado">
+<b>📊 Resultado de las pruebas</b>
+<br><br>
+<span id="resumen">Selecciona un mineral y realiza las pruebas.</span>
+</div>
+
+<div id="formula">
+<b>🔬 Principio de la prueba:</b>
+<br><br>
+Si el material utilizado es más duro que el mineral, puede producir una raya sobre él.
+<br><br>
+Si el mineral es más duro que el material utilizado, no se produce una raya visible.
+<br><br>
+Las pruebas permiten comparar la dureza relativa de los minerales.
+</div>
+
+</div>
+
+<!-- =========================================
+     INSTRUCCIÓN
+========================================= -->
+
+<div id="instruction">
+Selecciona un mineral y después utiliza <span>clavo, moneda o vidrio</span> para probarlo.
+</div>
+
+<!-- =========================================
+     EVALUACIÓN
+========================================= -->
+
+<div id="evaluation-overlay">
+
+<div id="evaluation-modal">
+
+<h2>📝 Evaluación: Dureza de minerales</h2>
+
+<p style="text-align:center;color:#aaa;">
+Responde las siguientes preguntas sobre el experimento.
+Cada pregunta vale 2 puntos.
+</p>
+
+<!-- PREGUNTA 1 -->
+<div class="question">
+<p>1. ¿Qué propiedad de los minerales se está estudiando en este experimento?</p>
+<label class="option"><input type="radio" name="q1" value="a"> La temperatura.</label>
+<label class="option"><input type="radio" name="q1" value="b"> La dureza.</label>
+<label class="option"><input type="radio" name="q1" value="c"> La masa.</label>
+<label class="option"><input type="radio" name="q1" value="d"> El volumen.</label>
+</div>
+
+<!-- PREGUNTA 2 -->
+<div class="question">
+<p>2. ¿Qué ocurre cuando el material utilizado para probar es más duro que el mineral?</p>
+<label class="option"><input type="radio" name="q2" value="a"> El mineral puede ser rayado.</label>
+<label class="option"><input type="radio" name="q2" value="b"> El mineral desaparece.</label>
+<label class="option"><input type="radio" name="q2" value="c"> El material se convierte en mineral.</label>
+<label class="option"><input type="radio" name="q2" value="d"> No ocurre absolutamente nada.</label>
+</div>
+
+<!-- PREGUNTA 3 -->
+<div class="question">
+<p>3. ¿Cuál de los siguientes materiales tiene la mayor dureza aproximada en el experimento?</p>
+<label class="option"><input type="radio" name="q3" value="a"> La moneda.</label>
+<label class="option"><input type="radio" name="q3" value="b"> El clavo.</label>
+<label class="option"><input type="radio" name="q3" value="c"> El vidrio.</label>
+<label class="option"><input type="radio" name="q3" value="d"> Todos tienen la misma dureza.</label>
+</div>
+
+<!-- PREGUNTA 4 -->
+<div class="question">
+<p>4. ¿Cuál de estos minerales tiene una dureza de 7?</p>
+<label class="option"><input type="radio" name="q4" value="a"> Talco.</label>
+<label class="option"><input type="radio" name="q4" value="b"> Calcita.</label>
+<label class="option"><input type="radio" name="q4" value="c"> Cuarzo.</label>
+<label class="option"><input type="radio" name="q4" value="d"> Ninguno.</label>
+</div>
+
+<!-- PREGUNTA 5 -->
+<div class="question">
+<p>5. ¿Para qué sirven las pruebas realizadas con el clavo, la moneda y el vidrio?</p>
+<label class="option"><input type="radio" name="q5" value="a"> Para medir la temperatura del mineral.</label>
+<label class="option"><input type="radio" name="q5" value="b"> Para comparar la dureza relativa del mineral.</label>
+<label class="option"><input type="radio" name="q5" value="c"> Para cambiar el color del mineral.</label>
+<label class="option"><input type="radio" name="q5" value="d"> Para medir su peso exacto.</label>
+</div>
+
+<button id="submit-evaluation" onclick="calificarEvaluacion()">
+✅ Entregar evaluación
+</button>
+
+<div id="evaluation-result">
+<h3 id="score-text"></h3>
+<p id="percentage-text"></p>
+<p id="feedback-text"></p>
+<div class="evaluation-buttons">
+<button id="retry-evaluation" onclick="repetirEvaluacion()">↻ Repetir evaluación</button>
+<button id="close-evaluation" onclick="cerrarEvaluacion()">Cerrar evaluación</button>
+</div>
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+// =====================================================
+// ESCENA
+// =====================================================
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x07121c);
+
+// =====================================================
+// CÁMARA
+// =====================================================
+
+const camera = new THREE.PerspectiveCamera(
+    50,
+    window.innerWidth / window.innerHeight,
+    .1,
+    1000
+);
+camera.position.set(0, 4.8, 10);
+
+// =====================================================
+// RENDER
+// =====================================================
+
+const renderer = new THREE.WebGLRenderer({ antialias:true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+document.body.appendChild(renderer.domElement);
+
+// =====================================================
+// CONTROLES
+// =====================================================
+
+const controls = new THREE.OrbitControls(camera, renderer.domElement);
+controls.target.set(0, 0, 0);
+controls.enableDamping = true;
+
+// =====================================================
+// LUCES
+// =====================================================
+
+scene.add(new THREE.AmbientLight(0xffffff, .7));
+
+const luz = new THREE.DirectionalLight(0xffffff, 1.2);
+luz.position.set(5, 8, 6);
+scene.add(luz);
+
+// =====================================================
+// MESA
+// =====================================================
+
+const mesa = new THREE.Mesh(
+    new THREE.BoxGeometry(12, .5, 6),
+    new THREE.MeshStandardMaterial({ color:0x202a30, roughness:.7 })
+);
+mesa.position.y = -2.2;
+scene.add(mesa);
+
+// =====================================================
+// MINERALES
+// =====================================================
+
+const minerales = [
+    { nombre:"Talco", dureza:1, color:0xc8c8c8 },
+    { nombre:"Calcita", dureza:3, color:0xd8c6a0 },
+    { nombre:"Cuarzo", dureza:7, color:0xaed8e8 }
+];
+
+let mineralActual = 1;
+let mineralMesh;
+
+// =====================================================
+// CREAR MINERAL
+// =====================================================
+
+function crearMineral(){
+    if(mineralMesh){
+        scene.remove(mineralMesh);
+    }
+
+    const mineral = minerales[mineralActual];
+    const geometria = new THREE.DodecahedronGeometry(1.5, 1);
+    const material = new THREE.MeshStandardMaterial({
+        color: mineral.color,
+        roughness: .55,
+        metalness: .05
+    });
+
+    mineralMesh = new THREE.Mesh(geometria, material);
+    mineralMesh.position.set(0, -.5, 0);
+    mineralMesh.rotation.set(.15, .3, .1);
+    scene.add(mineralMesh);
+
+    document.getElementById("mineralNombre").textContent = mineral.nombre;
+    document.getElementById("dureza").textContent = mineral.dureza;
+
+    reiniciarPruebas();
+}
+
+// =====================================================
+// OBJETOS DE PRUEBA
+// =====================================================
+
+const objetos = {};
+
+// CREAR CLAVO
+const clavo = new THREE.Group();
+const cuerpoClavo = new THREE.Mesh(
+    new THREE.CylinderGeometry(.09, .09, 2.2, 16),
+    new THREE.MeshStandardMaterial({ color:0xbfc5ca, metalness:.8, roughness:.25 })
+);
+cuerpoClavo.rotation.z = Math.PI / 2;
+clavo.add(cuerpoClavo);
+
+const puntaClavo = new THREE.Mesh(
+    new THREE.ConeGeometry(.18, .5, 16),
+    new THREE.MeshStandardMaterial({ color:0xaeb4b8, metalness:.8, roughness:.25 })
+);
+puntaClavo.rotation.z = -Math.PI / 2;
+puntaClavo.position.x = 1.35;
+clavo.add(puntaClavo);
+
+clavo.position.set(5, 1, 0);
+scene.add(clavo);
+objetos.clavo = clavo;
+
+// CREAR MONEDA
+const moneda = new THREE.Mesh(
+    new THREE.CylinderGeometry(.7, .7, .15, 48),
+    new THREE.MeshStandardMaterial({ color:0xc59b45, metalness:.7, roughness:.3 })
+);
+moneda.rotation.z = Math.PI / 2;
+moneda.position.set(5, .2, -2);
+scene.add(moneda);
+objetos.moneda = moneda;
+
+// CREAR VIDRIO
+const vidrio = new THREE.Mesh(
+    new THREE.BoxGeometry(2.2, .12, 1.3),
+    new THREE.MeshPhysicalMaterial({
+        color: 0x9edcff,
+        transparent: true,
+        opacity: .55,
+        roughness: .1,
+        transmission: .3
+    })
+);
+vidrio.position.set(5, .2, 2);
+scene.add(vidrio);
+objetos.vidrio = vidrio;
+
+// =====================================================
+// MARCAS DE RAYADO
+// =====================================================
+
+const rayas = [];
+
+function crearRaya(){
+    const raya = new THREE.Mesh(
+        new THREE.BoxGeometry(1.5, .035, .035),
+        new THREE.MeshStandardMaterial({ color:0x333333 })
+    );
+
+    raya.position.set(
+        (Math.random() - .5) * .7,
+        1.02,
+        (Math.random() - .5) * .7
+    );
+    raya.rotation.y = Math.random() * Math.PI;
+
+    scene.add(raya);
+    rayas.push(raya);
+}
+
+function limpiarRayas(){
+    rayas.forEach(r => scene.remove(r));
+    rayas.length = 0;
+}
+
+// =====================================================
+// ANIMACIÓN DE PRUEBA
+// =====================================================
+
+let pruebaActiva = false;
+let objetoPrueba = null;
+let tipoPrueba = null;
+let inicioPrueba = 0;
+
+function realizarPrueba(tipo){
+    if(pruebaActiva) return;
+
+    tipoPrueba = tipo;
+    objetoPrueba = objetos[tipo];
+    pruebaActiva = true;
+    inicioPrueba = performance.now();
+
+    actualizarEstado(tipo, "🔬 Probando...");
+}
+
+function terminarPrueba(){
+    pruebaActiva = false;
+
+    const mineral = minerales[mineralActual];
+    let durezaObjeto = 0;
+
+    if(tipoPrueba === "clavo") durezaObjeto = 4.5;
+    if(tipoPrueba === "moneda") durezaObjeto = 3;
+    if(tipoPrueba === "vidrio") durezaObjeto = 5.5;
+
+    const seRaya = durezaObjeto > mineral.dureza;
+    let resultado;
+
+    if(seRaya){
+        resultado = "✓ El mineral fue rayado";
+        crearRaya();
+    } else {
+        resultado = "✗ No se produjo una raya";
+    }
+
+    actualizarResultado(tipoPrueba, resultado);
+    pruebasRealizadas[tipoPrueba] = true;
+    actualizarResumen();
+    actualizarEvaluacion();
+}
+
+function actualizarResultado(tipo, resultado){
+    document.getElementById("resultado" + tipo.charAt(0).toUpperCase() + tipo.slice(1)).textContent = resultado;
+}
+
+function actualizarEstado(tipo, texto){
+    document.getElementById("resultado" + tipo.charAt(0).toUpperCase() + tipo.slice(1)).textContent = texto;
+}
+
+function actualizarResumen(){
+    const mineral = minerales[mineralActual];
+    document.getElementById("resumen").innerHTML =
+        "Mineral: <b>" + mineral.nombre + "</b><br><br>" +
+        "Dureza seleccionada: <b>" + mineral.dureza + "</b><br><br>" +
+        "Compara qué materiales lograron rayarlo.";
+}
+
+let pruebasRealizadas = { clavo: false, moneda: false, vidrio: false };
+
+function reiniciarPruebas(){
+    limpiarRayas();
+    pruebasRealizadas = { clavo: false, moneda: false, vidrio: false };
+
+    document.getElementById("resultadoClavo").textContent = "Pendiente";
+    document.getElementById("resultadoMoneda").textContent = "Pendiente";
+    document.getElementById("resultadoVidrio").textContent = "Pendiente";
+    document.getElementById("resumen").textContent = "Selecciona un material para comenzar.";
+
+    actualizarEvaluacion();
+}
+
+// =====================================================
+// PANEL DE CONTROL
+// =====================================================
+
+const gui = new lil.GUI({ title: "Laboratorio" });
+
+gui.add({ mineral: 1 }, "mineral", { "Talco": 0, "Calcita": 1, "Cuarzo": 2 })
+    .name("💎 Mineral")
+    .onChange(valor => {
+        mineralActual = Number(valor);
+        crearMineral();
+    });
+
+gui.add({ clavo: () => realizarPrueba("clavo") }, "clavo").name("🔩 Probar con clavo");
+gui.add({ moneda: () => realizarPrueba("moneda") }, "moneda").name("🪙 Probar con moneda");
+gui.add({ vidrio: () => realizarPrueba("vidrio") }, "vidrio").name("🪟 Probar con vidrio");
+gui.add({ reiniciar: () => reiniciarPruebas() }, "reiniciar").name("↻ Reiniciar pruebas");
+
+const evaluacionControl = {
+    evaluacion: function(){ abrirEvaluacion(); }
+};
+
+const evaluacionGUI = gui.add(evaluacionControl, "evaluacion").name("📝 Evaluación");
+evaluacionGUI.disable();
+
+function actualizarEvaluacion(){
+    const completas = pruebasRealizadas.clavo && pruebasRealizadas.moneda && pruebasRealizadas.vidrio;
+    if(completas){
+        evaluacionGUI.enable();
+    } else {
+        evaluacionGUI.disable();
+    }
+}
+
+function abrirEvaluacion(){
+    document.getElementById("evaluation-overlay").style.display = "flex";
+    document.getElementById("evaluation-result").style.display = "none";
+    document.getElementById("submit-evaluation").style.display = "block";
+}
+
+// =====================================================
+// GUARDAR EVALUACIÓN EN LA BASE DE DATOS
+// =====================================================
+
+function guardarEvaluacion(puntos) {
+    const id = 6;
+    const nota = puntos;
+    const baseDatos = "DUREZA DE MINERALES";
+
+    fetch('guardar_evaluacion.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
+            'id': id,
+            'nota': nota,
+            'base': baseDatos
+        })
+    })
+    .then(response => response.text())
+    .then(data => {
+        console.log('Evaluación guardada exitosamente en', baseDatos, ':', data);
+    })
+    .catch(error => {
+        console.error('Error al guardar la evaluación:', error);
+    });
+}
+
+// =====================================================
+// CALIFICAR EVALUACIÓN
+// =====================================================
+
+function calificarEvaluacion(){
+    const respuestasCorrectas = { q1:"b", q2:"a", q3:"c", q4:"c", q5:"b" };
+    let puntos = 0;
+    let todasRespondidas = true;
+
+    for(let i = 1; i <= 5; i++){
+        const respuesta = document.querySelector(`input[name="q${i}"]:checked`);
+        if(!respuesta){
+            todasRespondidas = false;
+        } else if(respuesta.value === respuestasCorrectas["q" + i]){
+            puntos += 2;
+        }
+    }
+
+    if(!todasRespondidas){
+        alert("⚠️ Debes responder las 5 preguntas antes de entregar la evaluación.");
+        return;
+    }
+
+    const porcentaje = puntos * 10;
+
+    document.getElementById("score-text").textContent = `Resultado: ${puntos}/10 puntos`;
+    document.getElementById("percentage-text").textContent = `Porcentaje: ${porcentaje}%`;
+
+    let mensaje = "";
+    if(puntos === 10){
+        mensaje = "🌟 ¡Excelente! Comprendes muy bien la dureza de los minerales.";
+    } else if(puntos >= 8){
+        mensaje = "👏 ¡Muy bien! Tienes un buen dominio del tema.";
+    } else if(puntos >= 6){
+        mensaje = "👍 Buen trabajo. Puedes repasar algunos conceptos para mejorar.";
+    } else {
+        mensaje = "📚 Te recomendamos repasar el tema de dureza de minerales y volver a intentarlo.";
+    }
+
+    document.getElementById("feedback-text").textContent = mensaje;
+    document.getElementById("evaluation-result").style.display = "block";
+    document.getElementById("submit-evaluation").style.display = "none";
+
+    document.querySelectorAll("#evaluation-modal input").forEach(input => {
+        input.disabled = true;
+    });
+
+    // Guardar evaluación en la base de datos
+    guardarEvaluacion(puntos);
+}
+
+// =====================================================
+// REPETIR Y CERRAR EVALUACIÓN
+// =====================================================
+
+function repetirEvaluacion(){
+    document.querySelectorAll("#evaluation-modal input").forEach(input => {
+        input.disabled = false;
+        input.checked = false;
+    });
+
+    document.getElementById("evaluation-result").style.display = "none";
+    document.getElementById("submit-evaluation").style.display = "block";
+}
+
+function cerrarEvaluacion(){
+    document.getElementById("evaluation-overlay").style.display = "none";
+}
+
+// =====================================================
+// BUCLE DE ANIMACIÓN Y RENDER
+// =====================================================
+
+function animarPrueba(){
+    if(!pruebaActiva) return;
+
+    const tiempo = performance.now() - inicioPrueba;
+    const duracion = 1800;
+    const progreso = Math.min(tiempo / duracion, 1);
+
+    const inicioX = 5;
+    const finalX = 1.65;
+
+    objetoPrueba.position.x = inicioX + (finalX - inicioX) * progreso;
+
+    if(progreso > .55 && progreso < .85){
+        objetoPrueba.position.y = .2 + Math.sin(progreso * 60) * .05;
+    }
+
+    if(progreso >= 1){
+        terminarPrueba();
+        objetoPrueba.position.x = inicioX;
+        objetoPrueba.position.y = tipoPrueba === "clavo" ? 1 : .2;
+    }
+}
+
+function animar(){
+    requestAnimationFrame(animar);
+    animarPrueba();
+
+    if(mineralMesh && !pruebaActiva){
+        mineralMesh.rotation.y += .002;
+    }
+
+    controls.update();
+    renderer.render(scene, camera);
+}
+
+animar();
+
+// =====================================================
+// RESPONSIVE
+// =====================================================
+
+window.addEventListener("resize", () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+</script>
+<script src="asistente.js"></script>
+</body>
+</html>

@@ -1,0 +1,1970 @@
+<!DOCTYPE html>
+
+<html lang="es">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="asistente.css">
+<title>Red de Interacciones del Ecosistema | EcoLab IA</title>
+
+<style>
+
+/* =====================================================
+   ESTILOS GENERALES
+===================================================== */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+    background: #071b22;
+}
+
+
+/* =====================================================
+   ESCENARIO
+===================================================== */
+
+#ecosystem {
+
+    position: relative;
+
+    width: 100vw;
+    height: 100vh;
+
+    overflow: hidden;
+
+    background:
+    linear-gradient(
+        to bottom,
+        #72c7ee 0%,
+        #a8dff2 45%,
+        #76bf62 46%,
+        #4d9848 100%
+    );
+}
+
+
+/* =====================================================
+   DECORACIÓN
+===================================================== */
+
+#sun-decoration {
+
+    position: absolute;
+
+    top: 80px;
+    right: 80px;
+
+    width: 100px;
+    height: 100px;
+
+    border-radius: 50%;
+
+    background: #ffd84d;
+
+    box-shadow:
+    0 0 45px rgba(255,216,77,.8);
+
+    z-index: 1;
+}
+
+
+.cloud {
+
+    position: absolute;
+
+    width: 130px;
+    height: 40px;
+
+    border-radius: 50px;
+
+    background: rgba(255,255,255,.75);
+
+    z-index: 1;
+}
+
+.cloud::before {
+
+    content: "";
+
+    position: absolute;
+
+    width: 60px;
+    height: 60px;
+
+    left: 20px;
+    bottom: 10px;
+
+    border-radius: 50%;
+
+    background: inherit;
+}
+
+.cloud::after {
+
+    content: "";
+
+    position: absolute;
+
+    width: 70px;
+    height: 70px;
+
+    right: 15px;
+    bottom: 8px;
+
+    border-radius: 50%;
+
+    background: inherit;
+}
+
+#cloud1 {
+    top: 130px;
+    left: 12%;
+}
+
+#cloud2 {
+    top: 220px;
+    left: 60%;
+    transform: scale(.75);
+}
+
+
+/* =====================================================
+   TARJETA DE INFORMACIÓN
+===================================================== */
+
+#info-card {
+
+    position: absolute;
+
+    top: 20px;
+    left: 20px;
+
+    width: 280px;
+
+    padding: 18px;
+
+    border-radius: 15px;
+
+    background: rgba(4,20,25,.88);
+
+    color: white;
+
+    z-index: 30;
+
+    box-shadow:
+    0 8px 25px rgba(0,0,0,.4);
+}
+
+#info-card h2 {
+
+    margin: 0 0 12px;
+
+    color: #8cff8c;
+
+    font-size: 20px;
+}
+
+#info-card p {
+
+    margin: 8px 0;
+
+    font-size: 13px;
+}
+
+.dato {
+
+    color: #ffd84d;
+
+    font-weight: bold;
+}
+
+#connection-info {
+
+    margin-top: 12px;
+
+    padding: 10px;
+
+    border-radius: 10px;
+
+    background: rgba(255,255,255,.08);
+
+    color: #d9f0f0;
+
+    font-size: 12px;
+
+    line-height: 1.5;
+}
+
+
+/* =====================================================
+   BARRA DE PROGRESO
+===================================================== */
+
+#progress-container {
+
+    margin-top: 14px;
+
+    padding: 10px;
+
+    border-radius: 10px;
+
+    background: rgba(255,255,255,.06);
+
+    font-size: 11px;
+
+    text-align: center;
+}
+
+#progress-bar-background {
+
+    width: 100%;
+    height: 8px;
+
+    margin-top: 8px;
+
+    border-radius: 10px;
+
+    overflow: hidden;
+
+    background: #27434a;
+}
+
+#progress-bar {
+
+    width: 0%;
+
+    height: 100%;
+
+    background: #8cff8c;
+
+    transition: width .3s;
+}
+
+
+/* =====================================================
+   PANEL DE CONTROL
+===================================================== */
+
+#control-panel {
+
+    position: absolute;
+
+    top: 20px;
+    right: 20px;
+
+    width: 260px;
+
+    padding: 18px;
+
+    border-radius: 15px;
+
+    background: rgba(4,20,25,.9);
+
+    color: white;
+
+    z-index: 30;
+
+    box-shadow:
+    0 8px 25px rgba(0,0,0,.4);
+}
+
+#control-panel h2 {
+
+    margin-top: 0;
+
+    text-align: center;
+
+    color: #ffd84d;
+
+    font-size: 18px;
+}
+
+#control-panel p {
+
+    font-size: 12px;
+
+    line-height: 1.5;
+
+    color: #d6e5e6;
+}
+
+button {
+
+    width: 100%;
+
+    margin-top: 10px;
+
+    padding: 11px;
+
+    border: none;
+
+    border-radius: 9px;
+
+    cursor: pointer;
+
+    font-weight: bold;
+
+    transition: .25s;
+}
+
+button:hover {
+
+    transform: translateY(-2px);
+}
+
+#reset-button {
+
+    background: #e9eeee;
+
+    color: #173038;
+}
+
+#finish-button {
+
+    background: #ffd84d;
+
+    color: #2c2200;
+}
+
+#finish-button:disabled {
+
+    opacity: .45;
+
+    cursor: not-allowed;
+}
+
+
+/* =====================================================
+   CANVAS DE LAS CONEXIONES
+===================================================== */
+
+#line-canvas {
+
+    position: absolute;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 100%;
+
+    pointer-events: none;
+
+    z-index: 5;
+}
+
+
+/* =====================================================
+   ELEMENTOS DEL ECOSISTEMA
+===================================================== */
+
+.eco-element {
+
+    position: absolute;
+
+    width: 105px;
+    height: 105px;
+
+    border-radius: 50%;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+
+    cursor: pointer;
+
+    user-select: none;
+
+    border: 4px solid rgba(255,255,255,.85);
+
+    z-index: 10;
+
+    box-shadow:
+    0 8px 18px rgba(0,0,0,.25);
+
+    transition: .25s;
+}
+
+.eco-element:hover {
+
+    transform: scale(1.08);
+}
+
+.eco-element.selected {
+
+    transform: scale(1.12);
+
+    border-color: #ffd84d;
+
+    box-shadow:
+    0 0 0 5px rgba(255,216,77,.35),
+    0 8px 20px rgba(0,0,0,.35);
+}
+
+.eco-icon {
+
+    font-size: 34px;
+}
+
+.eco-name {
+
+    margin-top: 5px;
+
+    font-size: 12px;
+
+    font-weight: bold;
+}
+
+
+/* =====================================================
+   POSICIONES
+===================================================== */
+
+#sun {
+
+    left: 37%;
+    top: 18%;
+
+    background: #ffcc3f;
+
+    color: #543700;
+}
+
+#tree {
+
+    left: 47%;
+    top: 47%;
+
+    background: #4b9d4d;
+}
+
+#flower {
+
+    left: 27%;
+    top: 63%;
+
+    background: #e987b7;
+}
+
+#hummingbird {
+
+    left: 66%;
+    top: 35%;
+
+    background: #68c9e5;
+
+    color: #07313b;
+}
+
+#soil {
+
+    left: 70%;
+    top: 68%;
+
+    background: #a96c43;
+}
+
+#water {
+
+    left: 13%;
+    top: 42%;
+
+    background: #54b9e3;
+}
+
+#rabbit {
+
+    left: 46%;
+    top: 75%;
+
+    background: #ded9ce;
+
+    color: #333;
+}
+
+
+/* =====================================================
+   INSTRUCCIÓN
+===================================================== */
+
+#instruction {
+
+    position: absolute;
+
+    bottom: 20px;
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    padding: 12px 22px;
+
+    border-radius: 12px;
+
+    background: rgba(0,0,0,.72);
+
+    color: white;
+
+    font-size: 13px;
+
+    text-align: center;
+
+    z-index: 30;
+}
+
+#instruction span {
+
+    color: #ffd84d;
+
+    font-weight: bold;
+}
+
+
+/* =====================================================
+   EVALUACIÓN
+===================================================== */
+
+#evaluation-screen {
+
+    position: fixed;
+
+    inset: 0;
+
+    display: none;
+
+    justify-content: center;
+    align-items: center;
+
+    padding: 20px;
+
+    background: rgba(2,10,14,.9);
+
+    z-index: 100;
+
+    color: white;
+}
+
+#evaluation-card {
+
+    width: min(650px,95vw);
+
+    max-height: 90vh;
+
+    overflow-y: auto;
+
+    padding: 30px;
+
+    border-radius: 25px;
+
+    background:
+    linear-gradient(
+        145deg,
+        #123c36,
+        #071b22
+    );
+
+    box-shadow:
+    0 20px 60px rgba(0,0,0,.7);
+}
+
+.evaluation-header {
+
+    text-align: center;
+}
+
+.evaluation-header h2 {
+
+    color: #8cff8c;
+
+    margin: 8px 0;
+}
+
+.evaluation-icon {
+
+    font-size: 45px;
+}
+
+#question-counter {
+
+    margin-top: 20px;
+
+    color: #ffd84d;
+
+    font-size: 13px;
+
+    font-weight: bold;
+}
+
+#question-text {
+
+    line-height: 1.5;
+
+    font-size: 18px;
+}
+
+.answer {
+
+    width: 100%;
+
+    margin-top: 10px;
+
+    padding: 14px;
+
+    border: 1px solid #456468;
+
+    border-radius: 10px;
+
+    background: rgba(255,255,255,.06);
+
+    color: white;
+
+    text-align: left;
+
+    cursor: pointer;
+}
+
+.answer:hover {
+
+    background: rgba(140,255,140,.1);
+
+    border-color: #8cff8c;
+}
+
+.answer.selected {
+
+    background: rgba(140,255,140,.2);
+
+    border-color: #8cff8c;
+}
+
+#next-question {
+
+    background: #8cff8c;
+
+    color: #06200d;
+}
+
+#next-question:disabled {
+
+    opacity: .4;
+
+    cursor: not-allowed;
+}
+
+
+/* =====================================================
+   RESULTADO
+===================================================== */
+
+#result-screen {
+
+    display: none;
+
+    text-align: center;
+}
+
+#result-screen h2 {
+
+    color: #8cff8c;
+}
+
+.result-icon {
+
+    font-size: 60px;
+}
+
+#score {
+
+    font-size: 40px;
+
+    color: #ffd84d;
+
+    font-weight: bold;
+
+    margin: 20px 0;
+}
+
+#feedback {
+
+    line-height: 1.6;
+
+    color: #dce8e9;
+}
+
+#restart-quiz {
+
+    background: #ffd84d;
+
+    color: #2c2200;
+}
+
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media(max-width: 800px) {
+
+    #info-card {
+
+        width: 220px;
+
+        font-size: 11px;
+    }
+
+    #control-panel {
+
+        width: 200px;
+    }
+
+    .eco-element {
+
+        width: 80px;
+        height: 80px;
+    }
+
+    .eco-icon {
+
+        font-size: 27px;
+    }
+
+    .eco-name {
+
+        font-size: 10px;
+    }
+
+    #instruction {
+
+        display: none;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div id="ecosystem">
+
+<!-- DECORACIÓN -->
+
+<div id="sun-decoration"></div>
+
+<div class="cloud" id="cloud1"></div>
+
+<div class="cloud" id="cloud2"></div>
+
+<!-- INFORMACIÓN -->
+
+<div id="info-card">
+
+<h2>🌿 Red del Ecosistema</h2>
+
+<p>
+🧶 Conexiones:
+<span id="connection-count" class="dato">0</span>
+/ 6
+</p>
+
+<p>
+🌎 Elementos conectados:
+<span id="element-count" class="dato">0</span>
+</p>
+
+<div id="connection-info">
+
+Selecciona un elemento y después otro para crear una conexión.
+
+</div>
+
+<div id="progress-container">
+
+<span id="progress-text">
+
+0% de la red construida
+
+</span>
+
+<div id="progress-bar-background">
+
+<div id="progress-bar"></div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- CONTROLES -->
+
+<div id="control-panel">
+
+<h2>🧶 Construye la red</h2>
+
+<p>
+Selecciona dos elementos relacionados.
+</p>
+
+<p>
+Cada conexión representa una relación dentro del ecosistema.
+</p>
+
+<p>
+Completa 6 conexiones para desbloquear la evaluación.
+</p>
+
+<button id="reset-button">
+
+↻ Reiniciar simulación
+
+</button>
+
+<button id="finish-button" disabled>
+
+📝 Realizar evaluación
+
+</button>
+
+</div>
+
+<!-- CANVAS -->
+
+<canvas id="line-canvas"></canvas>
+
+<!-- ELEMENTOS -->
+
+<div class="eco-element" id="sun" data-element="Sol">
+
+<div class="eco-icon">☀️</div>
+
+<div class="eco-name">Sol</div>
+
+</div>
+
+<div class="eco-element" id="tree" data-element="Árbol">
+
+<div class="eco-icon">🌳</div>
+
+<div class="eco-name">Árbol</div>
+
+</div>
+
+<div class="eco-element" id="flower" data-element="Flor">
+
+<div class="eco-icon">🌸</div>
+
+<div class="eco-name">Flor</div>
+
+</div>
+
+<div class="eco-element" id="hummingbird" data-element="Colibrí">
+
+<div class="eco-icon">🐦</div>
+
+<div class="eco-name">Colibrí</div>
+
+</div>
+
+<div class="eco-element" id="soil" data-element="Suelo">
+
+<div class="eco-icon">🟫</div>
+
+<div class="eco-name">Suelo</div>
+
+</div>
+
+<div class="eco-element" id="water" data-element="Agua">
+
+<div class="eco-icon">💧</div>
+
+<div class="eco-name">Agua</div>
+
+</div>
+
+<div class="eco-element" id="rabbit" data-element="Conejo">
+
+<div class="eco-icon">🐇</div>
+
+<div class="eco-name">Conejo</div>
+
+</div>
+
+<!-- INSTRUCCIÓN -->
+
+<div id="instruction">
+
+🧶 Haz clic en <span>dos elementos</span>
+para crear una conexión.
+
+</div>
+
+
+
+<!-- =====================================================
+     EVALUACIÓN
+===================================================== -->
+
+<div id="evaluation-screen">
+
+<div id="evaluation-card">
+
+<!-- QUIZ -->
+
+<div id="quiz-screen">
+
+<div class="evaluation-header">
+
+<div class="evaluation-icon">
+
+🌎
+
+</div>
+
+<h2>
+
+Evaluación del Experimento
+
+</h2>
+
+<p>
+
+Responde las preguntas según lo aprendido
+en la simulación.
+
+</p>
+
+</div>
+
+<div id="question-counter">
+
+Pregunta 1 de 5
+
+</div>
+
+<h3 id="question-text">
+
+</h3>
+
+<div id="answers-container">
+
+</div>
+
+<button id="next-question" disabled>
+
+Continuar →
+
+</button>
+
+</div>
+
+<!-- RESULTADO -->
+
+<div id="result-screen">
+
+<div class="result-icon">
+
+🏆
+
+</div>
+
+<h2>
+
+¡Evaluación terminada!
+
+</h2>
+
+<div id="score">
+
+0 / 5
+
+</div>
+
+<p id="feedback">
+
+</p>
+
+<button id="restart-quiz">
+
+🌿 Volver a la simulación
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+
+/* =====================================================
+   VARIABLES PRINCIPALES
+===================================================== */
+
+const canvas =
+document.getElementById("line-canvas");
+
+const ctx =
+canvas.getContext("2d");
+
+
+let selectedElement = null;
+
+let connections = [];
+
+
+/* =====================================================
+   RELACIONES DEL ECOSISTEMA
+===================================================== */
+
+const relationships = {
+
+
+"Sol|Árbol":
+"☀️ El Sol proporciona energía al árbol para realizar la fotosíntesis.",
+
+
+"Sol|Flor":
+"☀️ La flor utiliza la energía del Sol para crecer.",
+
+
+"Sol|Agua":
+"☀️ El Sol participa en procesos como la evaporación del agua.",
+
+
+"Árbol|Suelo":
+"🌳 El árbol obtiene nutrientes y soporte del suelo.",
+
+
+"Flor|Suelo":
+"🌸 La flor obtiene nutrientes del suelo.",
+
+
+"Árbol|Agua":
+"💧 El árbol necesita agua para vivir y crecer.",
+
+
+"Flor|Agua":
+"💧 La flor necesita agua para mantenerse viva.",
+
+
+"Flor|Colibrí":
+"🐦 El colibrí obtiene alimento y ayuda a polinizar la flor.",
+
+
+"Árbol|Conejo":
+"🐇 El árbol puede proporcionar alimento y refugio a los animales.",
+
+
+"Suelo|Conejo":
+"🟫 El suelo forma parte del hábitat del conejo.",
+
+
+"Agua|Conejo":
+"💧 El conejo necesita agua para sobrevivir.",
+
+
+"Agua|Colibrí":
+"💧 El colibrí necesita agua para vivir."
+
+};
+
+
+/* =====================================================
+   CREAR CLAVE SEGURA
+===================================================== */
+
+function createKey(name1, name2) {
+
+    const names = [name1, name2];
+
+    names.sort();
+
+    return names[0] + "|" + names[1];
+}
+
+
+/* =====================================================
+   NORMALIZAR RELACIONES
+===================================================== */
+
+const normalizedRelationships = {};
+
+for (const key in relationships) {
+
+    const parts = key.split("|");
+
+    const normalizedKey =
+    createKey(parts[0], parts[1]);
+
+    normalizedRelationships[normalizedKey] =
+    relationships[key];
+}
+
+
+/* =====================================================
+   AJUSTAR CANVAS
+===================================================== */
+
+function resizeCanvas() {
+
+    canvas.width =
+    window.innerWidth;
+
+    canvas.height =
+    window.innerHeight;
+
+    drawConnections();
+}
+
+
+/* =====================================================
+   DIBUJAR CONEXIONES
+===================================================== */
+
+function drawConnections() {
+
+    ctx.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+
+    connections.forEach(connection => {
+
+
+        const rect1 =
+        connection.element1.getBoundingClientRect();
+
+        const rect2 =
+        connection.element2.getBoundingClientRect();
+
+
+        const x1 =
+        rect1.left + rect1.width / 2;
+
+        const y1 =
+        rect1.top + rect1.height / 2;
+
+
+        const x2 =
+        rect2.left + rect2.width / 2;
+
+        const y2 =
+        rect2.top + rect2.height / 2;
+
+
+        /* SOMBRA DE LA LANA */
+
+        ctx.beginPath();
+
+        ctx.moveTo(x1, y1);
+
+        ctx.lineTo(x2, y2);
+
+        ctx.strokeStyle =
+        "rgba(60,20,10,.35)";
+
+        ctx.lineWidth = 12;
+
+        ctx.stroke();
+
+
+        /* LANA */
+
+        ctx.beginPath();
+
+        ctx.moveTo(x1, y1);
+
+        ctx.lineTo(x2, y2);
+
+        ctx.strokeStyle =
+        "#d8434e";
+
+        ctx.lineWidth = 6;
+
+        ctx.lineCap = "round";
+
+        ctx.stroke();
+
+
+        /* DETALLE */
+
+        ctx.beginPath();
+
+        ctx.moveTo(x1, y1);
+
+        ctx.lineTo(x2, y2);
+
+        ctx.strokeStyle =
+        "rgba(255,255,255,.25)";
+
+        ctx.lineWidth = 1.5;
+
+        ctx.stroke();
+
+    });
+
+}
+
+
+/* =====================================================
+   SELECCIONAR ELEMENTOS
+===================================================== */
+
+const ecoElements =
+document.querySelectorAll(".eco-element");
+
+
+ecoElements.forEach(element => {
+
+    element.addEventListener(
+        "click",
+        function() {
+
+            handleElementClick(element);
+
+        }
+    );
+
+});
+
+
+function handleElementClick(element) {
+
+
+    /* PRIMER ELEMENTO */
+
+    if (selectedElement === null) {
+
+        selectedElement = element;
+
+        element.classList.add("selected");
+
+
+        document.getElementById(
+            "connection-info"
+        ).innerText =
+
+        "🧶 Ahora selecciona otro elemento relacionado.";
+
+        return;
+    }
+
+
+    /* MISMO ELEMENTO */
+
+    if (selectedElement === element) {
+
+        selectedElement.classList.remove(
+            "selected"
+        );
+
+        selectedElement = null;
+
+
+        document.getElementById(
+            "connection-info"
+        ).innerText =
+
+        "Selecciona un elemento para comenzar.";
+
+        return;
+    }
+
+
+    const name1 =
+    selectedElement.dataset.element;
+
+    const name2 =
+    element.dataset.element;
+
+
+    const key =
+    createKey(name1, name2);
+
+
+    /* COMPROBAR SI EXISTE LA RELACIÓN */
+
+    if (normalizedRelationships[key]) {
+
+
+        /* COMPROBAR DUPLICADO */
+
+        const exists =
+        connections.some(connection => {
+
+            return connection.key === key;
+
+        });
+
+
+        if (exists) {
+
+            document.getElementById(
+                "connection-info"
+            ).innerText =
+
+            "⚠️ Esa conexión ya fue creada. Intenta otra.";
+
+        }
+
+        else {
+
+            connections.push({
+
+                element1:
+                selectedElement,
+
+                element2:
+                element,
+
+                key:
+                key
+
+            });
+
+
+            document.getElementById(
+                "connection-info"
+            ).innerText =
+
+            normalizedRelationships[key];
+
+
+            updateSimulation();
+        }
+
+    }
+
+    else {
+
+        document.getElementById(
+            "connection-info"
+        ).innerText =
+
+        "❌ Estos elementos no tienen una relación directa disponible en esta simulación.";
+
+    }
+
+
+    selectedElement.classList.remove(
+        "selected"
+    );
+
+    selectedElement = null;
+
+}
+
+
+/* =====================================================
+   ACTUALIZAR SIMULACIÓN
+===================================================== */
+
+function updateSimulation() {
+
+
+    drawConnections();
+
+
+    document.getElementById(
+        "connection-count"
+    ).innerText =
+    connections.length;
+
+
+    /* CONTAR ELEMENTOS */
+
+    const connectedElements =
+    new Set();
+
+
+    connections.forEach(connection => {
+
+        connectedElements.add(
+            connection.element1
+        );
+
+        connectedElements.add(
+            connection.element2
+        );
+
+    });
+
+
+    document.getElementById(
+        "element-count"
+    ).innerText =
+    connectedElements.size;
+
+
+    /* PROGRESO */
+
+    const percentage =
+    Math.min(
+        (connections.length / 6) * 100,
+        100
+    );
+
+
+    document.getElementById(
+        "progress-bar"
+    ).style.width =
+    percentage + "%";
+
+
+    document.getElementById(
+        "progress-text"
+    ).innerText =
+
+    Math.round(percentage) +
+    "% de la red construida";
+
+
+    /* DESBLOQUEAR EVALUACIÓN */
+
+    if (connections.length >= 6) {
+
+        document.getElementById(
+            "finish-button"
+        ).disabled = false;
+
+
+        document.getElementById(
+            "connection-info"
+        ).innerText =
+
+        "🎉 ¡Excelente! Ya construiste una red de interacciones. Ahora puedes realizar la evaluación.";
+
+    }
+
+}
+
+
+/* =====================================================
+   REINICIAR SIMULACIÓN
+===================================================== */
+
+document.getElementById(
+    "reset-button"
+).addEventListener(
+    "click",
+    function() {
+
+
+        connections = [];
+
+
+        if (selectedElement) {
+
+            selectedElement.classList.remove(
+                "selected"
+            );
+
+        }
+
+
+        selectedElement = null;
+
+
+        document.getElementById(
+            "connection-count"
+        ).innerText = "0";
+
+
+        document.getElementById(
+            "element-count"
+        ).innerText = "0";
+
+
+        document.getElementById(
+            "progress-bar"
+        ).style.width = "0%";
+
+
+        document.getElementById(
+            "progress-text"
+        ).innerText =
+        "0% de la red construida";
+
+
+        document.getElementById(
+            "connection-info"
+        ).innerText =
+
+        "Selecciona un elemento y después otro para crear una conexión.";
+
+
+        document.getElementById(
+            "finish-button"
+        ).disabled = true;
+
+
+        drawConnections();
+
+    }
+);
+
+
+/* =====================================================
+   ABRIR EVALUACIÓN
+===================================================== */
+
+document.getElementById(
+    "finish-button"
+).addEventListener(
+    "click",
+    function() {
+
+        document.getElementById(
+            "evaluation-screen"
+        ).style.display =
+        "flex";
+
+
+        startQuiz();
+
+    }
+);
+
+
+/* =====================================================
+   PREGUNTAS
+===================================================== */
+
+const questions = [
+
+{
+question:
+"¿Qué representa la lana en el experimento?",
+
+answers:
+[
+"El clima",
+"Las relaciones entre los componentes",
+"Únicamente a los animales",
+"La temperatura"
+],
+
+correct: 1
+},
+
+
+{
+question:
+"¿Cuál de los siguientes es un elemento no vivo?",
+
+answers:
+[
+"Colibrí",
+"Árbol",
+"Sol",
+"Flor"
+],
+
+correct: 2
+},
+
+
+{
+question:
+"¿Por qué el árbol está relacionado con el suelo?",
+
+answers:
+[
+"Obtiene nutrientes y soporte",
+"El suelo puede volar",
+"El árbol crea el suelo",
+"No tienen relación"
+],
+
+correct: 0
+},
+
+
+{
+question:
+"¿Qué relación existe entre la flor y el colibrí?",
+
+answers:
+[
+"El colibrí obtiene alimento y ayuda a polinizar",
+"No existe relación",
+"La flor persigue al colibrí",
+"El colibrí produce el Sol"
+],
+
+correct: 0
+},
+
+
+{
+question:
+"¿Qué demuestra la red de interacciones?",
+
+answers:
+[
+"Que todos viven aislados",
+"Que los componentes del ecosistema se relacionan",
+"Que solo importan los animales",
+"Que el suelo no es importante"
+],
+
+correct: 1
+}
+
+];
+
+
+/* =====================================================
+   VARIABLES QUIZ
+===================================================== */
+
+let currentQuestion = 0;
+
+let score = 0;
+
+let selectedAnswer = null;
+
+
+/* =====================================================
+   INICIAR QUIZ
+===================================================== */
+
+function startQuiz() {
+
+    currentQuestion = 0;
+
+    score = 0;
+
+    selectedAnswer = null;
+
+
+    document.getElementById(
+        "quiz-screen"
+    ).style.display =
+    "block";
+
+
+    document.getElementById(
+        "result-screen"
+    ).style.display =
+    "none";
+
+
+    showQuestion();
+
+}
+
+
+/* =====================================================
+   MOSTRAR PREGUNTA
+===================================================== */
+
+function showQuestion() {
+
+
+    selectedAnswer = null;
+
+
+    const question =
+    questions[currentQuestion];
+
+
+    document.getElementById(
+        "question-counter"
+    ).innerText =
+
+    "Pregunta " +
+    (currentQuestion + 1) +
+    " de " +
+    questions.length;
+
+
+    document.getElementById(
+        "question-text"
+    ).innerText =
+    question.question;
+
+
+    const container =
+    document.getElementById(
+        "answers-container"
+    );
+
+
+    container.innerHTML = "";
+
+
+    question.answers.forEach(
+        function(answer, index) {
+
+
+            const button =
+            document.createElement(
+                "button"
+            );
+
+
+            button.className =
+            "answer";
+
+
+            button.innerText =
+            String.fromCharCode(
+                65 + index
+            ) +
+            ". " +
+            answer;
+
+
+            button.addEventListener(
+                "click",
+                function() {
+
+                    document
+                    .querySelectorAll(
+                        ".answer"
+                    )
+                    .forEach(option => {
+
+                        option.classList.remove(
+                            "selected"
+                        );
+
+                    });
+
+
+                    button.classList.add(
+                        "selected"
+                    );
+
+
+                    selectedAnswer =
+                    index;
+
+
+                    document.getElementById(
+                        "next-question"
+                    ).disabled =
+                    false;
+
+                }
+            );
+
+
+            container.appendChild(
+                button
+            );
+
+        }
+    );
+
+
+    const nextButton =
+    document.getElementById(
+        "next-question"
+    );
+
+
+    nextButton.disabled =
+    true;
+
+
+    if (
+        currentQuestion ===
+        questions.length - 1
+    ) {
+
+        nextButton.innerText =
+        "Finalizar evaluación ✓";
+
+    }
+
+    else {
+
+        nextButton.innerText =
+        "Continuar →";
+
+    }
+
+}
+
+
+/* =====================================================
+   SIGUIENTE PREGUNTA
+===================================================== */
+
+document.getElementById(
+    "next-question"
+).addEventListener(
+    "click",
+    function() {
+
+
+        if (
+            selectedAnswer === null
+        ) {
+
+            return;
+
+        }
+
+
+        if (
+            selectedAnswer ===
+            questions[currentQuestion].correct
+        ) {
+
+            score++;
+
+        }
+
+
+        currentQuestion++;
+
+
+        if (
+            currentQuestion <
+            questions.length
+        ) {
+
+            showQuestion();
+
+        }
+
+        else {
+
+            showResult();
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   MOSTRAR RESULTADO
+===================================================== */
+
+function showResult() {
+
+
+    document.getElementById(
+        "quiz-screen"
+    ).style.display =
+    "none";
+
+
+    document.getElementById(
+        "result-screen"
+    ).style.display =
+    "block";
+
+
+    document.getElementById(
+        "score"
+    ).innerText =
+    score +
+    " / " +
+    questions.length;
+
+
+    let message = "";
+
+
+    if (score === 5) {
+
+        message =
+        "🌟 ¡Excelente trabajo! Comprendiste muy bien cómo los seres vivos y los elementos no vivos se relacionan dentro del ecosistema.";
+
+    }
+
+    else if (score >= 4) {
+
+        message =
+        "👏 ¡Muy buen trabajo! Comprendiste la mayoría de las relaciones del ecosistema.";
+
+    }
+
+    else if (score >= 3) {
+
+        message =
+        "👍 Buen trabajo. Puedes volver a realizar la simulación para observar mejor las relaciones.";
+
+    }
+
+    else {
+
+        message =
+        "📚 Te recomendamos volver a construir la red y analizar cómo cada componente depende de otros.";
+
+    }
+
+
+    document.getElementById(
+        "feedback"
+    ).innerText =
+    message;
+
+}
+
+
+/* =====================================================
+   VOLVER A LA SIMULACIÓN
+===================================================== */
+
+document.getElementById(
+    "restart-quiz"
+).addEventListener(
+    "click",
+    function() {
+
+        document.getElementById(
+            "evaluation-screen"
+        ).style.display =
+        "none";
+
+    }
+);
+
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+window.addEventListener(
+    "resize",
+    resizeCanvas
+);
+
+
+/* =====================================================
+   INICIAR
+===================================================== */
+
+resizeCanvas();
+
+
+</script>
+
+</body>
+<script src="asistente.js"></script>
+</html>

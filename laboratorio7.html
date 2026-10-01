@@ -1,0 +1,2416 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="asistente.css">
+    <title>Laboratorio Pro 3D: Mitosis y Cariocinesis</title>
+
+    <style>
+        :root {
+            --bg-dark: #03050a;
+            --panel-bg: rgba(8, 14, 26, 0.88);
+            --border-color: rgba(0, 240, 255, 0.25);
+            --accent-cyan: #00f0ff;
+            --accent-green: #00ff88;
+            --accent-pink: #ff0055;
+            --accent-purple: #a855f7;
+            --accent-yellow: #ffcc00;
+            --text-main: #f0f6fc;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        #canvas-container {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+
+        .overlay-panel {
+            position: absolute;
+            z-index: 10;
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            backdrop-filter: blur(16px);
+            box-shadow:
+                0 10px 30px rgba(0, 0, 0, 0.8),
+                0 0 20px rgba(0, 240, 255, 0.08);
+            pointer-events: auto;
+        }
+
+        /* ==============================
+           BOTÓN VOLVER
+        ============================== */
+
+        #back-btn {
+            top: 15px;
+            left: 15px;
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            color: var(--accent-cyan);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.25s ease;
+            text-decoration: none;
+        }
+
+        #back-btn:hover {
+            background: rgba(0, 240, 255, 0.15);
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 12px rgba(0, 240, 255, 0.3);
+            transform: translateY(-1px);
+        }
+
+        /* ==============================
+           HEADER
+        ============================== */
+
+        #header-panel {
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 8px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            max-width: calc(100vw - 640px);
+            white-space: nowrap;
+        }
+
+        h1 {
+            font-size: 0.95rem;
+            color: var(--accent-cyan);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 800;
+        }
+
+        .status-badge {
+            font-size: 0.7rem;
+            padding: 3px 10px;
+            border-radius: 20px;
+            background: rgba(0, 240, 255, 0.15);
+            color: var(--accent-cyan);
+            border: 1px solid var(--accent-cyan);
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        /* ==============================
+           PANEL IZQUIERDO
+        ============================== */
+
+        #left-panel {
+            top: 65px;
+            left: 15px;
+            width: 260px;
+            padding: 15px;
+        }
+
+        h2 {
+            font-size: 0.8rem;
+            color: var(--accent-cyan);
+            margin-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .phase-btn {
+            width: 100%;
+            padding: 10px 12px;
+            margin-bottom: 8px;
+            border: 1px solid var(--border-color);
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--text-main);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.78rem;
+            font-weight: 600;
+            text-align: left;
+            transition: all 0.25s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .phase-btn:hover {
+            background: rgba(0, 240, 255, 0.1);
+            border-color: var(--accent-cyan);
+        }
+
+        .phase-btn.active {
+            background: var(--accent-cyan);
+            color: var(--bg-dark);
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 12px rgba(0, 240, 255, 0.4);
+            font-weight: 800;
+        }
+
+        /* ==============================
+           PANEL DERECHO
+        ============================== */
+
+        #desc-panel {
+            top: 15px;
+            right: 15px;
+            width: 310px;
+            max-height: calc(100vh - 30px);
+            padding: 18px;
+            overflow-y: auto;
+        }
+
+        .desc-title {
+            font-size: 0.95rem;
+            font-weight: bold;
+            color: var(--accent-green);
+            margin-bottom: 8px;
+        }
+
+        .desc-text {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+            margin-bottom: 10px;
+        }
+
+        .concept-box {
+            background: rgba(0, 240, 255, 0.04);
+            border-left: 3px solid var(--accent-cyan);
+            padding: 8px 10px;
+            border-radius: 4px;
+            margin-bottom: 12px;
+            font-size: 0.75rem;
+        }
+
+        .concept-title {
+            color: var(--accent-cyan);
+            font-weight: bold;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+        }
+
+        .legend-list {
+            margin-top: 10px;
+            font-size: 0.72rem;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 10px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        /* ==============================
+           BOTÓN EVALUACIÓN
+        ============================== */
+
+        #open-quiz-btn {
+            position: absolute;
+            right: 15px;
+            bottom: 15px;
+            z-index: 20;
+            padding: 11px 18px;
+            background: rgba(8, 14, 26, 0.95);
+            color: var(--accent-cyan);
+            border: 1px solid var(--accent-cyan);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            transition: all 0.25s ease;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        #open-quiz-btn:hover {
+            background: var(--accent-cyan);
+            color: var(--bg-dark);
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.4);
+            transform: translateY(-2px);
+        }
+
+        /* ==============================
+           MODAL DE EVALUACIÓN
+        ============================== */
+
+        #quiz-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            background: rgba(2, 5, 12, 0.9);
+            backdrop-filter: blur(8px);
+        }
+
+        #quiz-modal {
+            width: min(680px, 95vw);
+            max-height: 90vh;
+            overflow-y: auto;
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(11, 28, 45, 0.98),
+                    rgba(3, 5, 10, 0.98)
+                );
+            border: 1px solid var(--border-color);
+            border-radius: 18px;
+            padding: 26px;
+            box-shadow:
+                0 25px 80px rgba(0, 0, 0, 0.85),
+                0 0 35px rgba(0, 240, 255, 0.12);
+        }
+
+        .quiz-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .quiz-icon {
+            font-size: 44px;
+            margin-bottom: 6px;
+        }
+
+        .quiz-header h2 {
+            border: none;
+            color: var(--accent-cyan);
+            font-size: 1.25rem;
+            margin-bottom: 5px;
+        }
+
+        .quiz-header p {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        #question-counter {
+            color: var(--accent-yellow);
+            font-size: 0.82rem;
+            font-weight: 800;
+            margin-bottom: 12px;
+        }
+
+        #question-text {
+            font-size: 1rem;
+            line-height: 1.5;
+            margin-bottom: 16px;
+            color: var(--text-main);
+        }
+
+        .quiz-option {
+            width: 100%;
+            display: block;
+            text-align: left;
+            padding: 13px 14px;
+            margin-bottom: 9px;
+            border-radius: 9px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: rgba(255, 255, 255, 0.035);
+            color: var(--text-main);
+            cursor: pointer;
+            font-size: 0.82rem;
+            line-height: 1.4;
+            transition: all 0.25s ease;
+        }
+
+        .quiz-option:hover {
+            border-color: var(--accent-cyan);
+            background: rgba(0, 240, 255, 0.08);
+            transform: translateX(3px);
+        }
+
+        .quiz-option.selected {
+            border-color: var(--accent-cyan);
+            background: rgba(0, 240, 255, 0.15);
+            box-shadow: 0 0 12px rgba(0, 240, 255, 0.12);
+        }
+
+        #quiz-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 18px;
+        }
+
+        #next-question,
+        #close-quiz-btn,
+        #restart-quiz {
+            border-radius: 8px;
+            padding: 11px;
+            cursor: pointer;
+            font-weight: 800;
+            transition: all 0.25s ease;
+        }
+
+        #next-question {
+            flex: 1;
+            border: none;
+            background: var(--accent-green);
+            color: #021a0e;
+        }
+
+        #next-question:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
+        }
+
+        #next-question:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        #close-quiz-btn {
+            flex: 0.4;
+            background: rgba(255, 0, 85, 0.1);
+            border: 1px solid var(--accent-pink);
+            color: var(--accent-pink);
+        }
+
+        #close-quiz-btn:hover {
+            background: var(--accent-pink);
+            color: white;
+        }
+
+        /* ==============================
+           RESULTADO
+        ============================== */
+
+        #result-screen {
+            display: none;
+            text-align: center;
+        }
+
+        .result-icon {
+            font-size: 65px;
+            margin-bottom: 8px;
+        }
+
+        #result-screen h2 {
+            border: none;
+            color: var(--accent-green);
+            font-size: 1.3rem;
+        }
+
+        #score {
+            font-size: 50px;
+            font-weight: 900;
+            color: var(--accent-yellow);
+            margin: 20px 0;
+        }
+
+        #feedback {
+            color: var(--text-muted);
+            line-height: 1.6;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+        }
+
+        #restart-quiz {
+            width: 100%;
+            border: none;
+            background: var(--accent-cyan);
+            color: var(--bg-dark);
+        }
+
+        #restart-quiz:hover {
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.35);
+            transform: translateY(-2px);
+        }
+
+        /* ==============================
+           RESPONSIVE
+        ============================== */
+
+        @media(max-width: 900px) {
+
+            #desc-panel {
+                width: 280px;
+            }
+
+            #left-panel {
+                width: 235px;
+            }
+
+            #header-panel {
+                max-width: 380px;
+            }
+        }
+
+        @media(max-width: 700px) {
+
+            #left-panel {
+                width: 215px;
+                top: 65px;
+            }
+
+            #desc-panel {
+                display: none;
+            }
+
+            #header-panel {
+                max-width: 300px;
+                padding: 8px 12px;
+            }
+
+            #header-panel h1 {
+                font-size: 0.75rem;
+            }
+
+            .status-badge {
+                font-size: 0.6rem;
+            }
+
+            #quiz-modal {
+                padding: 18px;
+            }
+        }
+    </style>
+
+    <!-- THREE.JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+</head>
+
+<body>
+
+    <div id="canvas-container"></div>
+
+    <!-- BOTÓN VOLVER -->
+    <a href="noveno.html" id="back-btn" class="overlay-panel">
+        &#8592; Volver
+    </a>
+
+    <!-- HEADER -->
+    <div id="header-panel" class="overlay-panel">
+        <h1>Simulador 3D: Mitosis Celular</h1>
+        <span class="status-badge" id="status-tag">
+            Profase
+        </span>
+    </div>
+
+    <!-- PANEL IZQUIERDO -->
+    <div id="left-panel" class="overlay-panel">
+
+        <h2>Control de Fases</h2>
+
+        <button class="phase-btn active" onclick="setPhase(0)">
+            1. Profase
+            <span>Fase 01</span>
+        </button>
+
+        <button class="phase-btn" onclick="setPhase(1)">
+            2. Metafase
+            <span>Fase 02</span>
+        </button>
+
+        <button class="phase-btn" onclick="setPhase(2)">
+            3. Anafase
+            <span>Fase 03</span>
+        </button>
+
+        <button class="phase-btn" onclick="setPhase(3)">
+            4. Telofase/Citocinesis
+            <span>Fase 04</span>
+        </button>
+
+    </div>
+
+    <!-- PANEL DERECHO -->
+    <div id="desc-panel" class="overlay-panel">
+
+        <div class="desc-title" id="phase-title">
+            Profase Inicial
+        </div>
+
+        <div class="desc-text" id="phase-desc">
+            La cromatina se condensa en estructuras súper enrolladas visibles
+            llamadas cromosomas. Cada uno está compuesto por dos cromátidas
+            hermanas idénticas unidas por un centrómero.
+        </div>
+
+        <div class="concept-box">
+
+            <div class="concept-title" id="concept-title">
+                Mecanismo Clave
+            </div>
+
+            <div id="concept-desc" style="color: var(--text-muted)">
+                Los centrosomas se separan hacia polos opuestos y comienzan
+                a emitir microtúbulos que estructuran el huso acromático.
+                La envoltura nuclear comienza su fosforilación para fragmentarse.
+            </div>
+
+        </div>
+
+        <div class="legend-list">
+
+            <div class="legend-item">
+                <div
+                    class="dot"
+                    style="background:#ff0055"
+                ></div>
+                Cromosomas (Cromátidas idénticas)
+            </div>
+
+            <div class="legend-item">
+                <div
+                    class="dot"
+                    style="background:#00f0ff"
+                ></div>
+                Microtúbulos del Huso Acromático
+            </div>
+
+            <div class="legend-item">
+                <div
+                    class="dot"
+                    style="background:#ffcc00"
+                ></div>
+                Centrosomas / Cinetocoros
+            </div>
+
+            <div class="legend-item">
+                <div
+                    class="dot"
+                    style="background:#a855f7"
+                ></div>
+                Envoltura Nuclear / Carioteca
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ==============================
+         BOTÓN EVALUACIÓN
+    ============================== -->
+
+    <button id="open-quiz-btn">
+        📝 Abrir Evaluación
+    </button>
+
+
+    <!-- ==============================
+         MODAL DE EVALUACIÓN
+    ============================== -->
+
+    <div id="quiz-overlay">
+
+        <div id="quiz-modal">
+
+            <!-- QUIZ -->
+
+            <div id="quiz-screen">
+
+                <div class="quiz-header">
+
+                    <div class="quiz-icon">
+                        🧬
+                    </div>
+
+                    <h2>
+                        Evaluación de Mitosis
+                    </h2>
+
+                    <p>
+                        Responde 5 preguntas sobre el experimento.
+                    </p>
+
+                </div>
+
+                <div id="question-counter">
+                    Pregunta 1 de 5
+                </div>
+
+                <h3 id="question-text">
+                </h3>
+
+                <div id="answers-container">
+                </div>
+
+                <div id="quiz-actions">
+
+                    <button id="close-quiz-btn">
+                        ← Salir
+                    </button>
+
+                    <button id="next-question" disabled>
+                        Continuar →
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- RESULTADO -->
+
+            <div id="result-screen">
+
+                <div class="result-icon">
+                    🏆
+                </div>
+
+                <h2>
+                    ¡Evaluación terminada!
+                </h2>
+
+                <div id="score">
+                    0 / 5
+                </div>
+
+                <p id="feedback">
+                </p>
+
+                <button id="restart-quiz">
+                    🔄 Realizar nuevamente
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <script>
+
+        /* =====================================================
+           BANCO DE PREGUNTAS
+        ===================================================== */
+
+        const questionBank = [
+
+            {
+                question:
+                    "¿Cuál es la función principal de la mitosis?",
+
+                answers: [
+                    "Producir células hijas genéticamente similares",
+                    "Producir únicamente células sexuales",
+                    "Reducir a la mitad el número de cromosomas",
+                    "Eliminar el ADN de la célula"
+                ],
+
+                correct: 0
+            },
+
+            {
+                question:
+                    "¿En qué fase los cromosomas se alinean en el centro de la célula?",
+
+                answers: [
+                    "Profase",
+                    "Metafase",
+                    "Anafase",
+                    "Telofase"
+                ],
+
+                correct: 1
+            },
+
+            {
+                question:
+                    "¿Qué ocurre durante la anafase?",
+
+                answers: [
+                    "Se forma nuevamente la envoltura nuclear",
+                    "Los cromosomas desaparecen",
+                    "Las cromátidas hermanas se separan",
+                    "El ADN comienza a replicarse"
+                ],
+
+                correct: 2
+            },
+
+            {
+                question:
+                    "¿Qué sucede principalmente durante la profase?",
+
+                answers: [
+                    "Los cromosomas se condensan y se forma el huso mitótico",
+                    "Las células hijas se separan completamente",
+                    "Los cromosomas se alinean en el ecuador",
+                    "Las cromátidas se dirigen a los polos"
+                ],
+
+                correct: 0
+            },
+
+            {
+                question:
+                    "¿Qué estructura organiza los microtúbulos del huso mitótico?",
+
+                answers: [
+                    "Los ribosomas",
+                    "Los centrosomas",
+                    "Las vacuolas",
+                    "Los lisosomas"
+                ],
+
+                correct: 1
+            },
+
+            {
+                question:
+                    "¿Qué ocurre durante la telofase?",
+
+                answers: [
+                    "Los cromosomas se alinean en el centro",
+                    "Las cromátidas comienzan a separarse",
+                    "Se forman nuevamente los núcleos",
+                    "Se duplica el ADN"
+                ],
+
+                correct: 2
+            },
+
+            {
+                question:
+                    "¿Qué proceso divide el citoplasma para formar las células hijas?",
+
+                answers: [
+                    "Replicación",
+                    "Citocinesis",
+                    "Transcripción",
+                    "Mutación"
+                ],
+
+                correct: 1
+            },
+
+            {
+                question:
+                    "¿Qué ocurre con las cromátidas hermanas durante la mitosis?",
+
+                answers: [
+                    "Se separan para distribuirse entre las células hijas",
+                    "Se destruyen antes de la división",
+                    "Se convierten en proteínas",
+                    "Permanecen siempre en la misma célula"
+                ],
+
+                correct: 0
+            },
+
+            {
+                question:
+                    "¿Cuál es la función del huso mitótico?",
+
+                answers: [
+                    "Producir energía",
+                    "Transportar nutrientes",
+                    "Ayudar a mover y separar los cromosomas",
+                    "Crear nuevas proteínas"
+                ],
+
+                correct: 2
+            },
+
+            {
+                question:
+                    "¿Cuál es el resultado final de la mitosis?",
+
+                answers: [
+                    "Dos células hijas con información genética equivalente",
+                    "Cuatro células sexuales",
+                    "Una sola célula sin núcleo",
+                    "Dos células con la mitad de cromosomas"
+                ],
+
+                correct: 0
+            },
+
+            {
+                question:
+                    "¿Qué estructura contiene el material genético durante la mayor parte del ciclo celular?",
+
+                answers: [
+                    "Núcleo",
+                    "Membrana celular",
+                    "Ribosoma",
+                    "Centrosoma"
+                ],
+
+                correct: 0
+            },
+
+            {
+                question:
+                    "¿Por qué es importante la alineación de los cromosomas en metafase?",
+
+                answers: [
+                    "Permite una distribución adecuada del material genético",
+                    "Hace que desaparezca el ADN",
+                    "Impide que se formen células hijas",
+                    "Detiene permanentemente la división"
+                ],
+
+                correct: 0
+            }
+
+        ];
+
+
+        /* =====================================================
+           VARIABLES DEL QUIZ
+        ===================================================== */
+
+        let quizQuestions = [];
+        let currentQuestion = 0;
+        let score = 0;
+        let selectedAnswer = null;
+
+
+        /* =====================================================
+           FUNCIÓN PARA MEZCLAR
+        ===================================================== */
+
+        function shuffleArray(array) {
+
+            const copy = [...array];
+
+            for (
+                let i = copy.length - 1;
+                i > 0;
+                i--
+            ) {
+
+                const j =
+                    Math.floor(
+                        Math.random() * (i + 1)
+                    );
+
+                [
+                    copy[i],
+                    copy[j]
+                ] = [
+                    copy[j],
+                    copy[i]
+                ];
+
+            }
+
+            return copy;
+        }
+
+
+        /* =====================================================
+           INICIAR QUIZ
+        ===================================================== */
+
+        function startQuiz() {
+
+            quizQuestions =
+                shuffleArray(questionBank)
+                .slice(0, 5);
+
+            currentQuestion = 0;
+            score = 0;
+            selectedAnswer = null;
+
+            document.getElementById(
+                "quiz-screen"
+            ).style.display = "block";
+
+            document.getElementById(
+                "result-screen"
+            ).style.display = "none";
+
+            showQuestion();
+        }
+
+
+        /* =====================================================
+           MOSTRAR PREGUNTA
+        ===================================================== */
+
+        function showQuestion() {
+
+            selectedAnswer = null;
+
+            const question =
+                quizQuestions[currentQuestion];
+
+
+            document.getElementById(
+                "question-counter"
+            ).innerText =
+                "Pregunta " +
+                (currentQuestion + 1) +
+                " de 5";
+
+
+            document.getElementById(
+                "question-text"
+            ).innerText =
+                question.question;
+
+
+            const container =
+                document.getElementById(
+                    "answers-container"
+                );
+
+
+            container.innerHTML = "";
+
+
+            question.answers.forEach(
+                (answer, index) => {
+
+                    const button =
+                        document.createElement(
+                            "button"
+                        );
+
+
+                    button.className =
+                        "quiz-option";
+
+
+                    button.innerText =
+                        String.fromCharCode(
+                            65 + index
+                        ) +
+                        ") " +
+                        answer;
+
+
+                    button.addEventListener(
+                        "click",
+                        () => {
+
+                            document
+                                .querySelectorAll(
+                                    ".quiz-option"
+                                )
+                                .forEach(
+                                    option => {
+
+                                        option.classList.remove(
+                                            "selected"
+                                        );
+
+                                    }
+                                );
+
+
+                            button.classList.add(
+                                "selected"
+                            );
+
+
+                            selectedAnswer =
+                                index;
+
+
+                            document.getElementById(
+                                "next-question"
+                            ).disabled = false;
+
+                        }
+                    );
+
+
+                    container.appendChild(
+                        button
+                    );
+
+                }
+            );
+
+
+            const nextButton =
+                document.getElementById(
+                    "next-question"
+                );
+
+
+            nextButton.disabled = true;
+
+
+            if (
+                currentQuestion ===
+                quizQuestions.length - 1
+            ) {
+
+                nextButton.innerText =
+                    "Finalizar evaluación ✓";
+
+            } else {
+
+                nextButton.innerText =
+                    "Continuar →";
+
+            }
+
+        }
+
+
+        /* =====================================================
+           SIGUIENTE PREGUNTA
+        ===================================================== */
+
+        document.getElementById(
+            "next-question"
+        ).addEventListener(
+            "click",
+            () => {
+
+                if (
+                    selectedAnswer === null
+                ) {
+                    return;
+                }
+
+
+                if (
+                    selectedAnswer ===
+                    quizQuestions[currentQuestion].correct
+                ) {
+
+                    score++;
+
+                }
+
+
+                currentQuestion++;
+
+
+                if (
+                    currentQuestion <
+                    quizQuestions.length
+                ) {
+
+                    showQuestion();
+
+                } else {
+
+                    showResult();
+
+                }
+
+            }
+        );
+
+
+        /* =====================================================
+           RESULTADO
+        ===================================================== */
+
+        function showResult() {
+
+            document.getElementById(
+                "quiz-screen"
+            ).style.display = "none";
+
+
+            document.getElementById(
+                "result-screen"
+            ).style.display = "block";
+
+
+            document.getElementById(
+                "score"
+            ).innerText =
+                score + " / 5";
+
+
+            let message = "";
+
+
+            if (score === 5) {
+
+                message =
+                    "🌟 ¡Excelente! Dominas muy bien las fases de la mitosis y la distribución del material genético.";
+
+            }
+
+            else if (score === 4) {
+
+                message =
+                    "👏 ¡Muy buen trabajo! Comprendes casi todos los procesos de la mitosis.";
+
+            }
+
+            else if (score === 3) {
+
+                message =
+                    "👍 Buen trabajo. Tienes una base correcta, pero puedes repasar las fases de la mitosis.";
+
+            }
+
+            else if (score >= 1) {
+
+                message =
+                    "📚 Sigue practicando. Te recomendamos revisar nuevamente las fases y observar la simulación.";
+
+            }
+
+            else {
+
+                message =
+                    "🔬 Te recomendamos estudiar nuevamente profase, metafase, anafase y telofase antes de volver a intentarlo.";
+
+            }
+
+
+            document.getElementById(
+                "feedback"
+            ).innerText =
+                message;
+
+        }
+
+
+        /* =====================================================
+           ABRIR EVALUACIÓN
+        ===================================================== */
+
+        document.getElementById(
+            "open-quiz-btn"
+        ).addEventListener(
+            "click",
+            () => {
+
+                document.getElementById(
+                    "quiz-overlay"
+                ).style.display = "flex";
+
+                startQuiz();
+
+            }
+        );
+
+
+        /* =====================================================
+           CERRAR EVALUACIÓN
+        ===================================================== */
+
+        document.getElementById(
+            "close-quiz-btn"
+        ).addEventListener(
+            "click",
+            () => {
+
+                document.getElementById(
+                    "quiz-overlay"
+                ).style.display = "none";
+
+            }
+        );
+
+
+        /* =====================================================
+           REPETIR EVALUACIÓN
+        ===================================================== */
+
+        document.getElementById(
+            "restart-quiz"
+        ).addEventListener(
+            "click",
+            () => {
+
+                startQuiz();
+
+            }
+        );
+
+
+        /* =====================================================
+           THREE.JS
+        ===================================================== */
+
+        const container =
+            document.getElementById(
+                'canvas-container'
+            );
+
+
+        const scene =
+            new THREE.Scene();
+
+
+        scene.fog =
+            new THREE.FogExp2(
+                0x03050a,
+                0.015
+            );
+
+
+        const camera =
+            new THREE.PerspectiveCamera(
+                45,
+                window.innerWidth /
+                window.innerHeight,
+                0.1,
+                1000
+            );
+
+
+        camera.position.set(
+            0,
+            0,
+            8.5
+        );
+
+
+        const renderer =
+            new THREE.WebGLRenderer({
+                antialias: true,
+                alpha: true
+            });
+
+
+        renderer.setSize(
+            window.innerWidth,
+            window.innerHeight
+        );
+
+
+        renderer.setPixelRatio(
+            Math.min(
+                window.devicePixelRatio,
+                2
+            )
+        );
+
+
+        container.appendChild(
+            renderer.domElement
+        );
+
+
+        /* =====================================================
+           ORBIT CONTROLS
+        ===================================================== */
+
+        const controls =
+            new THREE.OrbitControls(
+                camera,
+                renderer.domElement
+            );
+
+
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+
+
+        /* =====================================================
+           ILUMINACIÓN
+        ===================================================== */
+
+        scene.add(
+            new THREE.AmbientLight(
+                0xffffff,
+                0.6
+            )
+        );
+
+
+        const lightCyan =
+            new THREE.PointLight(
+                0x00f0ff,
+                2,
+                40
+            );
+
+
+        lightCyan.position.set(
+            6,
+            6,
+            6
+        );
+
+
+        scene.add(
+            lightCyan
+        );
+
+
+        const lightPink =
+            new THREE.PointLight(
+                0xff0055,
+                1.8,
+                40
+            );
+
+
+        lightPink.position.set(
+            -6,
+            -6,
+            6
+        );
+
+
+        scene.add(
+            lightPink
+        );
+
+
+        /* =====================================================
+           CONTENEDOR DE CÉLULA
+        ===================================================== */
+
+        const cellContainer =
+            new THREE.Group();
+
+
+        scene.add(
+            cellContainer
+        );
+
+
+        /* =====================================================
+           MEMBRANA CELULAR
+        ===================================================== */
+
+        const membraneGeo =
+            new THREE.SphereGeometry(
+                2.5,
+                64,
+                64
+            );
+
+
+        const membraneMat =
+            new THREE.MeshPhysicalMaterial({
+
+                color: 0x00f0ff,
+
+                roughness: 0.2,
+
+                transmission: 0.6,
+
+                thickness: 0.5,
+
+                transparent: true,
+
+                opacity: 0.2,
+
+                depthWrite: false
+
+            });
+
+
+        const membraneMesh =
+            new THREE.Mesh(
+                membraneGeo,
+                membraneMat
+            );
+
+
+        cellContainer.add(
+            membraneMesh
+        );
+
+
+        /* =====================================================
+           ENVOLTURA NUCLEAR
+        ===================================================== */
+
+        const nuclearGeo =
+            new THREE.SphereGeometry(
+                1.5,
+                32,
+                32
+            );
+
+
+        const nuclearMat =
+            new THREE.MeshStandardMaterial({
+
+                color: 0xa855f7,
+
+                transparent: true,
+
+                opacity: 0.35,
+
+                wireframe: true
+
+            });
+
+
+        const nuclearMesh =
+            new THREE.Mesh(
+                nuclearGeo,
+                nuclearMat
+            );
+
+
+        cellContainer.add(
+            nuclearMesh
+        );
+
+
+        /* =====================================================
+           CENTROSOMAS
+        ===================================================== */
+
+        const centrosomeGeo =
+            new THREE.SphereGeometry(
+                0.14,
+                16,
+                16
+            );
+
+
+        const centrosomeMat =
+            new THREE.MeshBasicMaterial({
+                color: 0xffcc00
+            });
+
+
+        const centrosomeLeft =
+            new THREE.Mesh(
+                centrosomeGeo,
+                centrosomeMat
+            );
+
+
+        const centrosomeRight =
+            new THREE.Mesh(
+                centrosomeGeo,
+                centrosomeMat
+            );
+
+
+        cellContainer.add(
+            centrosomeLeft
+        );
+
+        cellContainer.add(
+            centrosomeRight
+        );
+
+
+        /* =====================================================
+           HUSO MITÓTICO
+        ===================================================== */
+
+        const spindleGroup =
+            new THREE.Group();
+
+
+        cellContainer.add(
+            spindleGroup
+        );
+
+
+        const spindleMat =
+            new THREE.LineBasicMaterial({
+
+                color: 0x00f0ff,
+
+                transparent: true,
+
+                opacity: 0.35
+
+            });
+
+
+        function createSpindleFibers() {
+
+            while (
+                spindleGroup.children.length > 0
+            ) {
+
+                spindleGroup.remove(
+                    spindleGroup.children[0]
+                );
+
+            }
+
+
+            for (
+                let i = 0;
+                i < 18;
+                i++
+            ) {
+
+                const geo =
+                    new THREE.BufferGeometry();
+
+
+                const p1 =
+                    centrosomeLeft.position;
+
+
+                const p2 =
+                    centrosomeRight.position;
+
+
+                const mid =
+                    new THREE.Vector3()
+                        .addVectors(
+                            p1,
+                            p2
+                        )
+                        .multiplyScalar(0.5);
+
+
+                mid.y +=
+                    (Math.random() - 0.5) *
+                    1.5;
+
+
+                mid.z +=
+                    (Math.random() - 0.5) *
+                    1.5;
+
+
+                const curve =
+                    new THREE.QuadraticBezierCurve3(
+                        p1.clone(),
+                        mid,
+                        p2.clone()
+                    );
+
+
+                const points =
+                    curve.getPoints(10);
+
+
+                geo.setFromPoints(
+                    points
+                );
+
+
+                const line =
+                    new THREE.Line(
+                        geo,
+                        spindleMat
+                    );
+
+
+                spindleGroup.add(
+                    line
+                );
+
+            }
+
+        }
+
+
+        /* =====================================================
+           CROMOSOMAS
+        ===================================================== */
+
+        const chromosomes = [];
+
+
+        function buildChromosome() {
+
+            const group =
+                new THREE.Group();
+
+
+            const armMat =
+                new THREE.MeshStandardMaterial({
+                    color: 0xff0055,
+                    roughness: 0.3
+                });
+
+
+            const armGeo =
+                new THREE.CylinderGeometry(
+                    0.06,
+                    0.06,
+                    0.65,
+                    16
+                );
+
+
+            const arm1 =
+                new THREE.Mesh(
+                    armGeo,
+                    armMat
+                );
+
+
+            arm1.rotation.z =
+                Math.PI / 4;
+
+
+            group.add(
+                arm1
+            );
+
+
+            const arm2 =
+                new THREE.Mesh(
+                    armGeo,
+                    armMat
+                );
+
+
+            arm2.rotation.z =
+                -Math.PI / 4;
+
+
+            group.add(
+                arm2
+            );
+
+
+            const kinetochoreGeo =
+                new THREE.SphereGeometry(
+                    0.08,
+                    16,
+                    16
+                );
+
+
+            const kinetochoreMat =
+                new THREE.MeshBasicMaterial({
+                    color: 0xffcc00
+                });
+
+
+            const kinetochore =
+                new THREE.Mesh(
+                    kinetochoreGeo,
+                    kinetochoreMat
+                );
+
+
+            group.add(
+                kinetochore
+            );
+
+
+            return group;
+
+        }
+
+
+        for (
+            let i = 0;
+            i < 4;
+            i++
+        ) {
+
+            const chrom =
+                buildChromosome();
+
+
+            chromosomes.push(
+                chrom
+            );
+
+
+            cellContainer.add(
+                chrom
+            );
+
+        }
+
+
+        /* =====================================================
+           DATOS DE LAS FASES
+        ===================================================== */
+
+        let currentPhase = 0;
+
+
+        const phaseData = [
+
+            {
+                tag: "Profase",
+
+                title:
+                    "Profase: Condensación y Preparación",
+
+                desc:
+                    "Los filamentos de ADN disperso se condensan fuertemente hasta estructurar cromosomas visibles en forma de 'X'.",
+
+                conceptTitle:
+                    "Fragmentación de la Carioteca",
+
+                conceptDesc:
+                    "La envoltura nuclear se descompone. Los centrosomas migran hacia los polos opuestos formando el huso mitótico."
+            },
+
+            {
+
+                tag: "Metafase",
+
+                title:
+                    "Metafase: Alineación Ecuatorial",
+
+                desc:
+                    "Los microtúbulos del huso se anclan a los cinetocoros de cada cromosoma, ejerciendo tracción equilibrada.",
+
+                conceptTitle:
+                    "Placa Metafásica",
+
+                conceptDesc:
+                    "Todos los cromosomas quedan ordenados en el plano central. Garantiza una segregación genética equitativa."
+            },
+
+            {
+
+                tag: "Anafase",
+
+                title:
+                    "Anafase: Segregación Genética",
+
+                desc:
+                    "Las cromátidas hermanas se separan convirtiéndose en cromosomas independientes arrastrados a los polos.",
+
+                conceptTitle:
+                    "Despolimerización",
+
+                conceptDesc:
+                    "Los microtúbulos se acortan arrastrando los cromosomas hacia los centrosomas opuestos."
+            },
+
+            {
+
+                tag: "Telofase",
+
+                title:
+                    "Telofase y Citocinesis",
+
+                desc:
+                    "Los cromosomas llegan a los polos y vuelven a descondensarse. Se reensambla la carioteca.",
+
+                conceptTitle:
+                    "Estrangulamiento Celular",
+
+                conceptDesc:
+                    "Un anillo contráctil segmenta el citoplasma, resultando en dos células hijas diploides (2n)."
+            }
+
+        ];
+
+
+        /* =====================================================
+           CAMBIAR FASE
+        ===================================================== */
+
+        function setPhase(index) {
+
+            currentPhase = index;
+
+
+            document
+                .querySelectorAll(
+                    '.phase-btn'
+                )
+                .forEach(
+                    (btn, idx) => {
+
+                        btn.classList.toggle(
+                            'active',
+                            idx === index
+                        );
+
+                    }
+                );
+
+
+            const data =
+                phaseData[index];
+
+
+            document.getElementById(
+                'status-tag'
+            ).innerText =
+                data.tag;
+
+
+            document.getElementById(
+                'phase-title'
+            ).innerText =
+                data.title;
+
+
+            document.getElementById(
+                'phase-desc'
+            ).innerText =
+                data.desc;
+
+
+            document.getElementById(
+                'concept-title'
+            ).innerText =
+                data.conceptTitle;
+
+
+            document.getElementById(
+                'concept-desc'
+            ).innerText =
+                data.conceptDesc;
+
+        }
+
+
+        /* =====================================================
+           ANIMACIÓN
+        ===================================================== */
+
+        const clock =
+            new THREE.Clock();
+
+
+        const phaseVector =
+            new THREE.Vector3();
+
+
+        function animate() {
+
+            requestAnimationFrame(
+                animate
+            );
+
+
+            controls.update();
+
+
+            const time =
+                clock.getElapsedTime();
+
+
+            if (
+                currentPhase === 0
+            ) {
+
+                /* PROFASE */
+
+                nuclearMat.opacity =
+                    THREE.MathUtils.lerp(
+                        nuclearMat.opacity,
+                        0.45,
+                        0.04
+                    );
+
+
+                phaseVector.set(
+                    1,
+                    1,
+                    1
+                );
+
+
+                membraneMesh.scale.lerp(
+                    phaseVector,
+                    0.05
+                );
+
+
+                phaseVector.set(
+                    -1.2,
+                    0.8,
+                    0
+                );
+
+
+                centrosomeLeft.position.lerp(
+                    phaseVector,
+                    0.04
+                );
+
+
+                phaseVector.set(
+                    1.2,
+                    -0.8,
+                    0
+                );
+
+
+                centrosomeRight.position.lerp(
+                    phaseVector,
+                    0.04
+                );
+
+
+                phaseVector.set(
+                    -0.3,
+                    0.3,
+                    0.1
+                );
+
+
+                chromosomes[0].position.lerp(
+                    phaseVector,
+                    0.04
+                );
+
+
+                phaseVector.set(
+                    0.4,
+                    -0.2,
+                    -0.1
+                );
+
+
+                chromosomes[1].position.lerp(
+                    phaseVector,
+                    0.04
+                );
+
+
+                phaseVector.set(
+                    -0.2,
+                    -0.3,
+                    0.2
+                );
+
+
+                chromosomes[2].position.lerp(
+                    phaseVector,
+                    0.04
+                );
+
+
+                phaseVector.set(
+                    0.2,
+                    0.4,
+                    -0.2
+                );
+
+
+                chromosomes[3].position.lerp(
+                    phaseVector,
+                    0.04
+                );
+
+            }
+
+            else if (
+                currentPhase === 1
+            ) {
+
+                /* METAFASE */
+
+                nuclearMat.opacity =
+                    THREE.MathUtils.lerp(
+                        nuclearMat.opacity,
+                        0.0,
+                        0.05
+                    );
+
+
+                phaseVector.set(
+                    1,
+                    1,
+                    1
+                );
+
+
+                membraneMesh.scale.lerp(
+                    phaseVector,
+                    0.05
+                );
+
+
+                phaseVector.set(
+                    -2.2,
+                    0,
+                    0
+                );
+
+
+                centrosomeLeft.position.lerp(
+                    phaseVector,
+                    0.05
+                );
+
+
+                phaseVector.set(
+                    2.2,
+                    0,
+                    0
+                );
+
+
+                centrosomeRight.position.lerp(
+                    phaseVector,
+                    0.05
+                );
+
+
+                phaseVector.set(
+                    0,
+                    0.9,
+                    0
+                );
+
+
+                chromosomes[0].position.lerp(
+                    phaseVector,
+                    0.05
+                );
+
+
+                phaseVector.set(
+                    0,
+                    0.3,
+                    0
+                );
+
+
+                chromosomes[1].position.lerp(
+                    phaseVector,
+                    0.05
+                );
+
+
+                phaseVector.set(
+                    0,
+                    -0.3,
+                    0
+                );
+
+
+                chromosomes[2].position.lerp(
+                    phaseVector,
+                    0.05
+                );
+
+
+                phaseVector.set(
+                    0,
+                    -0.9,
+                    0
+                );
+
+
+                chromosomes[3].position.lerp(
+                    phaseVector,
+                    0.05
+                );
+
+
+                chromosomes.forEach(
+                    c => {
+
+                        c.rotation.y =
+                            Math.sin(
+                                time * 2.5
+                            ) * 0.08;
+
+                    }
+                );
+
+            }
+
+            else if (
+                currentPhase === 2
+            ) {
+
+                /* ANAFASE */
+
+                nuclearMat.opacity =
+                    THREE.MathUtils.lerp(
+                        nuclearMat.opacity,
+                        0.0,
+                        0.05
+                    );
+
+
+                phaseVector.set(
+                    1.2,
+                    0.85,
+                    0.85
+                );
+
+
+                membraneMesh.scale.lerp(
+                    phaseVector,
+                    0.05
+                );
+
+
+                phaseVector.set(
+                    -2.4,
+                    0,
+                    0
+                );
+
+
+                centrosomeLeft.position.lerp(
+                    phaseVector,
+                    0.05
+                );
+
+
+                phaseVector.set(
+                    2.4,
+                    0,
+                    0
+                );
+
+
+                centrosomeRight.position.lerp(
+                    phaseVector,
+                    0.05
+                );
+
+
+                phaseVector.set(
+                    -1.2,
+                    0.7,
+                    0
+                );
+
+
+                chromosomes[0].position.lerp(
+                    phaseVector,
+                    0.05
+                );
+
+
+                phaseVector.set(
+                    -1.2,
+                    -0.7,
+                    0
+                );
+
+
+                chromosomes[1].position.lerp(
+                    phaseVector,
+                    0.05
+                );
+
+
+                phaseVector.set(
+                    1.2,
+                    0.7,
+                    0
+                );
+
+
+                chromosomes[2].position.lerp(
+                    phaseVector,
+                    0.05
+                );
+
+
+                phaseVector.set(
+                    1.2,
+                    -0.7,
+                    0
+                );
+
+
+                chromosomes[3].position.lerp(
+                    phaseVector,
+                    0.05
+                );
+
+            }
+
+            else if (
+                currentPhase === 3
+            ) {
+
+                /* TELOFASE */
+
+                nuclearMat.opacity =
+                    THREE.MathUtils.lerp(
+                        nuclearMat.opacity,
+                        0.35,
+                        0.04
+                    );
+
+
+                phaseVector.set(
+                    1.5,
+                    0.55,
+                    0.55
+                );
+
+
+                membraneMesh.scale.lerp(
+                    phaseVector,
+                    0.05
+                );
+
+
+                phaseVector.set(
+                    -1.6,
+                    0,
+                    0
+                );
+
+
+                centrosomeLeft.position.lerp(
+                    phaseVector,
+                    0.05
+                );
+
+
+                phaseVector.set(
+                    1.6,
+                    0,
+                    0
+                );
+
+
+                centrosomeRight.position.lerp(
+                    phaseVector,
+                    0.05
+                );
+
+
+                phaseVector.set(
+                    -1.5,
+                    0.25,
+                    0
+                );
+
+
+                chromosomes[0].position.lerp(
+                    phaseVector,
+                    0.05
+                );
+
+
+                phaseVector.set(
+                    -1.5,
+                    -0.25,
+                    0
+                );
+
+
+                chromosomes[1].position.lerp(
+                    phaseVector,
+                    0.05
+                );
+
+
+                phaseVector.set(
+                    1.5,
+                    0.25,
+                    0
+                );
+
+
+                chromosomes[2].position.lerp(
+                    phaseVector,
+                    0.05
+                );
+
+
+                phaseVector.set(
+                    1.5,
+                    -0.25,
+                    0
+                );
+
+
+                chromosomes[3].position.lerp(
+                    phaseVector,
+                    0.05
+                );
+
+            }
+
+
+            createSpindleFibers();
+
+
+            cellContainer.rotation.y +=
+                0.0012;
+
+
+            renderer.render(
+                scene,
+                camera
+            );
+
+        }
+
+
+        /* =====================================================
+           REDIMENSIONAR
+        ===================================================== */
+
+        window.addEventListener(
+            'resize',
+            () => {
+
+                camera.aspect =
+                    window.innerWidth /
+                    window.innerHeight;
+
+
+                camera.updateProjectionMatrix();
+
+
+                renderer.setSize(
+                    window.innerWidth,
+                    window.innerHeight
+                );
+
+
+                renderer.setPixelRatio(
+                    Math.min(
+                        window.devicePixelRatio,
+                        2
+                    )
+                );
+
+            }
+        );
+
+
+        /* =====================================================
+           INICIAR SIMULACIÓN
+        ===================================================== */
+
+        setPhase(0);
+
+        animate();
+
+    </script>
+
+</body>
+<script src="asistente.js"></script>
+</html>

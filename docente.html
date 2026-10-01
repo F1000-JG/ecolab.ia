@@ -1,0 +1,2810 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Panel Docente | EcoLab IA</title>
+
+
+    <style>
+
+        /* =========================================================
+           CONFIGURACIÓN GENERAL
+        ========================================================= */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+
+        body {
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            background:
+
+                radial-gradient(
+                    circle at 15% 20%,
+                    rgba(0, 255, 170, 0.08),
+                    transparent 25%
+                ),
+
+                radial-gradient(
+                    circle at 85% 80%,
+                    rgba(0, 255, 170, 0.06),
+                    transparent 25%
+                ),
+
+                #07110d;
+
+            color: #ffffff;
+
+            min-height: 100vh;
+
+            overflow-x: hidden;
+        }
+
+
+        /* =========================================================
+           DECORACIONES
+        ========================================================= */
+
+        .decoraciones {
+
+            position: fixed;
+
+            inset: 0;
+
+            pointer-events: none;
+
+            overflow: hidden;
+
+            z-index: 0;
+        }
+
+
+        .adn {
+
+            position: absolute;
+
+            font-size: 75px;
+
+            opacity: 0.08;
+
+            animation:
+                flotar
+                6s
+                ease-in-out
+                infinite;
+        }
+
+
+        .adn1 {
+
+            top: 12%;
+            left: 3%;
+        }
+
+
+        .adn2 {
+
+            bottom: 12%;
+            right: 3%;
+
+            animation-delay: 2s;
+        }
+
+
+        .molecula {
+
+            position: absolute;
+
+            font-size: 65px;
+
+            opacity: 0.07;
+
+            animation:
+                girar
+                10s
+                linear
+                infinite;
+        }
+
+
+        .molecula1 {
+
+            top: 30%;
+            right: 5%;
+        }
+
+
+        .molecula2 {
+
+            bottom: 25%;
+            left: 5%;
+
+            animation-delay: 3s;
+        }
+
+
+        .burbuja {
+
+            position: absolute;
+
+            border:
+                1px solid
+                rgba(255,255,255,0.08);
+
+            border-radius: 50%;
+
+            animation:
+                subir
+                12s
+                linear
+                infinite;
+        }
+
+
+        .b1 {
+
+            width: 30px;
+            height: 30px;
+
+            left: 10%;
+            bottom: -40px;
+        }
+
+
+        .b2 {
+
+            width: 18px;
+            height: 18px;
+
+            left: 35%;
+            bottom: -30px;
+
+            animation-delay: 3s;
+        }
+
+
+        .b3 {
+
+            width: 45px;
+            height: 45px;
+
+            right: 20%;
+            bottom: -50px;
+
+            animation-delay: 5s;
+        }
+
+
+        .b4 {
+
+            width: 25px;
+            height: 25px;
+
+            right: 40%;
+            bottom: -40px;
+
+            animation-delay: 7s;
+        }
+
+
+        .b5 {
+
+            width: 15px;
+            height: 15px;
+
+            left: 70%;
+            bottom: -30px;
+
+            animation-delay: 2s;
+        }
+
+
+        /* =========================================================
+           ANIMACIONES
+        ========================================================= */
+
+        @keyframes flotar {
+
+            0%,
+            100% {
+
+                transform:
+                    translateY(0);
+            }
+
+            50% {
+
+                transform:
+                    translateY(-25px);
+            }
+        }
+
+
+        @keyframes girar {
+
+            from {
+
+                transform:
+                    rotate(0deg);
+            }
+
+            to {
+
+                transform:
+                    rotate(360deg);
+            }
+        }
+
+
+        @keyframes subir {
+
+            from {
+
+                transform:
+                    translateY(0);
+
+                opacity: 0;
+            }
+
+            20% {
+
+                opacity: 0.4;
+            }
+
+            100% {
+
+                transform:
+                    translateY(-110vh);
+
+                opacity: 0;
+            }
+        }
+
+
+        /* =========================================================
+           NAVBAR
+        ========================================================= */
+
+        .navbar {
+
+            position: relative;
+
+            z-index: 10;
+
+            width: 100%;
+
+            padding: 20px 5%;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 20px;
+
+            border-bottom:
+                1px solid
+                rgba(255,255,255,0.08);
+
+            background:
+                rgba(5,15,11,0.88);
+
+            backdrop-filter:
+                blur(12px);
+        }
+
+
+        .logo {
+
+            font-size: 1.6rem;
+
+            font-weight: bold;
+
+            white-space: nowrap;
+        }
+
+
+        .logo span {
+
+            color: #66ffcc;
+        }
+
+
+        .docente-info {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 15px;
+        }
+
+
+        .avatar {
+
+            width: 42px;
+
+            height: 42px;
+
+            border-radius: 50%;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            background:
+                rgba(102,255,204,0.12);
+
+            border:
+                1px solid
+                rgba(102,255,204,0.4);
+
+            font-size: 20px;
+        }
+
+
+        .nombre-docente {
+
+            font-weight: bold;
+
+            margin-bottom: 3px;
+        }
+
+
+        .rol {
+
+            color: #8ca69b;
+
+            font-size: 0.82rem;
+        }
+
+
+        .btn-salir {
+
+            border:
+                1px solid
+                rgba(255,255,255,0.15);
+
+            background:
+                rgba(255,255,255,0.05);
+
+            color: white;
+
+            padding: 9px 15px;
+
+            border-radius: 8px;
+
+            cursor: pointer;
+
+            transition: 0.3s;
+        }
+
+
+        .btn-salir:hover {
+
+            background:
+                rgba(255,80,80,0.15);
+
+            border-color:
+                rgba(255,100,100,0.5);
+
+            transform:
+                translateY(-2px);
+        }
+
+
+        /* =========================================================
+           CONTENEDOR PRINCIPAL
+        ========================================================= */
+
+        main {
+
+            position: relative;
+
+            z-index: 2;
+
+            width: 90%;
+
+            max-width: 1350px;
+
+            margin: 40px auto 70px;
+        }
+
+
+        .titulo {
+
+            margin-bottom: 8px;
+
+            font-size:
+                clamp(
+                    2rem,
+                    4vw,
+                    3rem
+                );
+        }
+
+
+        .titulo span {
+
+            color: #66ffcc;
+        }
+
+
+        .subtitulo {
+
+            color: #9db2a8;
+
+            margin-bottom: 35px;
+
+            line-height: 1.6;
+
+            max-width: 850px;
+        }
+
+
+        /* =========================================================
+           TARJETAS DE RESUMEN
+        ========================================================= */
+
+        .resumen {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 20px;
+
+            margin-bottom: 45px;
+        }
+
+
+        .tarjeta {
+
+            background:
+                rgba(255,255,255,0.045);
+
+            border:
+                1px solid
+                rgba(255,255,255,0.09);
+
+            border-radius: 16px;
+
+            padding: 25px;
+
+            backdrop-filter:
+                blur(10px);
+
+            transition: 0.3s;
+        }
+
+
+        .tarjeta:hover {
+
+            transform:
+                translateY(-4px);
+
+            border-color:
+                rgba(102,255,204,0.35);
+
+            background:
+                rgba(255,255,255,0.06);
+        }
+
+
+        .tarjeta-icono {
+
+            font-size: 30px;
+
+            margin-bottom: 15px;
+        }
+
+
+        .tarjeta h3 {
+
+            color: #9db2a8;
+
+            font-size: 0.9rem;
+
+            font-weight: normal;
+
+            margin-bottom: 8px;
+        }
+
+
+        .numero {
+
+            font-size: 2rem;
+
+            font-weight: bold;
+
+            color: #66ffcc;
+        }
+
+
+        /* =========================================================
+           BOTÓN REPORTE GENERAL
+        ========================================================= */
+
+        .reporte-general {
+
+            display: flex;
+
+            justify-content: flex-end;
+
+            margin-top: -20px;
+
+            margin-bottom: 35px;
+        }
+
+
+        .btn-reporte-general {
+
+            padding:
+                12px 18px;
+
+            border: none;
+
+            border-radius: 9px;
+
+            background: #66ffcc;
+
+            color: #07110d;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+            transition: 0.3s;
+
+            font-size: 0.92rem;
+        }
+
+
+        .btn-reporte-general:hover {
+
+            transform:
+                translateY(-2px);
+
+            box-shadow:
+                0 5px 18px
+                rgba(102,255,204,0.25);
+        }
+
+
+        /* =========================================================
+           SECCIONES DE GRADO
+        ========================================================= */
+
+        .seccion-grado {
+
+            margin-bottom: 38px;
+        }
+
+
+        .titulo-grado {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 15px;
+
+            margin-bottom: 15px;
+        }
+
+
+        .titulo-grado h2 {
+
+            font-size: 1.5rem;
+        }
+
+
+        .cantidad {
+
+            color: #8ca69b;
+
+            font-size: 0.9rem;
+        }
+
+
+        /* =========================================================
+           TABLAS
+        ========================================================= */
+
+        .tabla-contenedor {
+
+            width: 100%;
+
+            overflow-x: auto;
+
+            background:
+                rgba(255,255,255,0.035);
+
+            border:
+                1px solid
+                rgba(255,255,255,0.08);
+
+            border-radius: 14px;
+        }
+
+
+        table {
+
+            width: 100%;
+
+            border-collapse: collapse;
+
+            min-width: 950px;
+        }
+
+
+        th {
+
+            text-align: left;
+
+            padding: 16px;
+
+            font-size: 0.85rem;
+
+            color: #9db2a8;
+
+            background:
+                rgba(255,255,255,0.04);
+
+            border-bottom:
+                1px solid
+                rgba(255,255,255,0.08);
+        }
+
+
+        td {
+
+            padding:
+                17px 16px;
+
+            border-bottom:
+                1px solid
+                rgba(255,255,255,0.06);
+
+            color: #e8f0ec;
+
+            font-size: 0.92rem;
+        }
+
+
+        tr:last-child td {
+
+            border-bottom: none;
+        }
+
+
+        tr:hover td {
+
+            background:
+                rgba(102,255,204,0.035);
+        }
+
+
+        /* =========================================================
+           ESTUDIANTE
+        ========================================================= */
+
+        .estudiante {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+        }
+
+
+        .estudiante-avatar {
+
+            width: 38px;
+
+            height: 38px;
+
+            border-radius: 50%;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            background:
+                rgba(102,255,204,0.1);
+
+            border:
+                1px solid
+                rgba(102,255,204,0.25);
+
+            flex-shrink: 0;
+        }
+
+
+        .estudiante-nombre {
+
+            font-weight: bold;
+        }
+
+
+        .usuario {
+
+            color: #81958c;
+
+            font-size: 0.78rem;
+
+            margin-top: 3px;
+        }
+
+
+        /* =========================================================
+           BADGES
+        ========================================================= */
+
+        .badge {
+
+            display: inline-block;
+
+            min-width: 35px;
+
+            text-align: center;
+
+            padding:
+                6px 10px;
+
+            border-radius: 20px;
+
+            font-size: 0.78rem;
+
+            background:
+                rgba(102,255,204,0.1);
+
+            color: #66ffcc;
+
+            border:
+                1px solid
+                rgba(102,255,204,0.2);
+        }
+
+
+        /* =========================================================
+           BOTÓN REPORTE
+        ========================================================= */
+
+        .btn-reporte {
+
+            padding:
+                10px 14px;
+
+            border: none;
+
+            border-radius: 8px;
+
+            background: #66ffcc;
+
+            color: #07110d;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+            transition: 0.3s;
+
+            white-space: nowrap;
+        }
+
+
+        .btn-reporte:hover {
+
+            transform:
+                translateY(-2px);
+
+            box-shadow:
+                0 5px 18px
+                rgba(102,255,204,0.25);
+        }
+
+
+        /* =========================================================
+           MENSAJES
+        ========================================================= */
+
+        .sin-estudiantes {
+
+            padding: 35px;
+
+            text-align: center;
+
+            color: #71857b;
+        }
+
+
+        .mensaje-error {
+
+            color: #ff8d8d;
+
+            background:
+                rgba(255,70,70,0.08);
+
+            border:
+                1px solid
+                rgba(255,70,70,0.2);
+
+            padding: 15px;
+
+            border-radius: 10px;
+
+            margin-bottom: 25px;
+
+            display: none;
+        }
+
+
+        /* =========================================================
+           MODAL
+        ========================================================= */
+
+        .modal {
+
+            display: none;
+
+            position: fixed;
+
+            inset: 0;
+
+            z-index: 100;
+
+            background:
+                rgba(0,0,0,0.72);
+
+            align-items: center;
+
+            justify-content: center;
+
+            padding: 20px;
+        }
+
+
+        .modal.activo {
+
+            display: flex;
+        }
+
+
+        .modal-contenido {
+
+            width: 100%;
+
+            max-width: 1000px;
+
+            max-height: 90vh;
+
+            overflow-y: auto;
+
+            background: #0b1812;
+
+            border:
+                1px solid
+                rgba(102,255,204,0.2);
+
+            border-radius: 18px;
+
+            padding: 30px;
+
+            box-shadow:
+                0 20px 70px
+                rgba(0,0,0,0.5);
+        }
+
+
+        .modal-cabecera {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            gap: 20px;
+
+            margin-bottom: 25px;
+        }
+
+
+        .modal-cabecera h2 {
+
+            color: #66ffcc;
+        }
+
+
+        .cerrar-modal {
+
+            border: none;
+
+            background: transparent;
+
+            color: #ffffff;
+
+            font-size: 28px;
+
+            cursor: pointer;
+        }
+
+
+        .datos-estudiante {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 15px;
+
+            margin-bottom: 25px;
+        }
+
+
+        .dato {
+
+            background:
+                rgba(255,255,255,0.04);
+
+            border:
+                1px solid
+                rgba(255,255,255,0.07);
+
+            border-radius: 10px;
+
+            padding: 15px;
+        }
+
+
+        .dato small {
+
+            display: block;
+
+            color: #82968c;
+
+            margin-bottom: 5px;
+        }
+
+
+        .dato strong {
+
+            color: white;
+        }
+
+
+        .modal-tabla {
+
+            overflow-x: auto;
+        }
+
+
+        .detalle-tabla {
+
+            width: 100%;
+
+            min-width: 700px;
+        }
+
+
+        /* =========================================================
+           FOOTER
+        ========================================================= */
+
+        footer {
+
+            position: relative;
+
+            z-index: 2;
+
+            text-align: center;
+
+            padding: 25px;
+
+            color: #6f8178;
+
+            border-top:
+                1px solid
+                rgba(255,255,255,0.07);
+
+            font-size: 0.85rem;
+        }
+
+
+        /* =========================================================
+           RESPONSIVE
+        ========================================================= */
+
+        @media (max-width: 900px) {
+
+            .resumen {
+
+                grid-template-columns: 1fr;
+            }
+
+
+            .datos-estudiante {
+
+                grid-template-columns: 1fr;
+            }
+
+
+            .navbar {
+
+                flex-wrap: wrap;
+            }
+
+
+            .docente-info {
+
+                width: 100%;
+
+                justify-content: flex-end;
+            }
+        }
+
+
+        @media (max-width: 600px) {
+
+            main {
+
+                width: 94%;
+            }
+
+
+            .docente-info {
+
+                justify-content:
+                    space-between;
+
+                flex-wrap: wrap;
+            }
+
+
+            .titulo {
+
+                font-size: 2rem;
+            }
+
+
+            .titulo-grado {
+
+                align-items:
+                    flex-start;
+
+                flex-direction:
+                    column;
+            }
+
+
+            .reporte-general {
+
+                justify-content:
+                    flex-start;
+
+                margin-top: 0;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- =========================================================
+         DECORACIONES
+    ========================================================= -->
+
+    <div class="decoraciones">
+
+        <div class="adn adn1">
+            🧬
+        </div>
+
+        <div class="adn adn2">
+            🧬
+        </div>
+
+        <div class="molecula molecula1">
+            ⚛
+        </div>
+
+        <div class="molecula molecula2">
+            ⚗
+        </div>
+
+        <div class="burbuja b1"></div>
+
+        <div class="burbuja b2"></div>
+
+        <div class="burbuja b3"></div>
+
+        <div class="burbuja b4"></div>
+
+        <div class="burbuja b5"></div>
+
+    </div>
+
+
+    <!-- =========================================================
+         NAVBAR
+    ========================================================= -->
+
+    <header class="navbar">
+
+
+        <div class="logo">
+
+            🧪 EcoLab
+            <span>IA</span>
+
+        </div>
+
+
+        <div class="docente-info">
+
+
+            <div class="avatar">
+
+                👨‍🏫
+
+            </div>
+
+
+            <div>
+
+                <div
+                    class="nombre-docente"
+                    id="nombreDocente">
+
+                    Docente
+
+                </div>
+
+
+                <div class="rol">
+
+                    Panel de docente
+
+                </div>
+
+            </div>
+
+
+            <button
+                class="btn-salir"
+                onclick="cerrarSesion()">
+
+                🚪 Cerrar sesión
+
+            </button>
+
+
+        </div>
+
+
+    </header>
+
+
+    <!-- =========================================================
+         CONTENIDO PRINCIPAL
+    ========================================================= -->
+
+    <main>
+
+
+        <h1 class="titulo">
+
+            Panel del
+            <span>Docente</span>
+
+        </h1>
+
+
+        <p class="subtitulo">
+
+            Consulta el progreso de tus estudiantes,
+            los experimentos realizados, las veces que
+            realizaron cada experimento y el desempeño
+            obtenido en las evaluaciones.
+
+        </p>
+
+
+        <!-- MENSAJE DE ERROR -->
+
+        <div
+            class="mensaje-error"
+            id="mensajeError">
+        </div>
+
+
+        <!-- =====================================================
+             RESUMEN GENERAL
+        ===================================================== -->
+
+        <section class="resumen">
+
+
+            <div class="tarjeta">
+
+                <div class="tarjeta-icono">
+
+                    👨‍🎓
+
+                </div>
+
+
+                <h3>
+
+                    Total de estudiantes
+
+                </h3>
+
+
+                <div
+                    class="numero"
+                    id="totalEstudiantes">
+
+                    0
+
+                </div>
+
+            </div>
+
+
+            <div class="tarjeta">
+
+                <div class="tarjeta-icono">
+
+                    🧪
+
+                </div>
+
+
+                <h3>
+
+                    Experimentos realizados
+
+                </h3>
+
+
+                <div
+                    class="numero"
+                    id="totalExperimentos">
+
+                    0
+
+                </div>
+
+            </div>
+
+
+            <div class="tarjeta">
+
+                <div class="tarjeta-icono">
+
+                    📊
+
+                </div>
+
+
+                <h3>
+
+                    Evaluaciones realizadas
+
+                </h3>
+
+
+                <div
+                    class="numero"
+                    id="totalEvaluaciones">
+
+                    0
+
+                </div>
+
+            </div>
+
+
+        </section>
+
+
+        <!-- =====================================================
+             REPORTE GENERAL
+        ===================================================== -->
+
+        <div class="reporte-general">
+
+            <button
+                class="btn-reporte-general"
+                onclick="generarReporteGeneral()">
+
+                📊 Generar reporte general
+
+            </button>
+
+        </div>
+
+
+        <!-- =====================================================
+             7.º GRADO
+        ===================================================== -->
+
+        <section class="seccion-grado">
+
+
+            <div class="titulo-grado">
+
+                <h2>
+
+                    📘 7.º Grado
+
+                </h2>
+
+
+                <span
+                    class="cantidad"
+                    id="cantidad7">
+
+                    0 estudiantes
+
+                </span>
+
+
+            </div>
+
+
+            <div class="tabla-contenedor">
+
+
+                <table>
+
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Estudiante
+                            </th>
+
+                            <th>
+                                Experimentos
+                            </th>
+
+                            <th>
+                                Veces realizados
+                            </th>
+
+                            <th>
+                                Mejor nota
+                            </th>
+
+                            <th>
+                                Promedio
+                            </th>
+
+                            <th>
+                                Acción
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="tabla7">
+
+                        <tr>
+
+                            <td colspan="6">
+
+                                <div
+                                    class="sin-estudiantes">
+
+                                    Cargando estudiantes...
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+
+                </table>
+
+
+            </div>
+
+
+        </section>
+
+
+        <!-- =====================================================
+             8.º GRADO
+        ===================================================== -->
+
+        <section class="seccion-grado">
+
+
+            <div class="titulo-grado">
+
+                <h2>
+
+                    📗 8.º Grado
+
+                </h2>
+
+
+                <span
+                    class="cantidad"
+                    id="cantidad8">
+
+                    0 estudiantes
+
+                </span>
+
+
+            </div>
+
+
+            <div class="tabla-contenedor">
+
+
+                <table>
+
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Estudiante
+                            </th>
+
+                            <th>
+                                Experimentos
+                            </th>
+
+                            <th>
+                                Veces realizados
+                            </th>
+
+                            <th>
+                                Mejor nota
+                            </th>
+
+                            <th>
+                                Promedio
+                            </th>
+
+                            <th>
+                                Acción
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="tabla8">
+
+                        <tr>
+
+                            <td colspan="6">
+
+                                <div
+                                    class="sin-estudiantes">
+
+                                    Cargando estudiantes...
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+
+                </table>
+
+
+            </div>
+
+
+        </section>
+
+
+        <!-- =====================================================
+             9.º GRADO
+        ===================================================== -->
+
+        <section class="seccion-grado">
+
+
+            <div class="titulo-grado">
+
+                <h2>
+
+                    📕 9.º Grado
+
+                </h2>
+
+
+                <span
+                    class="cantidad"
+                    id="cantidad9">
+
+                    0 estudiantes
+
+                </span>
+
+
+            </div>
+
+
+            <div class="tabla-contenedor">
+
+
+                <table>
+
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Estudiante
+                            </th>
+
+                            <th>
+                                Experimentos
+                            </th>
+
+                            <th>
+                                Veces realizados
+                            </th>
+
+                            <th>
+                                Mejor nota
+                            </th>
+
+                            <th>
+                                Promedio
+                            </th>
+
+                            <th>
+                                Acción
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="tabla9">
+
+                        <tr>
+
+                            <td colspan="6">
+
+                                <div
+                                    class="sin-estudiantes">
+
+                                    Cargando estudiantes...
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+
+                </table>
+
+
+            </div>
+
+
+        </section>
+
+
+    </main>
+
+
+    <!-- =========================================================
+         MODAL REPORTE
+    ========================================================= -->
+
+    <div
+        class="modal"
+        id="modalReporte">
+
+
+        <div class="modal-contenido">
+
+
+            <div class="modal-cabecera">
+
+
+                <h2>
+
+                    📊 Reporte del estudiante
+
+                </h2>
+
+
+                <button
+                    class="cerrar-modal"
+                    onclick="cerrarModal()">
+
+                    ×
+
+                </button>
+
+
+            </div>
+
+
+            <div
+                class="datos-estudiante"
+                id="datosEstudiante">
+
+
+                <div class="dato">
+
+                    <small>
+                        Estudiante
+                    </small>
+
+                    <strong id="reporteNombre">
+                        —
+                    </strong>
+
+                </div>
+
+
+                <div class="dato">
+
+                    <small>
+                        Grado
+                    </small>
+
+                    <strong id="reporteGrado">
+                        —
+                    </strong>
+
+                </div>
+
+
+                <div class="dato">
+
+                    <small>
+                        Promedio general
+                    </small>
+
+                    <strong id="reportePromedio">
+                        —
+                    </strong>
+
+                </div>
+
+
+            </div>
+
+
+            <div class="modal-tabla">
+
+
+                <table class="detalle-tabla">
+
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Experimento
+                            </th>
+
+                            <th>
+                                Área
+                            </th>
+
+                            <th>
+                                Veces realizado
+                            </th>
+
+                            <th>
+                                Evaluaciones
+                            </th>
+
+                            <th>
+                                Mejor nota
+                            </th>
+
+                            <th>
+                                Promedio
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="tablaReporte">
+
+                        <tr>
+
+                            <td colspan="6">
+
+                                <div
+                                    class="sin-estudiantes">
+
+                                    Selecciona un estudiante
+                                    para consultar su información.
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+
+                </table>
+
+
+            </div>
+
+
+            <div
+                style="
+                    display:flex;
+                    justify-content:flex-end;
+                    margin-top:25px;
+                ">
+
+
+                <button
+                    class="btn-reporte"
+                    id="btnGenerarPDF"
+                    onclick="generarReportePDF()">
+
+                    📄 Generar reporte PDF
+
+                </button>
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+    <!-- =========================================================
+         FOOTER
+    ========================================================= -->
+
+    <footer>
+
+        <p>
+
+            © 2026 EcoLab IA | Panel Docente
+
+        </p>
+
+    </footer>
+
+
+    <!-- =========================================================
+         JAVASCRIPT
+    ========================================================= -->
+
+    <script>
+
+
+        /* =========================================================
+           DATOS DE ESTUDIANTES
+        ========================================================= */
+
+        const estudiantes = {
+
+            7: [],
+
+            8: [],
+
+            9: []
+
+        };
+
+
+        let estudianteSeleccionado = null;
+
+
+        /* =========================================================
+           ESCAPAR HTML
+        ========================================================= */
+
+        function escapeHTML(text) {
+
+            const div =
+                document.createElement("div");
+
+            div.textContent =
+                text ?? "";
+
+            return div.innerHTML;
+
+        }
+
+
+        /* =========================================================
+           FORMATO DE NOTA
+        ========================================================= */
+
+        function formatoNota(nota) {
+
+    if (
+        nota === null ||
+        nota === undefined ||
+        nota === ""
+    ) {
+
+        return "0.00";
+
+    }
+
+    const numero = Number(nota);
+
+    if (Number.isNaN(numero)) {
+
+        return "0.00";
+
+    }
+
+    return numero.toFixed(2);
+
+}
+
+
+        /* =========================================================
+           MOSTRAR ERROR
+        ========================================================= */
+
+        function mostrarMensajeError(mensaje) {
+
+            const elemento =
+                document.getElementById(
+                    "mensajeError"
+                );
+
+
+            elemento.textContent =
+                mensaje;
+
+
+            elemento.style.display =
+                "block";
+
+        }
+
+
+        function ocultarMensajeError() {
+
+            const elemento =
+                document.getElementById(
+                    "mensajeError"
+                );
+
+
+            elemento.textContent =
+                "";
+
+
+            elemento.style.display =
+                "none";
+
+        }
+
+
+        /* =========================================================
+           MOSTRAR ESTUDIANTES
+        ========================================================= */
+
+        function mostrarEstudiantes(grado) {
+
+            const tabla =
+                document.getElementById(
+                    "tabla" + grado
+                );
+
+
+            const cantidad =
+                document.getElementById(
+                    "cantidad" + grado
+                );
+
+
+            const lista =
+                estudiantes[grado] || [];
+
+
+            cantidad.textContent =
+                lista.length +
+                (
+                    lista.length === 1
+                        ? " estudiante"
+                        : " estudiantes"
+                );
+
+
+            if (
+                lista.length === 0
+            ) {
+
+                tabla.innerHTML = `
+
+                    <tr>
+
+                        <td colspan="6">
+
+                            <div class="sin-estudiantes">
+
+                                No hay estudiantes registrados.
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                `;
+
+
+                return;
+
+            }
+
+
+            tabla.innerHTML = "";
+
+
+            lista.forEach(
+                estudiante => {
+
+                    const fila =
+                        document.createElement(
+                            "tr"
+                        );
+
+
+                    fila.innerHTML = `
+
+                        <td>
+
+                            <div class="estudiante">
+
+                                <div class="estudiante-avatar">
+
+                                    👨‍🎓
+
+                                </div>
+
+                                <div>
+
+                                    <div class="estudiante-nombre">
+
+                                        ${escapeHTML(
+                                            estudiante.nombre_completo
+                                        )}
+
+                                    </div>
+
+                                    <div class="usuario">
+
+                                        ${escapeHTML(
+                                            estudiante.usuario
+                                        )}
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </td>
+
+
+                        <td>
+
+                            <span class="badge">
+
+                                ${Number(
+                                    estudiante.experimentos || 0
+                                )}
+
+                            </span>
+
+                        </td>
+
+
+                        <td>
+
+                            <span class="badge">
+
+                                ${Number(
+                                    estudiante.veces || 0
+                                )}
+
+                            </span>
+
+                        </td>
+
+
+                        <td>
+
+                            <strong>
+
+                                ${formatoNota(
+                                    estudiante.mejor_nota
+                                )}
+
+                            </strong>
+
+                        </td>
+
+
+                        <td>
+
+                            <strong>
+
+                                ${formatoNota(
+                                    estudiante.promedio
+                                )}
+
+                            </strong>
+
+                        </td>
+
+
+                        <td>
+
+                            <button
+                                class="btn-reporte"
+                                onclick="
+                                    verReporte(
+                                        ${Number(
+                                            estudiante.id_estudiante
+                                        )},
+                                        ${Number(grado)}
+                                    )
+                                "
+                            >
+
+                                📄 Ver reporte
+
+                            </button>
+
+                        </td>
+
+                    `;
+
+
+                    tabla.appendChild(
+                        fila
+                    );
+
+                }
+            );
+
+        }
+
+
+        /* =========================================================
+           CARGAR PANEL DESDE docente.php
+        ========================================================= */
+
+        async function cargarPanelDocente() {
+
+            ocultarMensajeError();
+
+
+            try {
+
+                const respuesta =
+                    await fetch(
+                        "php/docente.php",
+                        {
+                            method: "GET",
+
+                            credentials:
+                                "same-origin",
+
+                            cache:
+                                "no-store"
+                        }
+                    );
+
+
+                const texto =
+                    await respuesta.text();
+
+
+                let datos;
+
+
+                try {
+
+                    datos =
+                        JSON.parse(texto);
+
+                } catch (
+                    errorJSON
+                ) {
+
+                    console.error(
+                        "Respuesta de docente.php:",
+                        texto
+                    );
+
+
+                    throw new Error(
+                        "docente.php no devolvió JSON válido."
+                    );
+
+                }
+
+
+                if (
+                    !respuesta.ok
+                ) {
+
+                    throw new Error(
+                        datos.mensaje ||
+                        "Error al cargar el panel."
+                    );
+
+                }
+
+
+                if (
+                    !datos.exito
+                ) {
+
+                    throw new Error(
+                        datos.mensaje ||
+                        "No se pudo cargar la información."
+                    );
+
+                }
+
+
+                /* =================================================
+                   NOMBRE DEL DOCENTE
+                ================================================= */
+
+                if (
+                    datos.docente &&
+                    datos.docente.nombre_completo
+                ) {
+
+                    document.getElementById(
+                        "nombreDocente"
+                    ).textContent =
+                        datos.docente.nombre_completo;
+
+
+                    localStorage.setItem(
+                        "ecolab_nombre_docente",
+                        datos.docente.nombre_completo
+                    );
+
+                }
+
+
+                /* =================================================
+                   RESUMEN
+                ================================================= */
+
+                if (
+                    datos.resumen
+                ) {
+
+                    document.getElementById(
+                        "totalEstudiantes"
+                    ).textContent =
+                        Number(
+                            datos.resumen.total_estudiantes || 0
+                        );
+
+
+                    document.getElementById(
+                        "totalExperimentos"
+                    ).textContent =
+                        Number(
+                            datos.resumen.total_experimentos || 0
+                        );
+
+
+                    document.getElementById(
+                        "totalEvaluaciones"
+                    ).textContent =
+                        Number(
+                            datos.resumen.total_evaluaciones || 0
+                        );
+
+                }
+
+
+                /* =================================================
+                   ESTUDIANTES POR GRADO
+                ================================================= */
+
+                estudiantes[7] =
+                    datos.grados &&
+                    datos.grados["7"]
+                        ? datos.grados["7"]
+                        : [];
+
+
+                estudiantes[8] =
+                    datos.grados &&
+                    datos.grados["8"]
+                        ? datos.grados["8"]
+                        : [];
+
+
+                estudiantes[9] =
+                    datos.grados &&
+                    datos.grados["9"]
+                        ? datos.grados["9"]
+                        : [];
+
+
+                /* =================================================
+                   MOSTRAR TABLAS
+                ================================================= */
+
+                mostrarEstudiantes(7);
+
+                mostrarEstudiantes(8);
+
+                mostrarEstudiantes(9);
+
+
+            } catch (
+                error
+            ) {
+
+                console.error(
+                    "Error cargando panel:",
+                    error
+                );
+
+
+                mostrarMensajeError(
+                    "No se pudo cargar la información del panel. " +
+                    error.message
+                );
+
+
+                mostrarEstudiantes(7);
+
+                mostrarEstudiantes(8);
+
+                mostrarEstudiantes(9);
+
+            }
+
+        }
+
+
+        /* =========================================================
+           VER REPORTE DEL ESTUDIANTE
+        ========================================================= */
+
+        function verReporte(
+            id,
+            grado
+        ) {
+
+            const lista =
+                estudiantes[grado] || [];
+
+
+            const estudiante =
+                lista.find(
+                    e =>
+                        Number(
+                            e.id_estudiante
+                        ) === Number(id)
+                );
+
+
+            if (
+                !estudiante
+            ) {
+
+                alert(
+                    "No se encontró la información del estudiante."
+                );
+
+
+                return;
+
+            }
+
+
+            estudianteSeleccionado =
+                estudiante;
+
+
+            /* =====================================================
+               DATOS DEL ESTUDIANTE
+            ===================================================== */
+
+            document.getElementById(
+                "reporteNombre"
+            ).textContent =
+                estudiante.nombre_completo ||
+                "—";
+
+
+            document.getElementById(
+                "reporteGrado"
+            ).textContent =
+                grado + "º";
+
+
+            document.getElementById(
+                "reportePromedio"
+            ).textContent =
+                formatoNota(
+                    estudiante.promedio
+                );
+
+
+            /* =====================================================
+               TABLA DEL REPORTE
+            ===================================================== */
+
+            const tabla =
+                document.getElementById(
+                    "tablaReporte"
+                );
+
+
+            const detalles =
+                estudiante.experimentos_detalle ||
+                [];
+
+
+            if (
+                detalles.length === 0
+            ) {
+
+                tabla.innerHTML = `
+
+                    <tr>
+
+                        <td colspan="6">
+
+                            <div class="sin-estudiantes">
+
+                                Este estudiante todavía no tiene
+                                información de experimentos.
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                `;
+
+            }
+
+
+            else {
+
+                tabla.innerHTML = "";
+
+
+                detalles.forEach(
+                    experimento => {
+
+                        let area =
+                            experimento.area ||
+                            "—";
+
+
+                        /* =============================================
+                           CONVERTIR ÁREA
+                        ============================================= */
+
+                        if (
+                            area === "fisica"
+                        ) {
+
+                            area =
+                                "Física";
+
+                        }
+
+
+                        else if (
+                            area === "quimica"
+                        ) {
+
+                            area =
+                                "Química";
+
+                        }
+
+
+                        else if (
+                            area === "biologia"
+                        ) {
+
+                            area =
+                                "Biología";
+
+                        }
+
+
+                        /* =============================================
+                           CREAR FILA
+                        ============================================= */
+
+                        const fila =
+                            document.createElement(
+                                "tr"
+                            );
+
+
+                        fila.innerHTML = `
+
+                            <td>
+
+                                ${escapeHTML(
+                                    experimento.experimento ||
+                                    "—"
+                                )}
+
+                            </td>
+
+
+                            <td>
+
+                                ${escapeHTML(
+                                    area
+                                )}
+
+                            </td>
+
+
+                            <td>
+
+                                ${Number(
+                                    experimento.veces_realizado ||
+                                    0
+                                )}
+
+                            </td>
+
+
+                            <td>
+
+                                ${Number(
+                                    experimento.evaluaciones ||
+                                    0
+                                )}
+
+                            </td>
+
+
+                            <td>
+
+                                ${formatoNota(
+                                    experimento.mejor_nota
+                                )}
+
+                            </td>
+
+
+                            <td>
+
+                                ${formatoNota(
+                                    experimento.promedio
+                                )}
+
+                            </td>
+
+                        `;
+
+
+                        tabla.appendChild(
+                            fila
+                        );
+
+                    }
+                );
+
+            }
+
+
+            /* =====================================================
+               ABRIR MODAL
+            ===================================================== */
+
+            document.getElementById(
+                "modalReporte"
+            ).classList.add(
+                "activo"
+            );
+
+        }
+
+
+        /* =========================================================
+           GENERAR REPORTE PDF INDIVIDUAL
+        ========================================================= */
+
+        function generarReportePDF() {
+
+            if (
+                !estudianteSeleccionado
+            ) {
+
+                alert(
+                    "Primero selecciona un estudiante."
+                );
+
+
+                return;
+
+            }
+
+
+            const idEstudiante =
+                estudianteSeleccionado.id_estudiante;
+
+
+            if (
+                !idEstudiante
+            ) {
+
+                alert(
+                    "No se encontró el ID del estudiante."
+                );
+
+
+                return;
+
+            }
+
+
+            const url =
+                "php/generar_reporte.php?id_estudiante=" +
+                encodeURIComponent(
+                    idEstudiante
+                );
+
+
+            window.open(
+                url,
+                "_blank"
+            );
+
+        }
+
+
+        /* =========================================================
+           REPORTE GENERAL
+        ========================================================= */
+
+        function generarReporteGeneral() {
+
+    window.open(
+        "php/generar_reporte_general.php",
+        "_blank"
+    );
+
+}
+
+
+        /* =========================================================
+           CERRAR MODAL
+        ========================================================= */
+
+        function cerrarModal() {
+
+            document.getElementById(
+                "modalReporte"
+            ).classList.remove(
+                "activo"
+            );
+
+        }
+
+
+        /* =========================================================
+           CERRAR MODAL AL HACER CLIC AFUERA
+        ========================================================= */
+
+        document.getElementById(
+            "modalReporte"
+        ).addEventListener(
+            "click",
+            function(event) {
+
+                if (
+                    event.target === this
+                ) {
+
+                    cerrarModal();
+
+                }
+
+            }
+        );
+
+
+        /* =========================================================
+           CERRAR MODAL CON ESC
+        ========================================================= */
+
+        document.addEventListener(
+            "keydown",
+            function(event) {
+
+                if (
+                    event.key === "Escape"
+                ) {
+
+                    cerrarModal();
+
+                }
+
+            }
+        );
+
+
+        /* =========================================================
+           CERRAR SESIÓN
+        ========================================================= */
+
+        function cerrarSesion() {
+
+            localStorage.removeItem(
+                "ecolab_sesion"
+            );
+
+
+            localStorage.removeItem(
+                "ecolab_id_usuario"
+            );
+
+
+            localStorage.removeItem(
+                "ecolab_rol"
+            );
+
+
+            localStorage.removeItem(
+                "ecolab_grado"
+            );
+
+
+            localStorage.removeItem(
+                "ecolab_nombre_docente"
+            );
+
+
+            window.location.href =
+                "login.html";
+
+        }
+
+
+        /* =========================================================
+           PROTEGER ACCESO
+        ========================================================= */
+
+        const sesion =
+            localStorage.getItem(
+                "ecolab_sesion"
+            );
+
+
+        const rol =
+            localStorage.getItem(
+                "ecolab_rol"
+            );
+
+
+        if (
+            sesion !== "activa" ||
+            rol !== "docente"
+        ) {
+
+            window.location.href =
+                "login.html";
+
+        }
+
+
+        else {
+
+            /* =====================================================
+               CARGAR PANEL
+            ===================================================== */
+
+            const nombreGuardado =
+                localStorage.getItem(
+                    "ecolab_nombre_docente"
+                );
+
+
+            if (
+                nombreGuardado
+            ) {
+
+                document.getElementById(
+                    "nombreDocente"
+                ).textContent =
+                    nombreGuardado;
+
+            }
+
+
+            cargarPanelDocente();
+
+        }
+
+
+    </script>
+
+
+</body>
+
+</html>

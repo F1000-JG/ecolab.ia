@@ -1,0 +1,1608 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoLab IA - Acceso</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #080d17;
+            color: #f8fafc;
+            min-height: 100vh;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* ================= FONDO ================= */
+
+        body::before {
+            content: "";
+            position: absolute;
+
+            width: 500px;
+            height: 500px;
+
+            background: rgba(0, 238, 255, 0.08);
+
+            border-radius: 50%;
+
+            filter: blur(100px);
+
+            top: -200px;
+            left: -150px;
+        }
+
+        body::after {
+            content: "";
+            position: absolute;
+
+            width: 450px;
+            height: 450px;
+
+            background: rgba(30, 255, 210, 0.07);
+
+            border-radius: 50%;
+
+            filter: blur(100px);
+
+            bottom: -200px;
+            right: -150px;
+        }
+
+        /* ================= FIGURAS ================= */
+
+        .background-shapes {
+            position: absolute;
+
+            inset: 0;
+
+            overflow: hidden;
+
+            pointer-events: none;
+
+            z-index: 0;
+        }
+
+        .shape {
+            position: absolute;
+
+            opacity: 0.35;
+
+            animation: float 8s ease-in-out infinite;
+        }
+
+        .shape:nth-child(1) {
+            top: 10%;
+            left: 8%;
+
+            font-size: 35px;
+
+            animation-delay: 0s;
+        }
+
+        .shape:nth-child(2) {
+            top: 20%;
+            right: 10%;
+
+            font-size: 30px;
+
+            animation-delay: 2s;
+        }
+
+        .shape:nth-child(3) {
+            bottom: 15%;
+            left: 12%;
+
+            font-size: 32px;
+
+            animation-delay: 4s;
+        }
+
+        .shape:nth-child(4) {
+            bottom: 20%;
+            right: 12%;
+
+            font-size: 36px;
+
+            animation-delay: 1s;
+        }
+
+        .shape:nth-child(5) {
+            top: 45%;
+            left: 5%;
+
+            font-size: 24px;
+
+            animation-delay: 3s;
+        }
+
+        @keyframes float {
+
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+            }
+
+            50% {
+                transform: translateY(-20px) rotate(8deg);
+            }
+
+        }
+
+        /* ================= TARJETA ================= */
+
+        .login-card {
+
+            position: relative;
+
+            z-index: 2;
+
+            width: 100%;
+
+            max-width: 440px;
+
+            max-height: 95vh;
+
+            padding: 30px 40px;
+
+            background: rgba(15, 23, 42, 0.90);
+
+            border: 1px solid rgba(34, 211, 238, 0.30);
+
+            border-radius: 22px;
+
+            box-shadow:
+                0 25px 70px rgba(0, 0, 0, 0.55),
+                0 0 40px rgba(0, 238, 255, 0.08);
+
+            backdrop-filter: blur(15px);
+
+            transform-style: preserve-3d;
+
+            transition:
+                transform 0.15s ease,
+                box-shadow 0.3s ease;
+
+            overflow-y: auto;
+        }
+
+        .login-card:hover {
+
+            box-shadow:
+                0 30px 80px rgba(0, 0, 0, 0.65),
+                0 0 45px rgba(0, 238, 255, 0.14);
+        }
+
+        .login-card::before {
+
+            content: "";
+
+            position: absolute;
+
+            width: 250px;
+            height: 250px;
+
+            background: rgba(0, 238, 255, 0.07);
+
+            border-radius: 50%;
+
+            filter: blur(70px);
+
+            top: -120px;
+            right: -100px;
+
+            pointer-events: none;
+        }
+
+        /* ================= LOGO ================= */
+
+        .logo {
+
+            text-align: center;
+
+            margin-bottom: 8px;
+        }
+
+        .logo-icon {
+
+            font-size: 42px;
+
+            display: inline-block;
+
+            filter:
+                drop-shadow(0 0 8px rgba(0, 238, 255, 0.45));
+
+            animation: logoFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes logoFloat {
+
+            0%, 100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-5px);
+            }
+
+        }
+
+        /* ================= TITULO ================= */
+
+        h2 {
+
+            text-align: center;
+
+            margin: 0;
+
+            font-size: 30px;
+
+            font-weight: 800;
+
+            letter-spacing: -0.5px;
+        }
+
+        .eco {
+            color: #f8fafc;
+        }
+
+        .lab {
+
+            color: #00e5ff;
+
+            text-shadow:
+                0 0 10px rgba(0, 229, 255, 0.35);
+        }
+
+        /* ================= SUBTITULO ================= */
+
+        .subtitle {
+
+            text-align: center;
+
+            color: #94a3b8;
+
+            font-size: 14px;
+
+            margin-top: 8px;
+
+            margin-bottom: 20px;
+        }
+
+        /* ================= CAMBIO DE MODO ================= */
+
+        .mode-buttons {
+
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 8px;
+
+            margin-bottom: 22px;
+
+            padding: 5px;
+
+            background: #0b1220;
+
+            border: 1px solid #1e293b;
+
+            border-radius: 12px;
+        }
+
+        .mode-button {
+
+            border: none;
+
+            border-radius: 8px;
+
+            padding: 10px;
+
+            background: transparent;
+
+            color: #64748b;
+
+            font-size: 13px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            transition: 0.3s ease;
+        }
+
+        .mode-button.active {
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #06b6d4,
+                    #14b8a6
+                );
+
+            color: white;
+
+            box-shadow:
+                0 5px 15px rgba(6, 182, 212, 0.20);
+        }
+
+        .mode-button:hover:not(.active) {
+
+            color: #e2e8f0;
+
+            background: rgba(34, 211, 238, 0.06);
+        }
+
+        /* ================= FORMULARIO ================= */
+
+        .input-group {
+
+            margin-bottom: 15px;
+
+            transition:
+                opacity 0.3s ease,
+                max-height 0.4s ease,
+                margin 0.4s ease;
+        }
+
+        .input-group.hidden {
+
+            max-height: 0;
+
+            opacity: 0;
+
+            overflow: hidden;
+
+            margin: 0;
+        }
+
+        label {
+
+            display: block;
+
+            margin-bottom: 7px;
+
+            font-size: 13px;
+
+            color: #cbd5e1;
+
+            font-weight: 600;
+        }
+
+        input,
+        select {
+
+            width: 100%;
+
+            padding: 12px 14px;
+
+            border-radius: 10px;
+
+            border: 1px solid #334155;
+
+            background: #0b1220;
+
+            color: white;
+
+            font-size: 14px;
+
+            outline: none;
+
+            transition:
+                border 0.3s ease,
+                box-shadow 0.3s ease,
+                transform 0.2s ease;
+        }
+
+        input:hover,
+        select:hover {
+
+            border-color: #475569;
+        }
+
+        input:focus,
+        select:focus {
+
+            border-color: #00e5ff;
+
+            box-shadow:
+                0 0 0 3px rgba(0, 229, 255, 0.12),
+                0 0 15px rgba(0, 229, 255, 0.08);
+
+            transform: translateY(-1px);
+        }
+
+        option {
+
+            background: #0f172a;
+
+            color: white;
+        }
+
+        /* ================= CONTRASEÑA ================= */
+
+        .password-container {
+
+            position: relative;
+        }
+
+        .password-container input {
+
+            padding-right: 48px;
+        }
+
+        .toggle-password {
+
+            position: absolute;
+
+            right: 12px;
+
+            top: 50%;
+
+            transform: translateY(-50%);
+
+            border: none;
+
+            background: transparent;
+
+            color: #64748b;
+
+            cursor: pointer;
+
+            font-size: 18px;
+
+            padding: 4px;
+        }
+
+        .toggle-password:hover {
+
+            color: #00e5ff;
+        }
+
+        /* ================= GRADO ================= */
+
+        #grupo-grado {
+
+            max-height: 0;
+
+            opacity: 0;
+
+            overflow: hidden;
+
+            margin-bottom: 0;
+
+            transition:
+                max-height 0.4s ease,
+                opacity 0.3s ease,
+                margin-bottom 0.3s ease;
+        }
+
+        #grupo-grado.visible {
+
+            max-height: 100px;
+
+            opacity: 1;
+
+            margin-bottom: 15px;
+        }
+
+        /* ================= BOTON ================= */
+
+        .btn-submit {
+
+            width: 100%;
+
+            padding: 14px;
+
+            margin-top: 5px;
+
+            border: none;
+
+            border-radius: 10px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #06b6d4,
+                    #14b8a6
+                );
+
+            color: white;
+
+            font-size: 15px;
+
+            font-weight: 800;
+
+            cursor: pointer;
+
+            letter-spacing: 0.3px;
+
+            box-shadow:
+                0 8px 25px rgba(6, 182, 212, 0.20);
+
+            transition:
+                transform 0.25s ease,
+                box-shadow 0.25s ease,
+                filter 0.25s ease;
+        }
+
+        .btn-submit:hover {
+
+            transform: translateY(-3px);
+
+            box-shadow:
+                0 12px 30px rgba(6, 182, 212, 0.35);
+
+            filter: brightness(1.08);
+        }
+
+        .btn-submit:active {
+
+            transform: translateY(0);
+        }
+
+        /* ================= MENSAJE ================= */
+
+        #error-msg {
+
+            color: #fb7185;
+
+            font-size: 13px;
+
+            text-align: center;
+
+            margin-top: 16px;
+
+            margin-bottom: 0;
+
+            display: none;
+
+            animation: shake 0.4s ease-in-out;
+        }
+
+        #success-msg {
+
+            color: #2dd4bf;
+
+            font-size: 13px;
+
+            text-align: center;
+
+            margin-top: 16px;
+
+            margin-bottom: 0;
+
+            display: none;
+        }
+
+        @keyframes shake {
+
+            0%, 100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-5px);
+            }
+
+            75% {
+                transform: translateX(5px);
+            }
+
+        }
+
+        /* ================= TEXTO INFERIOR ================= */
+
+        .science-text {
+
+            text-align: center;
+
+            margin-top: 22px;
+
+            font-size: 10px;
+
+            letter-spacing: 3px;
+
+            color: #64748b;
+
+            text-transform: uppercase;
+        }
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 500px) {
+
+            .login-card {
+
+                width: calc(100% - 30px);
+
+                padding: 25px;
+
+                max-height: 94vh;
+            }
+
+            h2 {
+
+                font-size: 26px;
+            }
+
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <!-- ================= ELEMENTOS DEL FONDO ================= -->
+
+    <div class="background-shapes">
+
+        <div class="shape">🧬</div>
+        <div class="shape">⚛️</div>
+        <div class="shape">🔬</div>
+        <div class="shape">🧪</div>
+        <div class="shape">⚗️</div>
+
+    </div>
+
+
+    <!-- ================= TARJETA ================= -->
+
+    <div class="login-card" id="loginCard">
+
+        <!-- LOGO -->
+
+        <div class="logo">
+
+            <span class="logo-icon">🧪</span>
+
+        </div>
+
+
+        <!-- TITULO -->
+
+        <h2>
+
+            <span class="eco">EcoLab</span>
+            <span class="lab">IA</span>
+
+        </h2>
+
+
+        <p class="subtitle">
+
+            Laboratorio Científico Virtual Inteligente
+
+        </p>
+
+
+        <!-- ================= CAMBIO DE MODO ================= -->
+
+        <div class="mode-buttons">
+
+            <button
+                type="button"
+                class="mode-button active"
+                id="btnLogin">
+
+                Iniciar sesión
+
+            </button>
+
+            <button
+                type="button"
+                class="mode-button"
+                id="btnRegistro">
+
+                Crear cuenta
+
+            </button>
+
+        </div>
+
+
+        <!-- ================= FORMULARIO ================= -->
+
+        <form id="login-form">
+
+
+            <!-- ================= NOMBRE ================= -->
+
+            <div
+                class="input-group register-field hidden"
+                id="grupo-nombre">
+
+                <label for="nombre">
+
+                    Nombre
+
+                </label>
+
+                <input
+                    type="text"
+                    id="nombre"
+                    placeholder="Ingresa tu nombre"
+                >
+
+            </div>
+
+
+            <!-- ================= APELLIDOS ================= -->
+
+            <div
+                class="input-group register-field hidden"
+                id="grupo-apellidos">
+
+                <label for="apellidos">
+
+                    Apellidos
+
+                </label>
+
+                <input
+                    type="text"
+                    id="apellidos"
+                    placeholder="Ingresa tus apellidos"
+                >
+
+            </div>
+
+
+            <!-- ================= USUARIO ================= -->
+
+            <div class="input-group">
+
+                <label for="usuario">
+
+                    Nombre de usuario
+
+                </label>
+
+                <input
+                    type="text"
+                    id="usuario"
+                    placeholder="Ejemplo: jennifer2009"
+                    autocomplete="username"
+                    required
+                >
+
+            </div>
+
+
+            <!-- ================= ROL ================= -->
+
+            <div
+                class="input-group register-field hidden"
+                id="grupo-rol">
+
+                <label for="rol">
+
+                    Soy:
+
+                </label>
+
+                <select id="rol">
+
+                    <option
+                        value=""
+                        disabled
+                        selected>
+
+                        Selecciona tu rol...
+
+                    </option>
+
+                    <option value="estudiante">
+
+                        Estudiante
+
+                    </option>
+
+                    <option value="docente">
+
+                        Docente
+
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- ================= GRADO ================= -->
+
+            <div
+                class="input-group"
+                id="grupo-grado">
+
+                <label for="grado">
+
+                    Grado escolar
+
+                </label>
+
+                <select id="grado">
+
+                    <option
+                        value=""
+                        disabled
+                        selected>
+
+                        Selecciona tu grado...
+
+                    </option>
+
+                    <option value="7">
+
+                        Séptimo Grado
+
+                    </option>
+
+                    <option value="8">
+
+                        Octavo Grado
+
+                    </option>
+
+                    <option value="9">
+
+                        Noveno Grado
+
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- ================= CONTRASEÑA ================= -->
+
+            <div class="input-group">
+
+                <label for="password">
+
+                    Contraseña
+
+                </label>
+
+                <div class="password-container">
+
+                    <input
+                        type="password"
+                        id="password"
+                        placeholder="••••••••"
+                        autocomplete="current-password"
+                        required
+                    >
+
+                    <button
+                        type="button"
+                        class="toggle-password"
+                        id="togglePassword">
+
+                        👁️
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- ================= BOTON ================= -->
+
+            <button
+                type="submit"
+                class="btn-submit"
+                id="submitButton">
+
+                Ingresar
+
+            </button>
+
+        </form>
+
+
+        <!-- ================= MENSAJES ================= -->
+
+        <p id="error-msg"></p>
+
+        <p id="success-msg"></p>
+
+
+        <!-- ================= TEXTO INFERIOR ================= -->
+
+        <div class="science-text">
+
+            Ciencia • Vida • Experimentación
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= JAVASCRIPT ================= -->
+
+    <script>
+
+        /* ==========================================
+           ELEMENTOS
+        ========================================== */
+
+        const card =
+            document.getElementById("loginCard");
+
+        const form =
+            document.getElementById("login-form");
+
+        const btnLogin =
+            document.getElementById("btnLogin");
+
+        const btnRegistro =
+            document.getElementById("btnRegistro");
+
+        const grupoNombre =
+            document.getElementById("grupo-nombre");
+
+        const grupoApellidos =
+            document.getElementById("grupo-apellidos");
+
+        const grupoRol =
+            document.getElementById("grupo-rol");
+
+        const grupoGrado =
+            document.getElementById("grupo-grado");
+
+        const nombreInput =
+            document.getElementById("nombre");
+
+        const apellidosInput =
+            document.getElementById("apellidos");
+
+        const usuarioInput =
+            document.getElementById("usuario");
+
+        const rolSelect =
+            document.getElementById("rol");
+
+        const gradoSelect =
+            document.getElementById("grado");
+
+        const passwordInput =
+            document.getElementById("password");
+
+        const submitButton =
+            document.getElementById("submitButton");
+
+        const errorMsg =
+            document.getElementById("error-msg");
+
+        const successMsg =
+            document.getElementById("success-msg");
+
+        const togglePassword =
+            document.getElementById("togglePassword");
+
+
+        /* ==========================================
+           MODO ACTUAL
+        ========================================== */
+
+        let modo = "login";
+
+
+        /* ==========================================
+           FUNCION PARA LIMPIAR MENSAJES
+        ========================================== */
+
+        function limpiarMensajes() {
+
+            errorMsg.style.display = "none";
+
+            successMsg.style.display = "none";
+
+            errorMsg.textContent = "";
+
+            successMsg.textContent = "";
+
+        }
+
+
+        /* ==========================================
+           MOSTRAR CAMPOS DE REGISTRO
+        ========================================== */
+
+        function mostrarRegistro() {
+
+            modo = "registro";
+
+            limpiarMensajes();
+
+            btnRegistro.classList.add("active");
+
+            btnLogin.classList.remove("active");
+
+
+            grupoNombre.classList.remove("hidden");
+
+            grupoApellidos.classList.remove("hidden");
+
+            grupoRol.classList.remove("hidden");
+
+
+            nombreInput.required = true;
+
+            apellidosInput.required = true;
+
+            rolSelect.required = true;
+
+
+            submitButton.textContent =
+                "Crear cuenta";
+
+
+            passwordInput.autocomplete =
+                "new-password";
+
+        }
+
+
+        /* ==========================================
+           MOSTRAR CAMPOS DE LOGIN
+        ========================================== */
+
+        function mostrarLogin() {
+
+            modo = "login";
+
+            limpiarMensajes();
+
+            btnLogin.classList.add("active");
+
+            btnRegistro.classList.remove("active");
+
+
+            grupoNombre.classList.add("hidden");
+
+            grupoApellidos.classList.add("hidden");
+
+            grupoRol.classList.add("hidden");
+
+
+            nombreInput.required = false;
+
+            apellidosInput.required = false;
+
+            rolSelect.required = false;
+
+
+            submitButton.textContent =
+                "Ingresar";
+
+
+            passwordInput.autocomplete =
+                "current-password";
+
+
+            grupoGrado.classList.remove("visible");
+
+            gradoSelect.required = false;
+
+            gradoSelect.value = "";
+
+        }
+
+
+        /* ==========================================
+           BOTONES DE MODO
+        ========================================== */
+
+        btnLogin.addEventListener(
+            "click",
+            mostrarLogin
+        );
+
+        btnRegistro.addEventListener(
+            "click",
+            mostrarRegistro
+        );
+
+
+        /* ==========================================
+           MOSTRAR GRADO PARA ESTUDIANTES
+        ========================================== */
+
+        rolSelect.addEventListener(
+            "change",
+            () => {
+
+                limpiarMensajes();
+
+                if (
+                    rolSelect.value ===
+                    "estudiante"
+                ) {
+
+                    grupoGrado.classList.add(
+                        "visible"
+                    );
+
+                    gradoSelect.required =
+                        true;
+
+                } else {
+
+                    grupoGrado.classList.remove(
+                        "visible"
+                    );
+
+                    gradoSelect.required =
+                        false;
+
+                    gradoSelect.value = "";
+
+                }
+
+            }
+        );
+
+
+        /* ==========================================
+           MOSTRAR / OCULTAR CONTRASEÑA
+        ========================================== */
+
+        togglePassword.addEventListener(
+            "click",
+            () => {
+
+                if (
+                    passwordInput.type ===
+                    "password"
+                ) {
+
+                    passwordInput.type =
+                        "text";
+
+                    togglePassword.textContent =
+                        "🙈";
+
+                } else {
+
+                    passwordInput.type =
+                        "password";
+
+                    togglePassword.textContent =
+                        "👁️";
+
+                }
+
+            }
+        );
+
+
+        /* ==========================================
+           EFECTO 3D
+        ========================================== */
+
+        document.addEventListener(
+            "mousemove",
+            (e) => {
+
+                const centerX =
+                    window.innerWidth / 2;
+
+                const centerY =
+                    window.innerHeight / 2;
+
+                const rotateX =
+                    ((e.clientY - centerY)
+                    / centerY) * -4;
+
+                const rotateY =
+                    ((e.clientX - centerX)
+                    / centerX) * 4;
+
+                card.style.transform =
+                    `rotateX(${rotateX}deg)
+                     rotateY(${rotateY}deg)`;
+
+            }
+        );
+
+
+        document.addEventListener(
+            "mouseleave",
+            () => {
+
+                card.style.transform =
+                    "rotateX(0deg) rotateY(0deg)";
+
+            }
+        );
+
+
+        /* ==========================================
+           MOSTRAR ERROR
+        ========================================== */
+
+        function mostrarError(mensaje) {
+
+            errorMsg.textContent =
+                mensaje;
+
+            errorMsg.style.display =
+                "block";
+
+            successMsg.style.display =
+                "none";
+
+        }
+
+
+        /* ==========================================
+           MOSTRAR ÉXITO
+        ========================================== */
+
+        function mostrarExito(mensaje) {
+
+            successMsg.textContent =
+                mensaje;
+
+            successMsg.style.display =
+                "block";
+
+            errorMsg.style.display =
+                "none";
+
+        }
+
+
+        /* ==========================================
+           REGISTRO
+        ========================================== */
+function registrarUsuario() {
+
+    const nombre = nombreInput.value.trim();
+    const apellidos = apellidosInput.value.trim();
+    const usuario = usuarioInput.value.trim();
+    const rol = rolSelect.value;
+    const grado = gradoSelect.value;
+    const password = passwordInput.value;
+
+    // ==============================
+    // VALIDAR NOMBRE
+    // ==============================
+
+    if (nombre === "") {
+        mostrarError("Por favor, escribe tu nombre.");
+        return;
+    }
+
+    // ==============================
+    // VALIDAR APELLIDOS
+    // ==============================
+
+    if (apellidos === "") {
+        mostrarError("Por favor, escribe tus apellidos.");
+        return;
+    }
+
+    // ==============================
+    // VALIDAR USUARIO
+    // ==============================
+
+    if (usuario === "") {
+        mostrarError("Por favor, escribe tu nombre de usuario.");
+        return;
+    }
+
+    if (usuario.length < 4) {
+        mostrarError("El usuario debe tener al menos 4 caracteres.");
+        return;
+    }
+
+    // ==============================
+    // VALIDAR ROL
+    // ==============================
+
+    if (rol === "") {
+        mostrarError("Por favor, selecciona tu rol.");
+        return;
+    }
+
+    // ==============================
+    // VALIDAR GRADO
+    // ==============================
+
+    if (rol === "estudiante" && grado === "") {
+        mostrarError("Por favor, selecciona tu grado escolar.");
+        return;
+    }
+
+    // ==============================
+    // VALIDAR CONTRASEÑA
+    // ==============================
+
+    if (password === "") {
+        mostrarError("Por favor, escribe una contraseña.");
+        return;
+    }
+
+    if (password.length < 6) {
+        mostrarError("La contraseña debe tener al menos 6 caracteres.");
+        return;
+    }
+
+    // ==============================
+    // PREPARAR DATOS
+    // ==============================
+
+    const datos = new URLSearchParams();
+
+    datos.append("nombre", nombre);
+    datos.append("apellidos", apellidos);
+    datos.append("usuario", usuario);
+    datos.append("rol", rol);
+    datos.append("grado", rol === "estudiante" ? grado : "");
+    datos.append("password", password);
+
+    // ==============================
+    // DESACTIVAR BOTÓN
+    // ==============================
+
+    submitButton.disabled = true;
+    submitButton.textContent = "Creando cuenta...";
+
+    // ==============================
+    // ENVIAR A PHP
+    // ==============================
+
+    fetch("php/registrar.php", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: datos.toString()
+    })
+    .then(response => response.text())
+    .then(resultado => {
+
+        resultado = resultado.trim();
+
+        if (resultado.includes("¡Cuenta creada correctamente!")) {
+
+            mostrarExito(resultado);
+
+            // Guardar temporalmente el usuario para iniciar sesión
+            usuarioInput.value = usuario;
+
+            // Limpiar los demás campos
+            nombreInput.value = "";
+            apellidosInput.value = "";
+            rolSelect.value = "";
+            gradoSelect.value = "";
+            passwordInput.value = "";
+
+            grupoGrado.classList.remove("visible");
+            gradoSelect.required = false;
+
+            // Pasar a modo login
+            setTimeout(() => {
+
+                mostrarLogin();
+
+                usuarioInput.value = usuario;
+
+                passwordInput.focus();
+
+            }, 1500);
+
+        } else {
+
+            mostrarError(resultado);
+
+        }
+
+    })
+    .catch(error => {
+
+        console.error("Error:", error);
+
+        mostrarError(
+            "No se pudo conectar con el servidor. Verifica que Apache esté encendido."
+        );
+
+    })
+    .finally(() => {
+
+        submitButton.disabled = false;
+
+        if (modo === "registro") {
+            submitButton.textContent = "Crear cuenta";
+        } else {
+            submitButton.textContent = "Ingresar";
+        }
+
+    });
+}
+
+
+        /* ==========================================
+           INICIAR SESIÓN
+        ========================================== */
+
+       function iniciarSesion() {
+
+    const usuario = usuarioInput.value.trim();
+    const password = passwordInput.value;
+
+    // ==============================
+    // VALIDAR USUARIO
+    // ==============================
+
+    if (usuario === "") {
+        mostrarError("Por favor, escribe tu nombre de usuario.");
+        return;
+    }
+
+    // ==============================
+    // VALIDAR CONTRASEÑA
+    // ==============================
+
+    if (password === "") {
+        mostrarError("Por favor, escribe tu contraseña.");
+        return;
+    }
+
+    // ==============================
+    // PREPARAR DATOS
+    // ==============================
+
+    const datos = new URLSearchParams();
+
+    datos.append("usuario", usuario);
+    datos.append("password", password);
+
+    // ==============================
+    // DESACTIVAR BOTÓN
+    // ==============================
+
+    submitButton.disabled = true;
+    submitButton.textContent = "Ingresando...";
+
+    // ==============================
+    // ENVIAR A PHP
+    // ==============================
+
+    fetch("php/login.php", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: datos.toString()
+    })
+    .then(response => response.json())
+    .then(resultado => {
+
+        if (!resultado.exito) {
+
+            mostrarError(resultado.mensaje);
+            return;
+        }
+
+        // ==============================
+        // GUARDAR SESIÓN TEMPORAL
+        // ==============================
+
+        localStorage.setItem(
+            "ecolab_sesion",
+            "activa"
+        );
+
+        localStorage.setItem(
+            "ecolab_id_usuario",
+            usuario
+        );
+
+        localStorage.setItem(
+            "ecolab_rol",
+            resultado.rol
+        );
+
+        if (resultado.grado) {
+
+            localStorage.setItem(
+                "ecolab_grado",
+                resultado.grado
+            );
+
+        }
+
+        // ==============================
+        // MOSTRAR ÉXITO
+        // ==============================
+
+        mostrarExito(resultado.mensaje);
+
+        // ==============================
+        // REDIRECCIÓN
+        // ==============================
+
+        setTimeout(() => {
+
+            if (resultado.rol === "docente") {
+
+                window.location.href = "docente.html";
+
+            } else {
+
+                window.location.href = "index.html";
+
+            }
+
+        }, 800);
+
+    })
+    .catch(error => {
+
+        console.error("Error:", error);
+
+        mostrarError(
+            "No se pudo conectar con el servidor. Verifica que Apache esté encendido."
+        );
+
+    })
+    .finally(() => {
+
+        submitButton.disabled = false;
+
+        submitButton.textContent = "Ingresar";
+
+    });
+}
+
+/* ==========================================
+   ENVIAR FORMULARIO
+========================================== */
+
+form.addEventListener("submit", function(event) {
+
+    // Evitar que el formulario recargue la página
+    event.preventDefault();
+
+    // Verificar qué modo está activo
+    if (modo === "registro") {
+
+        registrarUsuario();
+
+    } else {
+
+        iniciarSesion();
+
+    }
+
+});
+        /* ==========================================
+           INICIO
+        ========================================== */
+
+        mostrarLogin();
+
+    </script>
+
+</body>
+</html>

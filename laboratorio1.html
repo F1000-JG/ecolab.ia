@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="asistente.css">
+    <title>Simulación 3D: Presión y Nivel de Agua</title>
+
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #1a1a1a;
+        }
+
+        #info-card {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.75);
+            color: #ffffff;
+            padding: 15px 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            pointer-events: none;
+            max-width: 300px;
+            z-index: 10;
+        }
+
+        #info-card h2 {
+            margin: 0 0 10px 0;
+            font-size: 18px;
+            color: #1CAAD9;
+        }
+
+        #info-card p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+
+        .highlight {
+            font-weight: bold;
+            color: #00ffcc;
+        }
+
+        #back-button {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            z-index: 20;
+            padding: 12px 20px;
+            background: #2a2a3d;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        #back-button:hover {
+            background: #3a3a50;
+            transform: translateY(-2px);
+        }
+
+        #quiz-button {
+            position: fixed !important;
+            bottom: 20px !important;
+            right: 20px !important;
+            z-index: 99999 !important;
+            padding: 12px 20px;
+            background: #1CAAD9;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(28, 170, 217, 0.6);
+            transition: all 0.3s ease;
+        }
+
+        #quiz-button:hover {
+            background: #00cfff;
+            transform: translateY(-2px);
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 10, 15, 0.85);
+            backdrop-filter: blur(6px);
+            z-index: 999999;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .quiz-card {
+            background: #14141c;
+            border: 1px solid #2a2a3d;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 650px;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+            color: #ffffff;
+        }
+
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #2a2a3d;
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+        }
+
+        .quiz-header h3 {
+            margin: 0;
+            color: #1CAAD9;
+            font-size: 18px;
+        }
+
+        .quiz-question {
+            margin-bottom: 20px;
+            background: #1e1e2d;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #1CAAD9;
+        }
+
+        .quiz-question p {
+            margin: 0 0 12px 0;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .option-label {
+            display: flex;
+            align-items: center;
+            padding: 10px 12px;
+            background: #14141c;
+            border: 1px solid #3a3a50;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: 0.2s;
+        }
+
+        .option-label:hover {
+            border-color: #1CAAD9;
+            background: #1a1a28;
+        }
+
+        .option-label input {
+            margin-right: 10px;
+            accent-color: #1CAAD9;
+        }
+
+        .quiz-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #2a2a3d;
+        }
+
+        .result-card {
+            background: #181824;
+            border: 1px solid #1CAAD9;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 480px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9);
+            color: #ffffff;
+            text-align: center;
+            animation: popup 0.3s ease-out;
+        }
+
+        @keyframes popup {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .feedback-item {
+            margin-top: 10px;
+            padding: 10px;
+            background: #12121a;
+            border-radius: 8px;
+            font-size: 12px;
+            text-align: left;
+            border-left: 3px solid #ff4444;
+        }
+
+        .feedback-item.correct {
+            border-left-color: #00ffcc;
+        }
+    </style>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lil-gui@0.18"></script>
+</head>
+
+<body>
+
+    <button id="back-button" onclick="window.location.href='noveno.html'">
+        ← Volver a Noveno
+    </button>
+
+    <button id="quiz-button" onclick="openQuiz()">
+        📝 Examen
+    </button>
+
+    <div id="info-card">
+        <h2>Medidor de Presión</h2>
+        <p>Nivel de Agua: <span id="water-level-val" class="highlight">5.0 m</span></p>
+        <p>Profundidad Sensor (h): <span id="depth-val" class="highlight">0.0 m</span></p>
+        <p>Presión Total (P): <span id="pressure-val" class="highlight">101.3 kPa</span></p>
+        <hr style="border: 0.5px solid #444; margin: 10px 0;">
+        <p style="font-size: 11px; color: #aaa;">
+            Fórmula: P = P<sub>atm</sub> + ρ · g · h<br>
+            (P<sub>atm</sub> = 101.3 kPa, ρ = 1000 kg/m³)
+        </p>
+    </div>
+
+    <!-- MODAL 1: PREGUNTAS DEL EXAMEN -->
+    <div class="modal-overlay" id="quizModal">
+        <div class="quiz-card">
+            <div class="quiz-header">
+                <h3>Evaluación: Presión Hidrostática</h3>
+                <button onclick="closeQuiz()" style="background:none; border:none; color:#aaa; font-size:20px; cursor:pointer;">&times;</button>
+            </div>
+
+            <form id="quizForm">
+                <div class="quiz-question">
+                    <p>1. ¿Qué sucede con la presión hidrostática a medida que aumenta la profundidad del sensor?</p>
+                    <div class="options-list">
+                        <label class="option-label"><input type="radio" name="q1" value="a"> Disminuye de forma lineal.</label>
+                        <label class="option-label"><input type="radio" name="q1" value="b"> Aumenta proporcionalmente a la profundidad.</label>
+                        <label class="option-label"><input type="radio" name="q1" value="c"> Se mantiene constante en todo el prisma.</label>
+                    </div>
+                </div>
+
+                <div class="quiz-question">
+                    <p>2. Si el sensor está en la superficie del agua (h = 0.0 m), ¿cuál es la presión registrada?</p>
+                    <div class="options-list">
+                        <label class="option-label"><input type="radio" name="q2" value="a"> 0.0 kPa</label>
+                        <label class="option-label"><input type="radio" name="q2" value="b"> Presión atmosférica (~101.3 kPa)</label>
+                        <label class="option-label"><input type="radio" name="q2" value="c"> 9.81 kPa</label>
+                    </div>
+                </div>
+
+                <div class="quiz-question">
+                    <p>3. ¿Qué término de la fórmula P = P<sub>atm</sub> + ρ·g·h representa la densidad del fluido?</p>
+                    <div class="options-list">
+                        <label class="option-label"><input type="radio" name="q3" value="a"> g</label>
+                        <label class="option-label"><input type="radio" name="q3" value="b"> h</label>
+                        <label class="option-label"><input type="radio" name="q3" value="c"> ρ (rho)</label>
+                    </div>
+                </div>
+
+                <div class="quiz-question">
+                    <p>4. Si usamos un líquido más denso que el agua a la misma profundidad, ¿qué pasa con la presión?</p>
+                    <div class="options-list">
+                        <label class="option-label"><input type="radio" name="q4" value="a"> La presión será mayor.</label>
+                        <label class="option-label"><input type="radio" name="q4" value="b"> La presión disminuirá.</label>
+                        <label class="option-label"><input type="radio" name="q4" value="c"> Permanecerá invariable.</label>
+                    </div>
+                </div>
+
+                <div class="quiz-question">
+                    <p>5. ¿Cuál es la unidad de medida en la que el panel reporta la presión total?</p>
+                    <div class="options-list">
+                        <label class="option-label"><input type="radio" name="q5" value="a"> Newtons (N)</label>
+                        <label class="option-label"><input type="radio" name="q5" value="b"> Kilopascales (kPa)</label>
+                        <label class="option-label"><input type="radio" name="q5" value="c"> Densidad relativa</label>
+                    </div>
+                </div>
+
+                <div class="quiz-footer">
+                    <button type="button" style="background:#3a3a50; border-radius:8px; padding:10px 16px; color:white; border:none; cursor:pointer;" onclick="closeQuiz()">Cerrar</button>
+                    <button type="button" style="background:#1CAAD9; border-radius:8px; padding:10px 16px; color:white; border:none; font-weight:bold; cursor:pointer;" onclick="evaluateQuiz()">Enviar Respuestas</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 2: TARJETA INDEPENDIENTE DE RESULTADOS -->
+    <div class="modal-overlay" id="resultModal" style="z-index: 9999999;">
+        <div class="result-card">
+            <div id="resultCardContent"></div>
+            <button onclick="closeResultModal()" style="margin-top:20px; background:#1CAAD9; color:white; border:none; padding:10px 24px; border-radius:8px; font-weight:bold; cursor:pointer;">Entendido</button>
+        </div>
+    </div>
+
+    <script>
+        window.ecoLabState = {
+            simulationName: "Presión e Hidrostática (Prisma)",
+            nivelAgua: 5.0,
+            profundidadSensor: 0.0,
+            presionHydroKPa: 0.0,
+            presionTotalKPa: 101.325,
+            status: "en_ejecucion"
+        };
+
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x222222);
+
+        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(12, 8, 15);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.target.set(0, 0, 0);
+
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+        scene.add(ambientLight);
+
+        const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        dirLight.position.set(10, 20, 10);
+        scene.add(dirLight);
+
+        const maxCapacity = 10;
+        const width = 5;
+        const depth = 5;
+        const bottomY = -maxCapacity / 2;
+
+        const tankGeo = new THREE.BoxGeometry(width, maxCapacity, depth);
+        const tankMat = new THREE.MeshPhongMaterial({
+            color: 0xffffff,
+            transparent: true,
+            opacity: 0.1,
+            side: THREE.DoubleSide
+        });
+        const tankMesh = new THREE.Mesh(tankGeo, tankMat);
+        scene.add(tankMesh);
+
+        const edgesGeo = new THREE.EdgesGeometry(tankGeo);
+        const edgesMat = new THREE.LineBasicMaterial({ color: 0x888888 });
+        const tankEdges = new THREE.LineSegments(edgesGeo, edgesMat);
+        scene.add(tankEdges);
+
+        const waterMat = new THREE.MeshPhongMaterial({
+            color: 0x0088ff,
+            transparent: true,
+            opacity: 0.5,
+            shininess: 90,
+            side: THREE.DoubleSide
+        });
+        const waterMesh = new THREE.Mesh(new THREE.BufferGeometry(), waterMat);
+        scene.add(waterMesh);
+
+        const sensorGeo = new THREE.SphereGeometry(0.4, 32, 32);
+        const sensorMat = new THREE.MeshStandardMaterial({
+            color: 0xff3333,
+            metalness: 0.5,
+            roughness: 0.2
+        });
+        const sensor = new THREE.Mesh(sensorGeo, sensorMat);
+        scene.add(sensor);
+
+        const arrowGeo = new THREE.ConeGeometry(0.25, 0.7, 16);
+        const arrowMat = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+        const arrow = new THREE.Mesh(arrowGeo, arrowMat);
+        arrow.rotation.z = -Math.PI / 2;
+        arrow.position.x = 0.6;
+        sensor.add(arrow);
+
+        const params = {
+            nivelAgua: 5.0,
+            profundidad: 0.0
+        };
+
+        const Patm = 101.325;
+        const rho = 1000;
+        const g = 9.81;
+
+        function updateSimulation() {
+            if (params.profundidad > params.nivelAgua) {
+                params.profundidad = params.nivelAgua;
+            }
+
+            if (params.nivelAgua > 0.01) {
+                waterMesh.visible = true;
+                waterMesh.geometry.dispose();
+                waterMesh.geometry = new THREE.BoxGeometry(
+                    width - 0.04,
+                    params.nivelAgua,
+                    depth - 0.04
+                );
+                waterMesh.position.y = bottomY + (params.nivelAgua / 2);
+            } else {
+                waterMesh.visible = false;
+            }
+
+            const surfaceY = bottomY + params.nivelAgua;
+            sensor.position.y = surfaceY - params.profundidad;
+
+            const hydrostaticPressure = (rho * g * params.profundidad) / 1000;
+            const totalPressure = Patm + hydrostaticPressure;
+
+            sensorMat.color.setHSL(
+                0.0 + (params.profundidad / maxCapacity) * 0.3,
+                1.0,
+                0.5
+            );
+
+            document.getElementById('water-level-val').innerText = `${params.nivelAgua.toFixed(1)} m`;
+            document.getElementById('depth-val').innerText = `${params.profundidad.toFixed(1)} m`;
+            document.getElementById('pressure-val').innerText = `${totalPressure.toFixed(2)} kPa`;
+
+            window.ecoLabState.nivelAgua = Number(params.nivelAgua.toFixed(2));
+            window.ecoLabState.profundidadSensor = Number(params.profundidad.toFixed(2));
+            window.ecoLabState.presionHydroKPa = Number(hydrostaticPressure.toFixed(2));
+            window.ecoLabState.presionTotalKPa = Number(totalPressure.toFixed(2));
+        }
+
+        const gui = new lil.GUI({ title: 'Controles de Simulación' });
+
+        const waterController = gui.add(params, 'nivelAgua', 0, maxCapacity, 0.1)
+            .name('Nivel de Agua (m)')
+            .onChange(() => {
+                depthController.max(params.nivelAgua);
+                updateSimulation();
+            });
+
+        const depthController = gui.add(params, 'profundidad', 0, params.nivelAgua, 0.1)
+            .name('Prof. Sensor (m)')
+            .listen()
+            .onChange(updateSimulation);
+
+        updateSimulation();
+
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        /* ======================================================== */
+        /* FUNCIONES DE MODAL Y EVALUACIÓN CON REINICIO DE FORMULARIO */
+        /* ======================================================== */
+        function openQuiz() {
+            document.getElementById('quizForm').reset();
+            document.getElementById('quizModal').classList.add('active');
+        }
+
+        function closeQuiz() {
+            document.getElementById('quizModal').classList.remove('active');
+        }
+
+        function closeResultModal() {
+            document.getElementById('resultModal').classList.remove('active');
+        }
+
+        function evaluateQuiz() {
+            const correctAnswers = { q1: 'b', q2: 'b', q3: 'c', q4: 'a', q5: 'b' };
+            const explanations = {
+                q1: "La presión hidrostática (ρ·g·h) aumenta linealmente con la profundidad.",
+                q2: "En h=0 la presión hidrostática es 0, registrando solo la atmosférica (~101.3 kPa).",
+                q3: "El símbolo ρ (rho) representa la densidad del líquido.",
+                q4: "A mayor densidad, mayor presión ejercida por el fluido.",
+                q5: "En esta simulación la presión se reporta en kilopascales (kPa)."
+            };
+
+            let score = 0;
+            const form = document.getElementById('quizForm');
+            let feedbackHTML = '';
+
+            for (let i = 1; i <= 5; i++) {
+                const selectedOption = form[`q${i}`].value;
+                const isCorrect = selectedOption === correctAnswers[`q${i}`];
+
+                if (isCorrect) score++;
+
+                feedbackHTML += `
+                    <div class="feedback-item ${isCorrect ? 'correct' : ''}">
+                        <strong>P${i}:</strong> ${isCorrect ? 'Correcta' : 'Incorrecta'}<br>
+                        <em>${explanations[`q${i}`]}</em>
+                    </div>
+                `;
+            }
+
+            let titleMessage = '';
+            let color = '';
+
+            if (score < 3) {
+                titleMessage = '⚠️ Tienes que mejorar';
+                color = '#ff4444';
+            } else if (score < 5) {
+                titleMessage = '👍 ¡Buen trabajo!';
+                color = '#00cfff';
+            } else {
+                titleMessage = '🌟 ¡Excelente dominio!';
+                color = '#00ffcc';
+            }
+
+            const cardContent = document.getElementById('resultCardContent');
+            cardContent.innerHTML = `
+                <h3 style="margin:0 0 10px 0; font-size:22px; color:${color};">${titleMessage}</h3>
+                <p style="font-size:16px; margin:0 0 15px 0;">Obtuviste <strong>${score} de 5</strong> aciertos (${(score/5)*100}%).</p>
+                <div style="max-height: 220px; overflow-y: auto;">${feedbackHTML}</div>
+            `;
+
+            form.reset();
+            closeQuiz();
+            document.getElementById('resultModal').classList.add('active');
+        }
+    </script>
+
+</body>
+<script src="asistente.js"></script>
+</html>

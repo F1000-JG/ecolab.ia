@@ -1,0 +1,1824 @@
+[
+  {
+    "grado": 7,
+    "nombre": "Generador Hidroeléctrico",
+    "area": "fisica",
+    "ruta": "generador.html",
+    "preguntas": [
+      {
+        "numero": 1,
+        "enunciado": "¿Cuál es la principal fuente de energía utilizada por el generador hidroeléctrico?",
+        "opciones": [
+          "Electricidad",
+          "Energía hidráulica (Agua)",
+          "Gas",
+          "Carbón"
+        ],
+        "correcta": 1
+      },
+      {
+        "numero": 2,
+        "enunciado": "¿Qué función cumple la hélice en el sistema?",
+        "opciones": [
+          "Transformar el flujo de agua en movimiento rotatorio",
+          "Filtrar el agua",
+          "Almacenar la energía eléctrica",
+          "Encender el LED directamente"
+        ],
+        "correcta": 0
+      },
+      {
+        "numero": 3,
+        "enunciado": "¿Qué dispositivo convierte la energía mecánica en energía eléctrica?",
+        "opciones": [
+          "El conducto",
+          "La botella",
+          "El motor de 12 V",
+          "La base de cartón"
+        ],
+        "correcta": 2
+      }
+    ],
+    "descripcion": "Explora cómo la energía cinética del agua se convierte en energía eléctrica mediante un generador hidroeléctrico. Aprende sobre el flujo de agua, la rotación de la turbina y la generación de electricidad."
+  },
+  {
+    "grado": 7,
+    "nombre": "Horno solar",
+    "area": "fisica",
+    "ruta": "horno.html",
+    "preguntas": [
+      {
+        "numero": 1,
+        "enunciado": "¿Cuál es la principal fuente de energía del horno solar?",
+        "opciones": [
+          "El agua",
+          "El Sol",
+          "El cartón",
+          "El viento"
+        ],
+        "correcta": 1
+      },
+      {
+        "numero": 2,
+        "enunciado": "¿Para qué se utiliza el papel aluminio dentro del horno?",
+        "opciones": [
+          "Para absorber agua",
+          "Para enfriar el alimento",
+          "Para reflejar la radiación solar",
+          "Para decorar la caja"
+        ],
+        "correcta": 2
+      },
+      {
+        "numero": 3,
+        "enunciado": "¿Qué función cumple el plástico transparente?",
+        "opciones": [
+          "Permite entrar la luz y ayuda a conservar el calor",
+          "Bloquea toda la luz",
+          "Enfría el horno",
+          "Produce electricidad"
+        ],
+        "correcta": 0
+      },
+      {
+        "numero": 4,
+        "enunciado": "¿Qué sucede con la temperatura dentro del horno cuando recibe radiación solar?",
+        "opciones": [
+          "Disminuye",
+          "Aumenta",
+          "Permanece siempre igual",
+          "Se convierte en agua"
+        ],
+        "correcta": 1
+      },
+      {
+        "numero": 5,
+        "enunciado": "¿Qué condición permite que el horno solar funcione mejor?",
+        "opciones": [
+          "Un día soleado",
+          "Una noche oscura",
+          "Una tormenta fuerte",
+          "Un lugar sin luz"
+        ],
+        "correcta": 0
+      }
+    ],
+    "descripcion": "Comprende como un horno solar utiliza la energía del sol para cocinar alimentos. Observa cómo los rayos solares se concentran en un punto y cómo se genera calor para cocinar de manera eficiente y sostenible."
+  },
+  {
+    "grado": 7,
+    "nombre": "Efecto invernadero",
+    "area": "fisica",
+    "ruta": "efecto.html",
+    "preguntas": [
+      {
+        "numero": 1,
+        "enunciado": "¿Qué contiene el recipiente A?",
+        "opciones": [
+          "Agua",
+          "Suelo",
+          "Bebida carbonatada",
+          "Nada"
+        ],
+        "correcta": 0
+      },
+      {
+        "numero": 2,
+        "enunciado": "¿Qué contiene el recipiente B?",
+        "opciones": [
+          "Agua",
+          "Bebida carbonatada",
+          "Suelo",
+          "Solamente aire"
+        ],
+        "correcta": 1
+      },
+      {
+        "numero": 3,
+        "enunciado": "¿Por qué se utiliza un recipiente de control?",
+        "opciones": [
+          "Para comparar los cambios de temperatura",
+          "Para aumentar la temperatura",
+          "Para contener agua",
+          "Para producir luz"
+        ],
+        "correcta": 0
+      },
+      {
+        "numero": 4,
+        "enunciado": "¿Qué instrumento permite medir la temperatura?",
+        "opciones": [
+          "El marcador",
+          "La cinta adhesiva",
+          "El termómetro",
+          "La tapadera"
+        ],
+        "correcta": 2
+      },
+      {
+        "numero": 5,
+        "enunciado": "¿Qué se puede observar al exponer los recipientes al Sol?",
+        "opciones": [
+          "Un aumento de temperatura",
+          "Una disminución inmediata de temperatura",
+          "Que los termómetros dejan de funcionar",
+          "Que desaparece el Sol"
+        ],
+        "correcta": 0
+      }
+    ],
+    "descripcion": "Observa cómo los gases de efecto invernadero atrapan el calor en la atmósfera y cómo esto afecta la temperatura global. Aprende sobre el impacto del cambio climático y la importancia de reducir las emisiones de gases de efecto invernadero."
+  },
+  {
+    "grado": 7,
+    "nombre": "Corrosión de Hierro",
+    "area": "quimica",
+    "ruta": "corrosion.html",
+    "preguntas": [
+      {
+        "numero": 1,
+        "enunciado": "¿Qué proceso ocurre en el hierro durante este experimento?",
+        "opciones": [
+          "Evaporación",
+          "Corrosión",
+          "Fusión",
+          "Congelación"
+        ],
+        "correcta": 1
+      },
+      {
+        "numero": 2,
+        "enunciado": "¿Qué se agrega al agua para preparar la solución?",
+        "opciones": [
+          "Azúcar",
+          "Arena",
+          "Sal",
+          "Aceite"
+        ],
+        "correcta": 2
+      },
+      {
+        "numero": 3,
+        "enunciado": "¿Qué fuente de energía se utiliza en el experimento?",
+        "opciones": [
+          "Una pila de 9 V",
+          "Una vela",
+          "El Sol",
+          "Un motor"
+        ],
+        "correcta": 0
+      },
+      {
+        "numero": 4,
+        "enunciado": "¿Qué aspecto puede presentar el hierro después de corroerse?",
+        "opciones": [
+          "Una capa transparente",
+          "Una capa rojiza o marrón",
+          "Una capa azul brillante",
+          "Se convierte en plástico"
+        ],
+        "correcta": 1
+      },
+      {
+        "numero": 5,
+        "enunciado": "¿Qué factores favorecen la corrosión del hierro?",
+        "opciones": [
+          "Agua, oxígeno y una solución conductora",
+          "Únicamente la luz",
+          "Solo el aire seco",
+          "Únicamente el calor"
+        ],
+        "correcta": 0
+      }
+    ],
+    "descripcion": "Observa cómo el hierro se oxida y se corroe cuando se expone al agua y al oxígeno. Aprende sobre los procesos químicos que ocurren durante la corrosión y cómo se pueden prevenir mediante recubrimientos protectores y aleaciones resistentes a la corrosión."
+  },
+  {
+    "grado": 7,
+    "nombre": "Obtención de Óxidos",
+    "area": "quimica",
+    "ruta": "oxidos.html",
+    "preguntas": [
+      {
+        "numero": 1,
+        "enunciado": "¿Qué sustancia se obtiene al quemar la cinta de magnesio?",
+        "opciones": [
+          "Óxido de magnesio (MgO)",
+          "Ácido clorhídrico",
+          "Cloruro de magnesio",
+          "Ácido carbónico"
+        ],
+        "correcta": 0
+      },
+      {
+        "numero": 2,
+        "enunciado": "¿Qué tipo de óxido se obtiene al quemar el magnesio?",
+        "opciones": [
+          "Óxido metálico",
+          "Óxido no metálico",
+          "Ácido",
+          "Sal"
+        ],
+        "correcta": 0
+      },
+      {
+        "numero": 3,
+        "enunciado": "¿Qué producto se forma cuando el MgO reacciona con agua?",
+        "opciones": [
+          "CO₂",
+          "Mg(OH)₂",
+          "O₂",
+          "HCl"
+        ],
+        "correcta": 1
+      },
+      {
+        "numero": 4,
+        "enunciado": "¿Qué ocurre cuando se introduce CO₂ en el agua con indicador?",
+        "opciones": [
+          "Se forma ácido carbónico y cambia el indicador",
+          "Se forma oxígeno",
+          "El agua desaparece",
+          "Se forma MgO"
+        ],
+        "correcta": 0
+      },
+      {
+        "numero": 5,
+        "enunciado": "¿Cuál es la reacción que representa la formación de ácido carbónico?",
+        "opciones": [
+          "CO₂ + H₂O → H₂CO₃",
+          "Mg + O₂ → MgO",
+          "MgO + H₂O → Mg(OH)₂",
+          "H₂ + O₂ → H₂O"
+        ],
+        "correcta": 0
+      }
+    ],
+    "descripcion": "Observa cómo se forman los óxidos en diferentes condiciones y cómo se pueden identificar. Aprende sobre las propiedades de los óxidos y su importancia en la química y la industria."
+  },
+  {
+    "grado": 7,
+    "nombre": "Síntesis de Sales Binarias",
+    "area": "quimica",
+    "ruta": "sintesis.html",
+    "preguntas": [
+      {
+        "numero": 1,
+        "enunciado": "¿Qué sustancia se agregó primero a los tubos de ensayo?",
+        "opciones": [
+          "Agua",
+          "Ácido clorhídrico (HCl)",
+          "Oxígeno",
+          "Cloruro de sodio"
+        ],
+        "correcta": 1
+      },
+      {
+        "numero": 2,
+        "enunciado": "¿Qué ocurre cuando el zinc reacciona con el HCl?",
+        "opciones": [
+          "Se forma ZnCl₂ y se libera H₂",
+          "No ocurre ninguna reacción",
+          "Se forma agua únicamente",
+          "El zinc desaparece sin producir sustancias"
+        ],
+        "correcta": 0
+      },
+      {
+        "numero": 3,
+        "enunciado": "¿Qué gas se libera durante la reacción?",
+        "opciones": [
+          "Oxígeno",
+          "Nitrógeno",
+          "Hidrógeno",
+          "Dióxido de carbono"
+        ],
+        "correcta": 2
+      },
+      {
+        "numero": 4,
+        "enunciado": "¿Qué tipo de reacción representa esta actividad?",
+        "opciones": [
+          "Combustión",
+          "Desplazamiento simple",
+          "Neutralización",
+          "Descomposición"
+        ],
+        "correcta": 1
+      },
+      {
+        "numero": 5,
+        "enunciado": "¿Cuál es uno de los productos de la reacción entre el zinc y el HCl?",
+        "opciones": [
+          "ZnCl₂",
+          "O₂",
+          "H₂O₂",
+          "NaCl"
+        ],
+        "correcta": 0
+      }
+    ],
+    "descripcion": "Observa como se forman las sales binarias a partir de la combinación de un metal y un no metal. Aprende sobre las propiedades de las sales binarias y su importancia en la química y la industria."
+  },
+  {
+    "grado": 7,
+    "nombre": "Extracción de ADN frutas",
+    "area": "biologia",
+    "ruta": "estraccio.html",
+    "preguntas": [
+      {
+        "numero": 1,
+        "enunciado": "¿Por qué se enfría el alcohol antes de utilizarlo?",
+        "opciones": [
+          "Para que cambie de color",
+          "Para favorecer la precipitación del ADN",
+          "Para destruir el ADN",
+          "Para calentar la muestra"
+        ],
+        "correcta": 1
+      },
+      {
+        "numero": 2,
+        "enunciado": "¿Qué función cumple principalmente el jabón líquido?",
+        "opciones": [
+          "Colorear el ADN",
+          "Romper las membranas celulares",
+          "Enfriar la fruta",
+          "Evaporar el agua"
+        ],
+        "correcta": 1
+      },
+      {
+        "numero": 3,
+        "enunciado": "¿Para qué se macera la fruta?",
+        "opciones": [
+          "Para romper las células y liberar su contenido",
+          "Para congelarla",
+          "Para cambiar su ADN",
+          "Para eliminar toda el agua"
+        ],
+        "correcta": 0
+      },
+      {
+        "numero": 4,
+        "enunciado": "¿Qué se observa cuando el ADN precipita?",
+        "opciones": [
+          "Una llama",
+          "Grumos o material blanquecino",
+          "Un gas azul",
+          "Una capa de aceite"
+        ],
+        "correcta": 1
+      },
+      {
+        "numero": 5,
+        "enunciado": "¿Qué función cumple el azul de metileno en la simulación?",
+        "opciones": [
+          "Ayuda a observar mejor los grumos de ADN",
+          "Destruye las células",
+          "Enfría el alcohol",
+          "Convierte la fruta en líquido"
+        ],
+        "correcta": 0
+      }
+    ],
+    "descripcion": "Observa cómo se extrae el ADN de diferentes frutas y cómo se pueden identificar sus características."
+  },
+  {
+    "grado": 7,
+    "nombre": "Red Ecosistema",
+    "area": "biologia",
+    "ruta": "red.html",
+    "preguntas": [
+      {
+        "numero": 1,
+        "enunciado": "¿Qué representa la lana en el experimento?",
+        "opciones": [
+          "El clima",
+          "Las relaciones entre los componentes",
+          "Únicamente a los animales",
+          "La temperatura"
+        ],
+        "correcta": 1
+      },
+      {
+        "numero": 2,
+        "enunciado": "¿Cuál de los siguientes es un elemento no vivo?",
+        "opciones": [
+          "Colibrí",
+          "Árbol",
+          "Sol",
+          "Flor"
+        ],
+        "correcta": 2
+      },
+      {
+        "numero": 3,
+        "enunciado": "¿Por qué el árbol está relacionado con el suelo?",
+        "opciones": [
+          "Obtiene nutrientes y soporte",
+          "El suelo puede volar",
+          "El árbol crea el suelo",
+          "No tienen relación"
+        ],
+        "correcta": 0
+      },
+      {
+        "numero": 4,
+        "enunciado": "¿Qué relación existe entre la flor y el colibrí?",
+        "opciones": [
+          "El colibrí obtiene alimento y ayuda a polinizar",
+          "No existe relación",
+          "La flor persigue al colibrí",
+          "El colibrí produce el Sol"
+        ],
+        "correcta": 0
+      },
+      {
+        "numero": 5,
+        "enunciado": "¿Qué demuestra la red de interacciones?",
+        "opciones": [
+          "Que todos viven aislados",
+          "Que los componentes del ecosistema se relacionan",
+          "Que solo importan los animales",
+          "Que el suelo no es importante"
+        ],
+        "correcta": 1
+      }
+    ],
+    "descripcion": "Observa cómo los diferentes organismos de un ecosistema interactúan entre sí y cómo se relacionan con su entorno. Aprende sobre la importancia de la biodiversidad y cómo los cambios en el ecosistema pueden afectar a todas las especies que lo habitan."
+  },
+  {
+    "grado": 7,
+    "nombre": "Replicación de ADN",
+    "area": "biologia",
+    "ruta": "replicacion.html",
+    "preguntas": [
+      {
+        "numero": 1,
+        "enunciado": "¿Qué base nitrogenada se une de forma complementaria con la Adenina (A)?",
+        "opciones": [
+          "Citosina (C)",
+          "Timina (T)",
+          "Guanina (G)",
+          "Uracilo (U)"
+        ],
+        "correcta": 1
+      },
+      {
+        "numero": 2,
+        "enunciado": "¿Qué enzima se encarga de sintetizar las nuevas cadenas de ADN incorporando los nucleótidos?",
+        "opciones": [
+          "Ligasa",
+          "Helicasa",
+          "ADN Polimerasa",
+          "ARN Primasa"
+        ],
+        "correcta": 2
+      },
+      {
+        "numero": 3,
+        "enunciado": "¿Cuál es la función principal de la enzima Ligasa en el proceso?",
+        "opciones": [
+          "Separar las dos cadenas de ADN",
+          "Unir los fragmentos de la nueva cadena de ADN",
+          "Marcar el sitio de inicio con un cebador",
+          "Leer la secuencia original"
+        ],
+        "correcta": 1
+      },
+      {
+        "numero": 4,
+        "enunciado": "¿Qué función cumple el cebador en la replicación?",
+        "opciones": [
+          "Indicar el punto de inicio para la construcción de la nueva cadena",
+          "Unir las bases nitrogenadas mediante puentes de hidrógeno",
+          "Destruir las hebras defectuosas",
+          "Cerrar la horquilla de replicación"
+        ],
+        "correcta": 0
+      },
+      {
+        "numero": 5,
+        "enunciado": "Al finalizar la replicación, ¿cómo se componen las dos nuevas moléculas resultantes?",
+        "opciones": [
+          "Dos hebras totalmente nuevas cada una",
+          "Una hebra original y una hebra nueva en cada molécula",
+          "Una molécula con hebras viejas y otra con hebras nuevas",
+          "Cuatro hebras individuales separadas"
+        ],
+        "correcta": 1
+      }
+    ],
+    "descripcion": "Observa cómo los diferentes tejidos del cuerpo humano se organizan y funcionan juntos para mantener la vida. Aprende sobre la estructura y función de los tejidos y su importancia en la salud y el bienestar."
+  },
+  {
+    "grado": 9,
+    "nombre": "Presión y Nivel del Agua",
+    "area": "fisica",
+    "ruta": "laboratorio1.html",
+    "preguntas": [
+      {
+        "numero": 1,
+        "enunciado": "¿Qué sucede con la presión hidrostática a medida que aumenta la profundidad del sensor?",
+        "opciones": [
+          "Disminuye de forma lineal.",
+          "Aumenta proporcionalmente a la profundidad.",
+          "Se mantiene constante en todo el prisma."
+        ],
+        "correcta": 1
+      },
+      {
+        "numero": 2,
+        "enunciado": "Si el sensor está en la superficie del agua (h = 0.0 m), ¿cuál es la presión registrada?",
+        "opciones": [
+          "0.0 kPa",
+          "Presión atmosférica (~101.3 kPa)",
+          "9.81 kPa"
+        ],
+        "correcta": 1
+      },
+      {
+        "numero": 3,
+        "enunciado": "¿Qué término de la fórmula P = Patm+ ρ·g·h representa la densidad del fluido?",
+        "opciones": [
+          "g",
+          "h",
+          "ρ (rho)"
+        ],
+        "correcta": 2
+      },
+      {
+        "numero": 4,
+        "enunciado": "Si usamos un líquido más denso que el agua a la misma profundidad, ¿qué pasa con la presión?",
+        "opciones": [
+          "La presión será mayor.",
+          "La presión disminuirá.",
+          "Permanecerá invariable."
+        ],
+        "correcta": 0
+      },
+      {
+        "numero": 5,
+        "enunciado": "¿Cuál es la unidad de medida en la que el panel reporta la presión total?",
+        "opciones": [
+          "Newtons (N)",
+          "Kilopascales (kPa)",
+          "Densidad relativa"
+        ],
+        "correcta": 1
+      }
+    ],
+    "descripcion": "Explora cómo cambia la presión del agua dependiendo de la profundidad y observa sus efectos mediante una simulación 3D."
+  },
+  {
+    "grado": 9,
+    "nombre": "Jeringas Hidráulicas",
+    "area": "fisica",
+    "ruta": "laboratorio2.html",
+    "preguntas": [
+      {
+        "numero": 1,
+        "enunciado": "¿Qué establece el Principio de Pascal en fluidos incompresibles?",
+        "opciones": [
+          "La presión se transmite íntegramente en todas direcciones.",
+          "La presión se pierde progresivamente con la distancia.",
+          "La presión aumenta solo en la superficie del líquido."
+        ],
+        "correcta": 0
+      },
+      {
+        "numero": 2,
+        "enunciado": "Si disminuimos el área del émbolo de entrada manteniendo la fuerza constante, ¿qué ocurre con la presión?",
+        "opciones": [
+          "Aumenta proporcionalmente (P = F / A).",
+          "Disminuye proporcionalmente.",
+          "Permanece exactamente igual."
+        ],
+        "correcta": 0
+      },
+      {
+        "numero": 3,
+        "enunciado": "¿Por qué se prefiere un fluido líquido sobre un gas en un sistema hidráulico?",
+        "opciones": [
+          "Porque el líquido es incompresible y transmite la fuerza eficientemente.",
+          "Porque los gases pesan demasiado dentro de las mangueras.",
+          "Porque el aire se congela bajo presión constante."
+        ],
+        "correcta": 0
+      },
+      {
+        "numero": 4,
+        "enunciado": "En una prensa hidráulica, si el área de la salida es el triple de la entrada, la fuerza de salida será:",
+        "opciones": [
+          "El triple de la fuerza aplicada.",
+          "Un tercio de la fuerza aplicada.",
+          "Exactamente igual a la fuerza inicial."
+        ],
+        "correcta": 0
+      },
+      {
+        "numero": 5,
+        "enunciado": "¿Cuál es la unidad de medida de la presión en el Sistema Internacional (SI)?",
+        "opciones": [
+          "Pascal (Pa) o N/m²",
+          "Joule (J)",
+          "Newton (N)"
+        ],
+        "correcta": 0
+      },
+      {
+        "numero": 6,
+        "enunciado": "¿Qué ocurre con el volumen de un líquido incompresible al aplicarle presión?",
+        "opciones": [
+          "Se mantiene constante.",
+          "Se reduce significativamente.",
+          "Aumenta proporcionalmente a la fuerza."
+        ],
+        "correcta": 0
+      },
+      {
+        "numero": 7,
+        "enunciado": "¿Cómo se define la fórmula matemática de la presión?",
+        "opciones": [
+          "P = Fuerza / Área",
+          "P = Fuerza × Área",
+          "P = Área / Fuerza"
+        ],
+        "correcta": 0
+      },
+      {
+        "numero": 8,
+        "enunciado": "¿Qué dispositivo de la vida real utiliza principalmente el Principio de Pascal?",
+        "opciones": [
+          "Frenos hidráulicos de un automóvil.",
+          "Un motor de combustión interna.",
+          "Un termómetro de mercurio."
+        ],
+        "correcta": 0
+      }
+    ],
+    "descripcion": "Comprende el Principio de Pascal y observa cómo la presión aplicada a un líquido puede transmitirse a través de un sistema hidráulico."
+  },
+  {
+    "grado": 9,
+    "nombre": "Cambios de Estado",
+    "area": "fisica",
+    "ruta": "laboratorio3.html",
+    "preguntas": [
+      {
+        "numero": 1,
+        "enunciado": "¿A qué temperatura se produce el punto de ebullición del agua a nivel del mar?",
+        "opciones": [
+          "0 °C",
+          "50 °C",
+          "100 °C",
+          "150 °C"
+        ],
+        "correcta": 2
+      },
+      {
+        "numero": 2,
+        "enunciado": "¿Qué cambio de estado ocurre cuando el agua pasa de Líquido a Sólido?",
+        "opciones": [
+          "Fusión",
+          "Solidificación",
+          "Evaporación",
+          "Sublimación"
+        ],
+        "correcta": 1
+      },
+      {
+        "numero": 3,
+        "enunciado": "Si la temperatura está en -15 °C, ¿en qué estado se encuentra el agua?",
+        "opciones": [
+          "Líquido",
+          "Gas",
+          "Plasma",
+          "Sólido"
+        ],
+        "correcta": 3
+      },
+      {
+        "numero": 4,
+        "enunciado": "¿Cómo se llama el cambio de Sólido a Líquido al aumentar el calor?",
+        "opciones": [
+          "Fusión",
+          "Condensación",
+          "Ebullición",
+          "Congelación"
+        ],
+        "correcta": 0
+      },
+      {
+        "numero": 5,
+        "enunciado": "¿Qué sucede con la energía cinética de las moléculas al aumentar la temperatura?",
+        "opciones": [
+          "Disminuye",
+          "Se mantiene igual",
+          "Aumenta",
+          "Desaparece"
+        ],
+        "correcta": 2
+      }
+    ],
+    "descripcion": "Observa cómo el agua cambia entre sólido, líquido y gas al modificar la temperatura cinético-molecular."
+  },
+  {
+    "grado": 9,
+    "nombre": "Genética y Herencia",
+    "area": "biologia",
+    "ruta": "laboratorio4.html",
+    "preguntas": [
+      {
+        "numero": 1,
+        "enunciado": "¿Qué representa un genotipo homocigoto dominante?",
+        "opciones": [
+          "Dos alelos dominantes iguales (AA)",
+          "Dos alelos recesivos iguales (aa)",
+          "Un alelo dominante y uno recesivo (Aa)"
+        ],
+        "correcta": 0
+      },
+      {
+        "numero": 2,
+        "enunciado": "Si cruzamos dos heterocigotos (Aa x Aa), ¿cuál es la probabilidad de obtener fenotipo recesivo?",
+        "opciones": [
+          "25%",
+          "50%",
+          "75%"
+        ],
+        "correcta": 0
+      },
+      {
+        "numero": 3,
+        "enunciado": "¿Qué es el fenotipo de un organismo?",
+        "opciones": [
+          "Las características físicas observables",
+          "El conjunto exacto de genes",
+          "La cantidad total de ADN cromosómico"
+        ],
+        "correcta": 0
+      },
+      {
+        "numero": 4,
+        "enunciado": "¿Cómo se conoce también a la Primera Ley de Mendel?",
+        "opciones": [
+          "Principio de la Uniformidad",
+          "Ley de Segregación Independiente",
+          "Herencia Ligada al Sexo"
+        ],
+        "correcta": 0
+      },
+      {
+        "numero": 5,
+        "enunciado": "¿Qué genotipo se requiere para expresar visualmente un rasgo recesivo?",
+        "opciones": [
+          "Homocigoto recesivo (aa)",
+          "Heterocigoto (Aa)",
+          "Homocigoto dominante (AA)"
+        ],
+        "correcta": 0
+      },
+      {
+        "numero": 6,
+        "enunciado": "¿Cuál es la proporción genotípica esperada del cruce Aa x Aa?",
+        "opciones": [
+          "1 AA : 2 Aa : 1 aa",
+          "3 AA : 1 aa",
+          "2 Aa : 2 aa"
+        ],
+        "correcta": 0
+      },
+      {
+        "numero": 7,
+        "enunciado": "¿Qué es un alelo?",
+        "opciones": [
+          "Una variante alternativa de un mismo gen",
+          "Una proteína celular",
+          "Un tipo de célula reproductora"
+        ],
+        "correcta": 0
+      },
+      {
+        "numero": 8,
+        "enunciado": "Si cruzamos AA x aa, ¿qué porcentaje de descendientes será heterocigoto (Aa)?",
+        "opciones": [
+          "100%",
+          "50%",
+          "25%"
+        ],
+        "correcta": 0
+      }
+    ],
+    "descripcion": "Explora cómo se transmiten las características genéticas realizando cruces y evaluando probabilidades de fenotipo."
+  },
+  {
+    "grado": 9,
+    "nombre": "Mitosis y División Celular",
+    "area": "biologia",
+    "ruta": "laboratorio5.html",
+    "preguntas": [
+      {
+        "numero": 1,
+        "enunciado": "¿Qué enzima es la encargada de romper los puentes de hidrógeno para separar las hebras de ADN?",
+        "opciones": [
+          "ADN Polimerasa",
+          "Helicasa",
+          "ARN Primasa",
+          "Ligasa"
+        ],
+        "correcta": 1
+      },
+      {
+        "numero": 2,
+        "enunciado": "Según la regla de complementariedad, ¿con qué base se aparea la Adenina (A) en el ADN?",
+        "opciones": [
+          "Guanina (G)",
+          "Citosina (C)",
+          "Timina (T)",
+          "Uracilo (U)"
+        ],
+        "correcta": 2
+      },
+      {
+        "numero": 3,
+        "enunciado": "¿Cuántos puentes de hidrógeno unen al par Citosina - Guanina (C-G)?",
+        "opciones": [
+          "1 puente",
+          "2 puentes",
+          "3 puentes",
+          "4 puentes"
+        ],
+        "correcta": 2
+      },
+      {
+        "numero": 4,
+        "enunciado": "¿Qué estructura constituye el esqueleto exterior de la molécula de ADN?",
+        "opciones": [
+          "Bases nitrogenadas y aminoácidos",
+          "Grupo fosfato y desoxirribosa",
+          "Proteínas histonas",
+          "Enlaces peptídicos"
+        ],
+        "correcta": 1
+      },
+      {
+        "numero": 5,
+        "enunciado": "¿Qué término describe el hecho de que las dos hebras del ADN corren en direcciones opuestas?",
+        "opciones": [
+          "Paralelas",
+          "Antiparalelas",
+          "Semiconservativas",
+          "Simétricas"
+        ],
+        "correcta": 1
+      },
+      {
+        "numero": 6,
+        "enunciado": "¿Qué tipo de enlace une a las bases nitrogenadas entre sí en el centro de la hélice?",
+        "opciones": [
+          "Enlaces covalentes",
+          "Puentes de hidrógeno",
+          "Enlaces iónicos",
+          "Puentes disulfuro"
+        ],
+        "correcta": 1
+      },
+      {
+        "numero": 7,
+        "enunciado": "En el modelo 3D visualizado, ¿qué representan las esferas grises del esqueleto externo?",
+        "opciones": [
+          "Bases nitrogenadas",
+          "Nodos de Fosfato / Desoxirribosa",
+          "Enzimas Helicasas",
+          "Moléculas de agua"
+        ],
+        "correcta": 1
+      },
+      {
+        "numero": 8,
+        "enunciado": "Si la hebra de ADN se separa al 100% durante el experimento, ¿qué proceso biológico inicia?",
+        "opciones": [
+          "Traducción proteica",
+          "Replicación del ADN",
+          "Síntesis de lípidos",
+          "Glucólisis"
+        ],
+        "correcta": 1
+      },
+      {
+        "numero": 9,
+        "enunciado": "¿Con cuál base se aparea la Guanina (G)?",
+        "opciones": [
+          "Adenina (A)",
+          "Timina (T)",
+          "Citosina (C)",
+          "Uracilo (U)"
+        ],
+        "correcta": 2
+      },
+      {
+        "numero": 10,
+        "enunciado": "¿Cuál es la forma geométrica característica de la molécula de ADN?",
+        "opciones": [
+          "Hélice simple",
+          "Doble hélice",
+          "Anillo plano",
+          "Cadena lineal plegada"
+        ],
+        "correcta": 1
+      }
+    ],
+    "descripcion": "Visualiza de manera interactiva las fases del ciclo celular (profase, metafase, anafase y telofase) en 3D."
+  },
+  {
+    "grado": 9,
+    "nombre": "Fotosíntesis y Cloroplastos",
+    "area": "biologia",
+    "ruta": "laboratorio6.html",
+    "preguntas": [
+      {
+        "numero": 1,
+        "enunciado": "¿Qué es la ósmosis?",
+        "opciones": [
+          "El movimiento de proteínas dentro de la célula",
+          "El movimiento de agua a través de una membrana semipermeable",
+          "La producción de energía en la célula",
+          "La división celular"
+        ],
+        "correcta": 1
+      },
+      {
+        "numero": 2,
+        "enunciado": "¿Qué ocurre con un eritrocito en un medio hipotónico?",
+        "opciones": [
+          "Pierde agua y se encoge",
+          "No ocurre ningún cambio",
+          "Entra agua y puede producirse citólisis",
+          "Se convierte en una célula vegetal"
+        ],
+        "correcta": 2
+      },
+      {
+        "numero": 3,
+        "enunciado": "¿Qué característica permite a la célula vegetal resistir la entrada excesiva de agua?",
+        "opciones": [
+          "La pared celular",
+          "El núcleo",
+          "El citoplasma",
+          "Los ribosomas"
+        ],
+        "correcta": 0
+      },
+      {
+        "numero": 4,
+        "enunciado": "¿Qué ocurre cuando una célula se encuentra en un medio hipertónico?",
+        "opciones": [
+          "El agua tiende a salir de la célula",
+          "El agua siempre entra a la célula",
+          "La célula produce más oxígeno",
+          "La célula deja de tener membrana"
+        ],
+        "correcta": 0
+      },
+      {
+        "numero": 5,
+        "enunciado": "¿Qué fenómeno ocurre en una célula vegetal colocada en un medio hipertónico?",
+        "opciones": [
+          "Turgencia",
+          "Plasmólisis",
+          "Fotosíntesis",
+          "Citolisis"
+        ],
+        "correcta": 1
+      },
+      {
+        "numero": 6,
+        "enunciado": "¿Qué ocurre en un medio isotónico?",
+        "opciones": [
+          "Existe un equilibrio en el flujo neto de agua",
+          "La célula siempre explota",
+          "Toda el agua sale de la célula",
+          "La pared celular desaparece"
+        ],
+        "correcta": 0
+      },
+      {
+        "numero": 7,
+        "enunciado": "¿Qué estructura permite el paso de agua a través de la membrana celular?",
+        "opciones": [
+          "Acuaporinas",
+          "Ribosomas",
+          "Cromosomas",
+          "Mitocondrias"
+        ],
+        "correcta": 0
+      },
+      {
+        "numero": 8,
+        "enunciado": "¿Qué sucede con una célula animal en un medio hipertónico?",
+        "opciones": [
+          "Aumenta mucho su volumen",
+          "Pierde agua y puede presentar crenación",
+          "Desarrolla una pared celular",
+          "Se vuelve vegetal"
+        ],
+        "correcta": 1
+      },
+      {
+        "numero": 9,
+        "enunciado": "¿Qué significa que una célula vegetal esté turgente?",
+        "opciones": [
+          "Ha perdido toda su agua",
+          "Ha recibido agua y su presión interna aumenta",
+          "Su membrana desapareció",
+          "Está completamente deshidratada"
+        ],
+        "correcta": 1
+      },
+      {
+        "numero": 10,
+        "enunciado": "¿De qué depende principalmente el movimiento osmótico del agua?",
+        "opciones": [
+          "De la diferencia de concentración de solutos",
+          "Del color de la célula",
+          "Del tamaño del núcleo",
+          "De la cantidad de cromosomas"
+        ],
+        "correcta": 0
+      }
+    ],
+    "descripcion": "Comprende cómo las plantas transforman la luz solar, agua y CO2 en glucosa y oxígeno a nivel molecular."
+  },
+  {
+    "grado": 9,
+    "nombre": "Estructura del ADN y ARN",
+    "area": "biologia",
+    "ruta": "laboratorio7.html",
+    "preguntas": [
+      {
+        "numero": 1,
+        "enunciado": "¿Cuál es la función principal de la mitosis?",
+        "opciones": [
+          "Producir células hijas genéticamente similares",
+          "Producir únicamente células sexuales",
+          "Reducir a la mitad el número de cromosomas",
+          "Eliminar el ADN de la célula"
+        ],
+        "correcta": 0
+      },
+      {
+        "numero": 2,
+        "enunciado": "¿En qué fase los cromosomas se alinean en el centro de la célula?",
+        "opciones": [
+          "Profase",
+          "Metafase",
+          "Anafase",
+          "Telofase"
+        ],
+        "correcta": 1
+      },
+      {
+        "numero": 3,
+        "enunciado": "¿Qué ocurre durante la anafase?",
+        "opciones": [
+          "Se forma nuevamente la envoltura nuclear",
+          "Los cromosomas desaparecen",
+          "Las cromátidas hermanas se separan",
+          "El ADN comienza a replicarse"
+        ],
+        "correcta": 2
+      },
+      {
+        "numero": 4,
+        "enunciado": "¿Qué sucede principalmente durante la profase?",
+        "opciones": [
+          "Los cromosomas se condensan y se forma el huso mitótico",
+          "Las células hijas se separan completamente",
+          "Los cromosomas se alinean en el ecuador",
+          "Las cromátidas se dirigen a los polos"
+        ],
+        "correcta": 0
+      },
+      {
+        "numero": 5,
+        "enunciado": "¿Qué estructura organiza los microtúbulos del huso mitótico?",
+        "opciones": [
+          "Los ribosomas",
+          "Los centrosomas",
+          "Las vacuolas",
+          "Los lisosomas"
+        ],
+        "correcta": 1
+      },
+      {
+        "numero": 6,
+        "enunciado": "¿Qué ocurre durante la telofase?",
+        "opciones": [
+          "Los cromosomas se alinean en el centro",
+          "Las cromátidas comienzan a separarse",
+          "Se forman nuevamente los núcleos",
+          "Se duplica el ADN"
+        ],
+        "correcta": 2
+      },
+      {
+        "numero": 7,
+        "enunciado": "¿Qué proceso divide el citoplasma para formar las células hijas?",
+        "opciones": [
+          "Replicación",
+          "Citocinesis",
+          "Transcripción",
+          "Mutación"
+        ],
+        "correcta": 1
+      },
+      {
+        "numero": 8,
+        "enunciado": "¿Qué ocurre con las cromátidas hermanas durante la mitosis?",
+        "opciones": [
+          "Se separan para distribuirse entre las células hijas",
+          "Se destruyen antes de la división",
+          "Se convierten en proteínas",
+          "Permanecen siempre en la misma célula"
+        ],
+        "correcta": 0
+      },
+      {
+        "numero": 9,
+        "enunciado": "¿Cuál es la función del huso mitótico?",
+        "opciones": [
+          "Producir energía",
+          "Transportar nutrientes",
+          "Ayudar a mover y separar los cromosomas",
+          "Crear nuevas proteínas"
+        ],
+        "correcta": 2
+      },
+      {
+        "numero": 10,
+        "enunciado": "¿Cuál es el resultado final de la mitosis?",
+        "opciones": [
+          "Dos células hijas con información genética equivalente",
+          "Cuatro células sexuales",
+          "Una sola célula sin núcleo",
+          "Dos células con la mitad de cromosomas"
+        ],
+        "correcta": 0
+      },
+      {
+        "numero": 11,
+        "enunciado": "¿Qué estructura contiene el material genético durante la mayor parte del ciclo celular?",
+        "opciones": [
+          "Núcleo",
+          "Membrana celular",
+          "Ribosoma",
+          "Centrosoma"
+        ],
+        "correcta": 0
+      },
+      {
+        "numero": 12,
+        "enunciado": "¿Por qué es importante la alineación de los cromosomas en metafase?",
+        "opciones": [
+          "Permite una distribución adecuada del material genético",
+          "Hace que desaparezca el ADN",
+          "Impide que se formen células hijas",
+          "Detiene permanentemente la división"
+        ],
+        "correcta": 0
+      }
+    ],
+    "descripcion": "Explora la estructura de doble hélice del ADN, los pares de bases nitrogenadas y la transcripción genómica."
+  },
+  {
+    "grado": 9,
+    "nombre": "Modelo Atómico de Bohr 3D",
+    "area": "quimica",
+    "ruta": "laboratorio8.html",
+    "preguntas": [
+      {
+        "numero": 1,
+        "enunciado": "¿Quién propuso el modelo atómico que utiliza niveles de energía cuantizados?",
+        "opciones": [
+          "Niels Bohr",
+          "Isaac Newton",
+          "Charles Darwin",
+          "Gregor Mendel"
+        ],
+        "correcta": 0
+      },
+      {
+        "numero": 2,
+        "enunciado": "¿Qué partícula se encuentra en los orbitales o niveles de energía del modelo de Bohr?",
+        "opciones": [
+          "Protón",
+          "Neutrón",
+          "Electrón",
+          "Núcleo"
+        ],
+        "correcta": 2
+      },
+      {
+        "numero": 3,
+        "enunciado": "¿Qué representa la letra 'n' en el modelo de Bohr?",
+        "opciones": [
+          "La cantidad de neutrones",
+          "El nivel de energía",
+          "La cantidad de protones",
+          "La masa atómica"
+        ],
+        "correcta": 1
+      },
+      {
+        "numero": 4,
+        "enunciado": "¿Dónde se encuentran los protones y neutrones?",
+        "opciones": [
+          "En las órbitas",
+          "En los niveles de energía",
+          "En el núcleo",
+          "Fuera del átomo"
+        ],
+        "correcta": 2
+      },
+      {
+        "numero": 5,
+        "enunciado": "¿Qué sucede cuando un electrón absorbe energía?",
+        "opciones": [
+          "Desaparece",
+          "Puede pasar a un nivel de energía superior",
+          "Se convierte en protón",
+          "Sale del núcleo"
+        ],
+        "correcta": 1
+      },
+      {
+        "numero": 6,
+        "enunciado": "¿Qué ocurre cuando un electrón regresa a un nivel de energía menor?",
+        "opciones": [
+          "Libera energía",
+          "Se convierte en neutrón",
+          "Aumenta su masa",
+          "Desaparece"
+        ],
+        "correcta": 0
+      },
+      {
+        "numero": 7,
+        "enunciado": "¿Cuál es el número atómico del hidrógeno?",
+        "opciones": [
+          "0",
+          "1",
+          "2",
+          "11"
+        ],
+        "correcta": 1
+      },
+      {
+        "numero": 8,
+        "enunciado": "¿Cuántos electrones tiene un átomo neutro de carbono?",
+        "opciones": [
+          "2",
+          "4",
+          "6",
+          "8"
+        ],
+        "correcta": 2
+      },
+      {
+        "numero": 9,
+        "enunciado": "¿Cuál es la distribución electrónica simplificada del sodio mostrada en la simulación?",
+        "opciones": [
+          "2, 8, 1",
+          "2, 7, 2",
+          "8, 2, 1",
+          "2, 9"
+        ],
+        "correcta": 0
+      },
+      {
+        "numero": 10,
+        "enunciado": "¿Cuál de estos elementos tiene dos niveles de energía en la simulación?",
+        "opciones": [
+          "Hidrógeno",
+          "Carbono",
+          "Ninguno",
+          "Solo sodio"
+        ],
+        "correcta": 1
+      },
+      {
+        "numero": 11,
+        "enunciado": "¿Qué representa el color cian en la simulación?",
+        "opciones": [
+          "Los electrones",
+          "Los protones",
+          "Los neutrones",
+          "El núcleo"
+        ],
+        "correcta": 0
+      },
+      {
+        "numero": 12,
+        "enunciado": "¿Qué representa el color rosado o magenta en el núcleo?",
+        "opciones": [
+          "Electrones",
+          "Neutrones",
+          "Protones",
+          "Niveles de energía"
+        ],
+        "correcta": 2
+      },
+      {
+        "numero": 13,
+        "enunciado": "¿Qué representa el color blanco dentro del núcleo?",
+        "opciones": [
+          "Protones",
+          "Neutrones",
+          "Electrones",
+          "Fotones"
+        ],
+        "correcta": 1
+      },
+      {
+        "numero": 14,
+        "enunciado": "¿Cuál de estos elementos tiene tres niveles de energía en la simulación?",
+        "opciones": [
+          "Hidrógeno",
+          "Carbono",
+          "Oxígeno",
+          "Sodio"
+        ],
+        "correcta": 3
+      },
+      {
+        "numero": 15,
+        "enunciado": "¿Cuál es una característica importante del modelo de Bohr?",
+        "opciones": [
+          "Los electrones pueden ocupar niveles de energía definidos",
+          "Los protones giran alrededor de los electrones",
+          "El núcleo está vacío",
+          "Los neutrones se encuentran en las órbitas"
+        ],
+        "correcta": 0
+      },
+      {
+        "numero": 16,
+        "enunciado": "¿Qué partícula determina el número atómico de un elemento?",
+        "opciones": [
+          "Electrones",
+          "Neutrones",
+          "Protones",
+          "Fotones"
+        ],
+        "correcta": 2
+      }
+    ],
+    "descripcion": "Explora la estructura atómica, órbitas cuantizadas de electrones y los niveles de energía de distintos elementos."
+  },
+  {
+    "grado": 9,
+    "nombre": "Reacciones y Enlaces",
+    "area": "quimica",
+    "ruta": "laboratorio9.html",
+    "preguntas": [
+      {
+        "numero": 1,
+        "enunciado": "¿Qué es la convección?",
+        "opciones": [
+          "Transferencia de calor mediante el movimiento de un fluido",
+          "Transferencia de calor únicamente por luz",
+          "Cambio de estado de un sólido",
+          "Movimiento de electrones en un metal"
+        ],
+        "correcta": 0
+      },
+      {
+        "numero": 2,
+        "enunciado": "¿Qué ocurre generalmente con la densidad de un fluido cuando aumenta su temperatura?",
+        "opciones": [
+          "Aumenta mucho",
+          "Disminuye",
+          "Permanece siempre igual",
+          "Desaparece"
+        ],
+        "correcta": 1
+      },
+      {
+        "numero": 3,
+        "enunciado": "¿Qué sucede con el fluido caliente dentro de la simulación?",
+        "opciones": [
+          "Desciende",
+          "Permanece inmóvil",
+          "Asciende",
+          "Se convierte en sólido"
+        ],
+        "correcta": 2
+      },
+      {
+        "numero": 4,
+        "enunciado": "¿Qué sucede con el fluido más frío?",
+        "opciones": [
+          "Desciende",
+          "Siempre asciende",
+          "Desaparece",
+          "Se convierte en gas"
+        ],
+        "correcta": 0
+      },
+      {
+        "numero": 5,
+        "enunciado": "¿Qué representa la flecha de color rosa/rojo?",
+        "opciones": [
+          "El movimiento descendente del fluido frío",
+          "El movimiento ascendente del fluido caliente",
+          "La velocidad de la cámara",
+          "La presión atmosférica"
+        ],
+        "correcta": 1
+      },
+      {
+        "numero": 6,
+        "enunciado": "¿Qué representan las flechas de color cian?",
+        "opciones": [
+          "El movimiento descendente del fluido más frío",
+          "El calor producido por la luz",
+          "La evaporación",
+          "La densidad máxima"
+        ],
+        "correcta": 0
+      },
+      {
+        "numero": 7,
+        "enunciado": "¿Qué ocurre al aumentar la potencia térmica?",
+        "opciones": [
+          "Disminuye el movimiento del fluido",
+          "Aumenta el calentamiento y el movimiento convectivo",
+          "El fluido deja de existir",
+          "La viscosidad siempre llega a cero"
+        ],
+        "correcta": 1
+      },
+      {
+        "numero": 8,
+        "enunciado": "¿Qué ocurre cuando la potencia térmica es 0 %?",
+        "opciones": [
+          "El régimen aparece como estático",
+          "El régimen siempre es turbulento",
+          "El fluido hierve",
+          "La temperatura llega a 100 °C"
+        ],
+        "correcta": 0
+      },
+      {
+        "numero": 9,
+        "enunciado": "¿Qué régimen muestra la simulación cuando la potencia es menor al 50 %, pero mayor que 0 %?",
+        "opciones": [
+          "Turbulento",
+          "Estático",
+          "Laminar",
+          "Congelado"
+        ],
+        "correcta": 2
+      },
+      {
+        "numero": 10,
+        "enunciado": "¿Qué régimen muestra la simulación cuando la potencia térmica es igual o mayor al 50 %?",
+        "opciones": [
+          "Laminar",
+          "Turbulento",
+          "Estático",
+          "Sin flujo"
+        ],
+        "correcta": 1
+      },
+      {
+        "numero": 11,
+        "enunciado": "¿Qué propiedad representa la resistencia de un fluido al movimiento o flujo?",
+        "opciones": [
+          "Temperatura",
+          "Densidad",
+          "Viscosidad",
+          "Luminosidad"
+        ],
+        "correcta": 2
+      },
+      {
+        "numero": 12,
+        "enunciado": "¿Cuál de estos fluidos tiene mayor viscosidad en la simulación?",
+        "opciones": [
+          "Agua",
+          "Aceite vegetal",
+          "Glicerina",
+          "Todos tienen la misma"
+        ],
+        "correcta": 2
+      },
+      {
+        "numero": 13,
+        "enunciado": "¿Cuál es la viscosidad mostrada para el agua?",
+        "opciones": [
+          "1200 cP",
+          "50.0 cP",
+          "1.0 cP",
+          "500 cP"
+        ],
+        "correcta": 2
+      },
+      {
+        "numero": 14,
+        "enunciado": "¿Qué relación representa ΔT → Δρ en la simulación?",
+        "opciones": [
+          "Relación entre temperatura y densidad",
+          "Relación entre luz y sonido",
+          "Relación entre presión y electricidad",
+          "Relación entre masa y color"
+        ],
+        "correcta": 0
+      },
+      {
+        "numero": 15,
+        "enunciado": "¿Qué genera principalmente las corrientes de convección?",
+        "opciones": [
+          "Diferencias de temperatura y densidad",
+          "La oscuridad del recipiente",
+          "El tamaño de la pantalla",
+          "La ausencia de partículas"
+        ],
+        "correcta": 0
+      },
+      {
+        "numero": 16,
+        "enunciado": "¿Cuál es el objetivo principal de este experimento?",
+        "opciones": [
+          "Observar cómo el calentamiento produce movimiento en el fluido",
+          "Medir la velocidad de la luz",
+          "Estudiar únicamente los sólidos",
+          "Eliminar la transferencia de calor"
+        ],
+        "correcta": 0
+      }
+    ],
+    "descripcion": "Explora cómo interactúan los átomos para formar moléculas, observa el intercambio electrónico y la liberación energética."
+  },
+  {
+    "grado": 9,
+    "nombre": "Tabla Periódica e Isótopos",
+    "area": "quimica",
+    "ruta": "laboratorio10.html",
+    "preguntas": [
+      {
+        "numero": 1,
+        "enunciado": "¿Qué es un enlace químico?",
+        "opciones": [
+          "Una interacción que mantiene unidos a los átomos",
+          "Un cambio de temperatura",
+          "Una corriente eléctrica",
+          "Una separación de moléculas"
+        ],
+        "correcta": 0
+      },
+      {
+        "numero": 2,
+        "enunciado": "¿Qué ocurre en un enlace iónico?",
+        "opciones": [
+          "Los átomos comparten electrones por igual",
+          "Se transfieren electrones entre átomos",
+          "Los protones cambian de átomo",
+          "Los neutrones desaparecen"
+        ],
+        "correcta": 1
+      },
+      {
+        "numero": 3,
+        "enunciado": "¿Qué tipo de enlace presenta el NaCl?",
+        "opciones": [
+          "Covalente apolar",
+          "Covalente polar",
+          "Iónico",
+          "Metálico"
+        ],
+        "correcta": 2
+      },
+      {
+        "numero": 4,
+        "enunciado": "¿Qué ocurre en un enlace covalente?",
+        "opciones": [
+          "Los átomos comparten electrones",
+          "Los átomos pierden todos sus protones",
+          "Se destruyen los electrones",
+          "Los neutrones se transfieren"
+        ],
+        "correcta": 0
+      },
+      {
+        "numero": 5,
+        "enunciado": "¿Qué característica tiene un enlace covalente polar?",
+        "opciones": [
+          "Los electrones se comparten de manera desigual",
+          "No existen electrones",
+          "Siempre se transfieren electrones",
+          "Los átomos tienen la misma carga"
+        ],
+        "correcta": 0
+      },
+      {
+        "numero": 6,
+        "enunciado": "¿Qué ocurre en un enlace covalente apolar?",
+        "opciones": [
+          "Los electrones se comparten de forma similar",
+          "Un átomo pierde todos sus electrones",
+          "Se forman únicamente iones",
+          "Los protones son compartidos"
+        ],
+        "correcta": 0
+      },
+      {
+        "numero": 7,
+        "enunciado": "¿Qué representa la diferencia de electronegatividad (ΔEN)?",
+        "opciones": [
+          "La diferencia de masa entre átomos",
+          "La diferencia en la capacidad de atraer electrones",
+          "La cantidad de protones",
+          "La temperatura de la molécula"
+        ],
+        "correcta": 1
+      },
+      {
+        "numero": 8,
+        "enunciado": "¿Cuál tiene una diferencia de electronegatividad de 0.0 en esta simulación?",
+        "opciones": [
+          "NaCl",
+          "H₂O",
+          "H₂",
+          "NH₃"
+        ],
+        "correcta": 2
+      },
+      {
+        "numero": 9,
+        "enunciado": "¿Cuál es la diferencia de electronegatividad mostrada para NaCl?",
+        "opciones": [
+          "0.0",
+          "0.9",
+          "1.4",
+          "2.1"
+        ],
+        "correcta": 3
+      },
+      {
+        "numero": 10,
+        "enunciado": "¿Cuál es la diferencia de electronegatividad mostrada para H₂O?",
+        "opciones": [
+          "1.4",
+          "2.1",
+          "0.0",
+          "0.9"
+        ],
+        "correcta": 0
+      },
+      {
+        "numero": 11,
+        "enunciado": "¿Qué sucede al disminuir la distancia entre los átomos en la simulación?",
+        "opciones": [
+          "Los átomos se alejan",
+          "Los átomos se aproximan",
+          "Los electrones desaparecen",
+          "La temperatura se vuelve cero"
+        ],
+        "correcta": 1
+      },
+      {
+        "numero": 12,
+        "enunciado": "¿Qué efecto tiene aumentar la temperatura en la simulación?",
+        "opciones": [
+          "Aumenta la vibración de los átomos",
+          "Elimina los átomos",
+          "Detiene completamente los electrones",
+          "Convierte todos los enlaces en iónicos"
+        ],
+        "correcta": 0
+      },
+      {
+        "numero": 13,
+        "enunciado": "¿Qué partículas participan directamente en la formación de enlaces químicos?",
+        "opciones": [
+          "Electrones",
+          "Neutrones únicamente",
+          "Fotones únicamente",
+          "Núcleos sin electrones"
+        ],
+        "correcta": 0
+      },
+      {
+        "numero": 14,
+        "enunciado": "¿Qué representa la entalpía de reacción (ΔH)?",
+        "opciones": [
+          "Un cambio de energía asociado a una reacción",
+          "El número de electrones",
+          "La masa de un átomo",
+          "La cantidad de neutrones"
+        ],
+        "correcta": 0
+      },
+      {
+        "numero": 15,
+        "enunciado": "¿Cuál es el valor de ΔH mostrado para la formación de H₂?",
+        "opciones": [
+          "−91.8 kJ/mol",
+          "−285.8 kJ/mol",
+          "−411 kJ/mol",
+          "−436 kJ/mol"
+        ],
+        "correcta": 3
+      },
+      {
+        "numero": 16,
+        "enunciado": "¿Cuál es el objetivo principal de este laboratorio?",
+        "opciones": [
+          "Observar y comprender la formación de enlaces químicos",
+          "Medir la velocidad del sonido",
+          "Estudiar el movimiento de planetas",
+          "Calcular la gravedad terrestre"
+        ],
+        "correcta": 0
+      },
+      {
+        "numero": 17,
+        "enunciado": "¿Qué representa la fórmula Na + Cl → Na⁺ + Cl⁻?",
+        "opciones": [
+          "Una transferencia de electrones",
+          "Una evaporación",
+          "Una reacción nuclear",
+          "Una separación de protones"
+        ],
+        "correcta": 0
+      },
+      {
+        "numero": 18,
+        "enunciado": "¿Qué elemento tiene mayor electronegatividad en un enlace NaCl?",
+        "opciones": [
+          "Sodio",
+          "Cloro",
+          "Ambos tienen exactamente la misma",
+          "Ninguno"
+        ],
+        "correcta": 1
+      },
+      {
+        "numero": 19,
+        "enunciado": "¿Cuál de estas opciones corresponde a una reacción de síntesis mostrada?",
+        "opciones": [
+          "N₂ + 3H₂ → 2NH₃",
+          "Na + Cl → Na⁺ + Cl⁻",
+          "H + H → H₂",
+          "H₂O → H + O"
+        ],
+        "correcta": 0
+      }
+    ],
+    "descripcion": "Visualiza la estructura nuclear de distintos elementos, la distribución neutrónica y el comportamiento isotópico."
+  }
+]

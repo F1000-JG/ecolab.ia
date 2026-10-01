@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Preparación de soluciones | EcoLab IA</title>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lil-gui@0.18"></script>
+  <link rel="stylesheet" href="asistente.css">
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+      background: #07121c;
+    }
+
+    /* INFORMACIÓN */
+    #info-card {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      z-index: 10;
+      width: 335px;
+      padding: 18px 20px;
+      background: rgba(0, 0, 0, .84);
+      color: white;
+      border-radius: 14px;
+      box-shadow: 0 5px 25px rgba(0, 0, 0, .5);
+    }
+
+    #info-card h2 {
+      margin: 0 0 15px;
+      color: #19cfff;
+      font-size: 21px;
+    }
+
+    #info-card p {
+      margin: 8px 0;
+      font-size: 14px;
+    }
+
+    .dato {
+      color: #00ffcc;
+      font-weight: bold;
+    }
+
+    /* BARRA */
+    #concentration-title {
+      margin-top: 15px;
+      font-size: 13px;
+    }
+
+    #concentration {
+      width: 100%;
+      height: 10px;
+      margin-top: 6px;
+      background: #1d2b35;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    #concentration-bar {
+      width: 0%;
+      height: 100%;
+      background: #19cfff;
+      transition: width .4s;
+    }
+
+    /* EXPLICACIÓN */
+    .formula {
+      color: #aaa;
+      font-size: 11px;
+      line-height: 1.5;
+      margin-top: 15px;
+      padding-top: 12px;
+      border-top: 1px solid #444;
+    }
+
+    /* INSTRUCCIONES */
+    #instruction {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      padding: 12px 20px;
+      background: rgba(0, 0, 0, .78);
+      color: white;
+      border-radius: 10px;
+      font-size: 14px;
+      text-align: center;
+    }
+
+    #instruction span {
+      color: #19cfff;
+      font-weight: bold;
+    }
+
+    /* OVERLAY EVALUACIÓN */
+    #overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 90;
+      background: rgba(0, 0, 0, .72);
+    }
+
+    /* VENTANA EVALUACIÓN */
+    #evaluation {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 100;
+      width: 90%;
+      max-width: 650px;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 25px;
+      background: #101c25;
+      color: white;
+      border-radius: 16px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, .8);
+    }
+
+    #evaluation h2 {
+      margin-top: 0;
+      text-align: center;
+      color: #19cfff;
+    }
+
+    .evaluation-description {
+      text-align: center;
+      color: #aaa;
+      margin-bottom: 20px;
+    }
+
+    /* PREGUNTAS */
+    .question {
+      margin-bottom: 18px;
+      padding: 15px;
+      background: #172832;
+      border-radius: 10px;
+    }
+
+    .question p {
+      margin-top: 0;
+      font-weight: bold;
+      line-height: 1.4;
+    }
+
+    .question label {
+      display: block;
+      padding: 9px;
+      margin: 5px 0;
+      background: #223640;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: .2s;
+    }
+
+    .question label:hover {
+      background: #2c4653;
+    }
+
+    .question input {
+      margin-right: 8px;
+    }
+
+    /* BOTONES */
+    #submitEvaluation {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      background: #19cfff;
+      color: #02111d;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    #submitEvaluation:hover {
+      background: white;
+    }
+
+    #result {
+      display: none;
+      margin-top: 20px;
+      padding: 25px;
+      background: #172832;
+      border-radius: 12px;
+      text-align: center;
+      border: 1px solid #294653;
+    }
+
+    #result h3 {
+      margin: 0 0 12px;
+      color: #19cfff;
+    }
+
+    #score {
+      font-size: 40px;
+      color: #00ffcc;
+      font-weight: bold;
+      margin: 10px 0;
+    }
+
+    #percentage {
+      font-size: 18px;
+      margin-bottom: 12px;
+    }
+
+    #resultMessage {
+      color: #ccc;
+      line-height: 1.5;
+      margin-bottom: 18px;
+    }
+
+    #retry,
+    #closeEvaluation {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    #retry {
+      background: #19cfff;
+      color: #02111d;
+    }
+
+    #closeEvaluation {
+      background: #223640;
+      color: white;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- PANEL DE INFORMACIÓN -->
+  <div id="info-card">
+    <h2>🧪 Preparación de soluciones</h2>
+    <p>Soluto: <span id="solute" class="dato">Sal</span></p>
+    <p>Agua: <span id="water" class="dato">250 mL</span></p>
+    <p>Soluto agregado: <span id="amount" class="dato">10 g</span></p>
+    <p>Concentración: <span id="concentration-value" class="dato">4.00 %</span></p>
+    <p>Estado: <span id="status" class="dato">Soluto sin disolver</span></p>
+
+    <div id="concentration-title">Nivel de concentración</div>
+    <div id="concentration">
+      <div id="concentration-bar"></div>
+    </div>
+
+    <div class="formula">
+      <b>Concentración:</b><br>
+      C = (masa del soluto / volumen de la solución) × 100<br><br>
+      Más soluto → mayor concentración.<br>
+      Más agua → menor concentración.<br><br>
+      Durante la mezcla, las partículas se dispersan por el agua hasta formar una solución homogénea.
+    </div>
+  </div>
+
+  <!-- INSTRUCCIÓN -->
+  <div id="instruction">
+    Ajusta la <span>cantidad de agua</span> y <span>soluto</span>. Después presiona <span>🥄 Mezclar</span>.
+  </div>
+
+  <!-- OVERLAY -->
+  <div id="overlay"></div>
+
+  <!-- EVALUACIÓN -->
+  <div id="evaluation">
+    <h2>📝 Evaluación del experimento</h2>
+    <div class="evaluation-description">
+      Responde las siguientes preguntas sobre la preparación de soluciones.
+    </div>
+
+    <div class="question">
+      <p>1. ¿Qué es una solución homogénea?</p>
+      <label><input type="radio" name="q1" value="a"> Una mezcla donde el soluto no se mezcla.</label>
+      <label><input type="radio" name="q1" value="b"> Una mezcla uniforme donde el soluto está distribuido en el solvente.</label>
+      <label><input type="radio" name="q1" value="c"> Una mezcla formada únicamente por agua.</label>
+      <label><input type="radio" name="q1" value="d"> Una sustancia sólida sin disolver.</label>
+    </div>
+
+    <div class="question">
+      <p>2. ¿Qué ocurre cuando aumenta la cantidad de soluto?</p>
+      <label><input type="radio" name="q2" value="a"> La concentración disminuye.</label>
+      <label><input type="radio" name="q2" value="b"> El agua desaparece.</label>
+      <label><input type="radio" name="q2" value="c"> La concentración aumenta.</label>
+      <label><input type="radio" name="q2" value="d"> La solución deja de existir.</label>
+    </div>
+
+    <div class="question">
+      <p>3. ¿Qué función cumple el agua en este experimento?</p>
+      <label><input type="radio" name="q3" value="a"> Actúa como solvente.</label>
+      <label><input type="radio" name="q3" value="b"> Actúa como soluto.</label>
+      <label><input type="radio" name="q3" value="c"> Aumenta la masa del recipiente.</label>
+      <label><input type="radio" name="q3" value="d"> Produce partículas de sal.</label>
+    </div>
+
+    <div class="question">
+      <p>4. ¿Cuál es la fórmula utilizada para calcular la concentración?</p>
+      <label><input type="radio" name="q4" value="a"> C = agua × soluto</label>
+      <label><input type="radio" name="q4" value="b"> C = masa del soluto ÷ volumen de la solución × 100</label>
+      <label><input type="radio" name="q4" value="c"> C = volumen ÷ tiempo</label>
+      <label><input type="radio" name="q4" value="d"> C = masa × gravedad</label>
+    </div>
+
+    <div class="question">
+      <p>5. ¿Qué sucede durante la mezcla con una cuchara?</p>
+      <label><input type="radio" name="q5" value="a"> Las partículas se concentran únicamente en el fondo.</label>
+      <label><input type="radio" name="q5" value="b"> El recipiente desaparece.</label>
+      <label><input type="radio" name="q5" value="c"> El agua se convierte en sólido.</label>
+      <label><input type="radio" name="q5" value="d"> Las partículas se dispersan hasta formar una solución uniforme.</label>
+    </div>
+
+    <button id="submitEvaluation">✓ Finalizar evaluación</button>
+
+    <div id="result">
+      <h3>🏆 Evaluación completada</h3>
+      <div>Tu calificación final es:</div>
+      <div id="score">0/10</div>
+      <div id="percentage">0%</div>
+      <div id="resultMessage"></div>
+      <button id="retry">↻ Repetir evaluación</button>
+      <button id="closeEvaluation">Cerrar evaluación</button>
+    </div>
+  </div>
+
+  <script>
+    // ID DE CONEXIÓN DE EXPERIMENTO
+    const EXPERIMENT_ID = 4;
+
+    // CANAL DE COMUNICACIÓN EXTERNA
+    function notificarConexion(tipoEvento, payload = {}) {
+      const eventoData = {
+        experimentId: EXPERIMENT_ID,
+        type: tipoEvento,
+        timestamp: new Date().toISOString(),
+        data: payload
+      };
+
+      // Envío vía postMessage para comunicación con iframe o ventana contenedora
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage(eventoData, '*');
+      }
+
+      // Notificación en consola para depuración
+      console.log(`[EcoLab - Exp ID ${EXPERIMENT_ID}]`, eventoData);
+    }
+
+    // ESCENA
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x07121c);
+
+    // CÁMARA
+    const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, .1, 1000);
+    camera.position.set(7, 4.5, 9);
+
+    // RENDER
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    document.body.appendChild(renderer.domElement);
+
+    // CONTROLES
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.target.set(0, .5, 0);
+    controls.enableDamping = true;
+    controls.dampingFactor = .05;
+
+    // LUCES
+    scene.add(new THREE.AmbientLight(0xffffff, .75));
+    const luz = new THREE.DirectionalLight(0xffffff, 1);
+    luz.position.set(5, 9, 7);
+    scene.add(luz);
+
+    // PISO
+    const piso = new THREE.Mesh(
+      new THREE.PlaneGeometry(25, 25),
+      new THREE.MeshStandardMaterial({ color: 0x102431, roughness: .8 })
+    );
+    piso.rotation.x = -Math.PI / 2;
+    piso.position.y = -2.5;
+    scene.add(piso);
+
+    // PARÁMETROS
+    const params = {
+      soluto: "Sal",
+      agua: 250,
+      cantidad: 10,
+      mezclar: function () { iniciarMezcla(); },
+      pausar: function () { pausarMezcla(); },
+      reiniciar: function () { reiniciar(); },
+      evaluacion: function () { abrirEvaluacion(); }
+    };
+
+    // VASO
+    const vidrio = new THREE.MeshPhysicalMaterial({
+      color: 0x8edcff,
+      transparent: true,
+      opacity: .20,
+      roughness: .1,
+      metalness: 0,
+      transmission: .2
+    });
+    const vaso = new THREE.Mesh(new THREE.CylinderGeometry(1.55, 1.3, 3.2, 64, 1, true), vidrio);
+    scene.add(vaso);
+
+    // BORDE
+    const borde = new THREE.Mesh(
+      new THREE.TorusGeometry(1.55, .07, 16, 64),
+      new THREE.MeshStandardMaterial({ color: 0xbdefff, transparent: true, opacity: .8 })
+    );
+    borde.rotation.x = Math.PI / 2;
+    borde.position.y = 1.6;
+    scene.add(borde);
+
+    // AGUA
+    const aguaMaterial = new THREE.MeshPhysicalMaterial({
+      color: 0x29a9e8,
+      transparent: true,
+      opacity: .55,
+      roughness: .1
+    });
+    const agua = new THREE.Mesh(new THREE.CylinderGeometry(1.45, 1.25, 2.3, 64), aguaMaterial);
+    agua.position.y = -.35;
+    scene.add(agua);
+
+    // SOLUCIÓN
+    const solucionMaterial = new THREE.MeshPhysicalMaterial({
+      color: 0x5fc9ef,
+      transparent: true,
+      opacity: 0,
+      roughness: .15
+    });
+    const solucion = new THREE.Mesh(new THREE.CylinderGeometry(1.42, 1.22, 2.25, 64), solucionMaterial);
+    solucion.position.y = -.35;
+    scene.add(solucion);
+
+    // CUCHARA
+    const cuchara = new THREE.Group();
+    const mango = new THREE.Mesh(
+      new THREE.CylinderGeometry(.07, .07, 3.5, 20),
+      new THREE.MeshStandardMaterial({ color: 0xc5c5c5, metalness: .8, roughness: .2 })
+    );
+    mango.position.y = 1.5;
+    mango.rotation.z = -.15;
+    cuchara.add(mango);
+
+    const cabeza = new THREE.Mesh(
+      new THREE.SphereGeometry(.28, 24, 16),
+      new THREE.MeshStandardMaterial({ color: 0xd0d0d0, metalness: .8, roughness: .2 })
+    );
+    cabeza.scale.set(1.3, .4, .75);
+    cabeza.position.y = -.25;
+    cuchara.add(cabeza);
+
+    cuchara.position.set(.9, .3, 0);
+    cuchara.rotation.z = -.15;
+    scene.add(cuchara);
+
+    // PARTÍCULAS
+    let particulas = [];
+    const materialSal = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: .35 });
+    const materialAzucar = new THREE.MeshStandardMaterial({ color: 0xffe5a8, roughness: .4 });
+
+    function crearParticulas() {
+      particulas.forEach(p => scene.remove(p.mesh));
+      particulas = [];
+
+      const cantidad = Math.min(Math.round(params.cantidad * 2), 80);
+
+      for (let i = 0; i < cantidad; i++) {
+        const material = params.soluto === "Sal" ? materialSal : materialAzucar;
+        const radio = params.soluto === "Sal" ? .055 : .08;
+        const mesh = new THREE.Mesh(new THREE.SphereGeometry(radio, 10, 10), material);
+
+        mesh.position.set(
+          (Math.random() - .5) * 1.7,
+          -1.1 + Math.random() * .3,
+          (Math.random() - .5) * 1.7
+        );
+
+        scene.add(mesh);
+        particulas.push({
+          mesh,
+          fase: Math.random() * Math.PI * 2,
+          velocidad: .5 + Math.random() * .7
+        });
+      }
+    }
+
+    // VARIABLES
+    let mezclando = false;
+    let tiempo = 0;
+    let progreso = 0;
+    let evaluacionDisponible = false;
+
+    // CONCENTRACIÓN
+    function obtenerConcentracion() {
+      if (params.agua <= 0) return 0;
+      return (params.cantidad / params.agua) * 100;
+    }
+
+    // INFORMACIÓN
+    function actualizarInfo() {
+      const concentracion = obtenerConcentracion();
+      document.getElementById("solute").textContent = params.soluto;
+      document.getElementById("water").textContent = params.agua + " mL";
+      document.getElementById("amount").textContent = params.cantidad + " g";
+      document.getElementById("concentration-value").textContent = concentracion.toFixed(2) + " %";
+
+      actualizarBarra();
+
+      notificarConexion("PARAMS_CHANGED", {
+        soluto: params.soluto,
+        agua: params.agua,
+        cantidad: params.cantidad,
+        concentracion: concentracion.toFixed(2)
+      });
+    }
+
+    function actualizarBarra() {
+      const porcentaje = Math.min(obtenerConcentracion() * 5, 100);
+      document.getElementById("concentration-bar").style.width = porcentaje + "%";
+    }
+
+    // AGUA
+    function actualizarAgua() {
+      const altura = .8 + (params.agua / 250) * 1.5;
+      agua.scale.y = altura / 2.3;
+      solucion.scale.y = altura / 2.3;
+      agua.position.y = -1.55 + altura / 2;
+      solucion.position.y = -1.55 + altura / 2;
+
+      actualizarInfo();
+    }
+
+    // INICIAR
+    function iniciarMezcla() {
+      if (progreso >= 1) return;
+      mezclando = true;
+      document.getElementById("status").textContent = "🥄 Soluto disolviéndose";
+      bloquearControles();
+
+      notificarConexion("MIX_STARTED", {
+        soluto: params.soluto,
+        agua: params.agua,
+        cantidad: params.cantidad
+      });
+    }
+
+    // PAUSAR
+    function pausarMezcla() {
+      if (!mezclando) return;
+      mezclando = false;
+      document.getElementById("status").textContent = "⏸ Mezcla pausada";
+
+      notificarConexion("MIX_PAUSED", { progreso: progreso.toFixed(2) });
+    }
+
+    // REINICIAR
+    function reiniciar() {
+      mezclando = false;
+      progreso = 0;
+      tiempo = 0;
+
+      evaluacionDisponible = false;
+      evaluacionControl.disable();
+
+      params.soluto = "Sal";
+      params.agua = 250;
+      params.cantidad = 10;
+
+      gui.controllersRecursive().forEach(c => c.updateDisplay());
+
+      crearParticulas();
+      actualizarAgua();
+
+      solucionMaterial.opacity = 0;
+      cuchara.position.set(.9, .3, 0);
+      cuchara.rotation.set(0, 0, -.15);
+
+      document.getElementById("status").textContent = "Soluto sin disolver";
+      desbloquearControles();
+
+      notificarConexion("EXPERIMENT_RESET");
+    }
+
+    // BLOQUEAR
+    function bloquearControles() {
+      gui.controllersRecursive().forEach(c => {
+        if (c.property === "agua" || c.property === "cantidad" || c.property === "soluto") {
+          c.disable();
+        }
+      });
+    }
+
+    // DESBLOQUEAR
+    function desbloquearControles() {
+      gui.controllersRecursive().forEach(c => {
+        if (c.property === "agua" || c.property === "cantidad" || c.property === "soluto") {
+          c.enable();
+        }
+      });
+    }
+
+    // CUCHARA
+    function animarCuchara() {
+      if (!mezclando) return;
+      const radio = .65;
+      const velocidad = 2.8;
+
+      cuchara.position.x = Math.cos(tiempo * velocidad) * radio;
+      cuchara.position.z = Math.sin(tiempo * velocidad) * radio;
+      cuchara.position.y = .2 + Math.sin(tiempo * velocidad * 2) * .12;
+      cuchara.rotation.y = tiempo * velocidad;
+      cuchara.rotation.z = -.15 + Math.sin(tiempo * velocidad) * .15;
+    }
+
+    // PARTÍCULAS
+    function animarParticulas() {
+      particulas.forEach(p => {
+        if (progreso < 1) {
+          const objetivoX = Math.sin(p.fase) * .95;
+          const objetivoY = -.95 + Math.random() * 1.8;
+          const objetivoZ = Math.cos(p.fase) * .95;
+          const factor = progreso * .015;
+
+          p.mesh.position.x += (objetivoX - p.mesh.position.x) * factor;
+          p.mesh.position.y += (objetivoY - p.mesh.position.y) * factor;
+          p.mesh.position.z += (objetivoZ - p.mesh.position.z) * factor;
+
+          p.mesh.position.x += Math.sin(tiempo * p.velocidad + p.fase) * .004;
+          p.mesh.position.y += Math.cos(tiempo * p.velocidad + p.fase) * .004;
+        }
+      });
+    }
+
+    // FINALIZAR
+    function finalizarMezcla() {
+      mezclando = false;
+      progreso = 1;
+
+      particulas.forEach(p => { p.mesh.visible = false; });
+      solucionMaterial.opacity = .22;
+
+      document.getElementById("status").textContent = "✓ Solución homogénea";
+      desbloquearControles();
+
+      evaluacionDisponible = true;
+      evaluacionControl.enable();
+
+      notificarConexion("MIX_COMPLETED", {
+        soluto: params.soluto,
+        agua: params.agua,
+        cantidad: params.cantidad,
+        concentracion: obtenerConcentracion().toFixed(2)
+      });
+    }
+
+    // GUI
+    const gui = new lil.GUI({ title: "Control del experimento" });
+
+    gui.add(params, "soluto", ["Sal", "Azúcar"])
+      .name("Tipo de soluto")
+      .onChange(() => {
+        if (!mezclando) {
+          evaluacionDisponible = false;
+          evaluacionControl.disable();
+          crearParticulas();
+          actualizarInfo();
+        }
+      });
+
+    gui.add(params, "agua", 100, 500, 10)
+      .name("Agua (mL)")
+      .onChange(() => {
+        if (!mezclando) {
+          evaluacionDisponible = false;
+          evaluacionControl.disable();
+          actualizarAgua();
+        }
+      });
+
+    gui.add(params, "cantidad", 1, 30, 1)
+      .name("Soluto (g)")
+      .onChange(() => {
+        if (!mezclando) {
+          evaluacionDisponible = false;
+          evaluacionControl.disable();
+          crearParticulas();
+          actualizarInfo();
+        }
+      });
+
+    gui.add(params, "mezclar").name("🥄 Mezclar");
+    gui.add(params, "pausar").name("⏸ Pausar");
+    gui.add(params, "reiniciar").name("↻ Reiniciar");
+
+    const evaluacionControl = gui.add(params, "evaluacion").name("📝 Evaluación");
+    evaluacionControl.disable();
+
+    // ABRIR EVALUACIÓN
+    function abrirEvaluacion() {
+      if (!evaluacionDisponible) {
+        alert("Primero completa el experimento hasta obtener una solución homogénea.");
+        return;
+      }
+      document.getElementById("overlay").style.display = "block";
+      document.getElementById("evaluation").style.display = "block";
+
+      notificarConexion("EVALUATION_OPENED");
+    }
+
+    // INICIALIZAR
+    crearParticulas();
+    actualizarAgua();
+    actualizarInfo();
+
+    // NOTIFICAR INICIALIZACIÓN CONECTADA A ID 4
+    notificarConexion("EXPERIMENT_INITIALIZED", {
+      status: "ready",
+      initialParams: {
+        soluto: params.soluto,
+        agua: params.agua,
+        cantidad: params.cantidad
+      }
+    });
+
+    // ANIMACIÓN
+    let reloj = new THREE.Clock();
+
+    function animar() {
+      requestAnimationFrame(animar);
+      const delta = reloj.getDelta();
+
+      if (mezclando) {
+        tiempo += delta;
+        progreso += delta * .12;
+        if (progreso > 1) progreso = 1;
+
+        animarCuchara();
+        animarParticulas();
+
+        if (progreso >= 1) {
+          finalizarMezcla();
+        }
+      }
+
+      controls.update();
+      renderer.render(scene, camera);
+    }
+
+    animar();
+
+    // RESPUESTAS
+    const correctAnswers = {
+      q1: "b",
+      q2: "c",
+      q3: "a",
+      q4: "b",
+      q5: "d"
+    };
+
+    // FINALIZAR EVALUACIÓN
+    document.getElementById("submitEvaluation").addEventListener("click", function () {
+      let puntos = 0;
+      let respondidas = 0;
+
+      for (let pregunta in correctAnswers) {
+        const seleccion = document.querySelector('input[name="' + pregunta + '"]:checked');
+        if (seleccion) {
+          respondidas++;
+          if (seleccion.value === correctAnswers[pregunta]) {
+            puntos += 2;
+          }
+        }
+      }
+
+      if (respondidas < 5) {
+        alert("Debes responder las 5 preguntas antes de finalizar.");
+        return;
+      }
+
+      const porcentaje = puntos * 10;
+
+      document.getElementById("score").innerText = puntos + "/10";
+      document.getElementById("percentage").innerText = "Porcentaje: " + porcentaje + "%";
+
+      let mensaje = "";
+      if (puntos >= 9) {
+        mensaje = "🎉 ¡Excelente trabajo! Comprendiste muy bien la preparación de soluciones.";
+      } else if (puntos >= 7) {
+        mensaje = "👏 ¡Muy bien! Tienes un buen dominio del tema.";
+      } else if (puntos >= 5) {
+        mensaje = "👍 Buen intento. Te recomendamos repasar algunos conceptos.";
+      } else {
+        mensaje = "📚 Te recomendamos estudiar nuevamente la preparación de soluciones.";
+      }
+
+      document.getElementById("resultMessage").innerText = mensaje;
+      document.getElementById("result").style.display = "block";
+      document.getElementById("submitEvaluation").style.display = "none";
+
+      document.querySelectorAll("#evaluation input").forEach(input => input.disabled = true);
+
+      // NOTIFICAR RESULTADO
+      notificarConexion("EVALUATION_COMPLETED", {
+        score: puntos,
+        maxScore: 10,
+        percentage: porcentaje,
+        passed: puntos >= 7
+      });
+    });
+
+    // REPETIR EVALUACIÓN
+    document.getElementById("retry").addEventListener("click", function () {
+      document.querySelectorAll("#evaluation input").forEach(input => {
+        input.checked = false;
+        input.disabled = false;
+      });
+
+      document.getElementById("result").style.display = "none";
+      document.getElementById("submitEvaluation").style.display = "block";
+
+      notificarConexion("EVALUATION_RETRY");
+    });
+
+    // CERRAR EVALUACIÓN
+    document.getElementById("closeEvaluation").addEventListener("click", function () {
+      document.getElementById("evaluation").style.display = "none";
+      document.getElementById("overlay").style.display = "none";
+
+      notificarConexion("EVALUATION_CLOSED");
+    });
+
+    // RESPONSIVE
+    window.addEventListener("resize", () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    // ESCUCHAR COMANDOS EXTERNOS PARA LA ID 4
+    window.addEventListener("message", (event) => {
+      const { experimentId, action, payload } = event.data || {};
+
+      // Filtrar eventos destinados a este experimento
+      if (experimentId !== EXPERIMENT_ID) return;
+
+      switch (action) {
+        case "START_MIX":
+          iniciarMezcla();
+          break;
+        case "PAUSE_MIX":
+          pausarMezcla();
+          break;
+        case "RESET_EXPERIMENT":
+          reiniciar();
+          break;
+        case "SET_PARAMS":
+          if (payload) {
+            if (payload.soluto) params.soluto = payload.soluto;
+            if (payload.agua) params.agua = payload.agua;
+            if (payload.cantidad) params.cantidad = payload.cantidad;
+            gui.controllersRecursive().forEach(c => c.updateDisplay());
+            crearParticulas();
+            actualizarAgua();
+          }
+          break;
+      }
+    });
+  </script>
+  <script src="asistente.js"></script>
+</body>
+
+</html>

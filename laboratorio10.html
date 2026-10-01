@@ -1,0 +1,2288 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="asistente.css">
+    <title>Laboratorio 10: Reacciones Químicas y Enlaces 3D | EcoLab IA</title>
+
+    <!-- Three.js y OrbitControls -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-dark: #05050d;
+            --panel-bg: rgba(15, 12, 29, 0.85);
+            --panel-border: rgba(186, 85, 211, 0.3);
+            --accent-purple: #ba55d3;
+            --accent-cyan: #00f2fe;
+            --accent-green: #00f2ad;
+            --text-light: #f0f4f8;
+            --text-dim: #a0aec0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .navbar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            background: linear-gradient(
+                180deg,
+                rgba(5,5,13,0.9) 0%,
+                rgba(5,5,13,0) 100%
+            );
+            backdrop-filter: blur(5px);
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .btn-volver {
+            background: linear-gradient(
+                135deg,
+                #00f2fe 0%,
+                #4facfe 50%,
+                #00f2ad 100%
+            );
+            color: #051329;
+            font-weight: 800;
+            font-size: 13px;
+            padding: 8px 20px;
+            border-radius: 50px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 242, 254, 0.3);
+        }
+
+        .btn-volver:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 242, 254, 0.5);
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: 900;
+            letter-spacing: 1px;
+            color: #fff;
+        }
+
+        .logo span {
+            color: var(--accent-purple);
+            text-shadow: 0 0 12px var(--accent-purple);
+        }
+
+        .lab-badge {
+            background: rgba(186, 85, 211, 0.15);
+            border: 1px solid var(--accent-purple);
+            color: var(--accent-purple);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        #webgl-container {
+            width: 100vw;
+            height: 100vh;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+
+        .gui-panel {
+            position: absolute;
+            z-index: 10;
+            background: var(--panel-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--panel-border);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+        }
+
+        .panel-controles {
+            top: 90px;
+            left: 25px;
+            width: 320px;
+        }
+
+        .panel-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 8px;
+        }
+
+        .control-group {
+            margin-bottom: 16px;
+        }
+
+        .control-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-dim);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+
+        .select-custom,
+        .slider-custom {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #fff;
+            padding: 10px;
+            border-radius: 8px;
+            outline: none;
+        }
+
+        .select-custom option {
+            background: #0f0c1d;
+            color: #fff;
+        }
+
+        .btn-action {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(
+                135deg,
+                var(--accent-purple) 0%,
+                #8a2be2 100%
+            );
+            color: #fff;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .btn-action:hover {
+            filter: brightness(1.15);
+            transform: translateY(-1px);
+        }
+
+        /* BOTÓN EXAMEN */
+        .btn-examen {
+            background: linear-gradient(
+                135deg,
+                #00f2fe,
+                #0072ff
+            );
+            box-shadow: 0 4px 15px rgba(0, 242, 254, 0.25);
+        }
+
+        .btn-examen:hover {
+            box-shadow: 0 6px 20px rgba(0, 242, 254, 0.45);
+        }
+
+        .panel-info {
+            top: 90px;
+            right: 25px;
+            width: 330px;
+        }
+
+        .info-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 10px;
+        }
+
+        .info-card-header {
+            font-size: 11px;
+            color: var(--accent-cyan);
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .info-card-value {
+            font-size: 16px;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        .formula-box {
+            background: rgba(0, 0, 0, 0.4);
+            border-left: 3px solid var(--accent-cyan);
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 15px;
+            color: var(--accent-cyan);
+            text-align: center;
+            margin-bottom: 12px;
+        }
+
+        .desc-box {
+            background: rgba(186, 85, 211, 0.08);
+            border: 1px solid rgba(186, 85, 211, 0.25);
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 12px;
+        }
+
+        .desc-box h4 {
+            font-size: 12px;
+            color: var(--accent-purple);
+            text-transform: uppercase;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .desc-box p {
+            font-size: 11px;
+            color: var(--text-dim);
+            line-height: 1.4;
+        }
+
+        .panel-leyenda {
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            padding: 10px 25px;
+        }
+
+        .leyenda-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+        }
+
+        .leyenda-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        /* ==============================
+           MODAL DEL EXAMEN
+        ============================== */
+
+        .quiz-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.82);
+            backdrop-filter: blur(10px);
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .quiz-overlay.active {
+            display: flex;
+        }
+
+        .quiz-modal {
+            width: min(700px, 95vw);
+            max-height: 90vh;
+            overflow-y: auto;
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(20, 15, 38, 0.98),
+                    rgba(7, 10, 22, 0.98)
+                );
+            border: 1px solid rgba(186, 85, 211, 0.5);
+            border-radius: 22px;
+            padding: 28px;
+            box-shadow:
+                0 0 50px rgba(186, 85, 211, 0.18),
+                0 20px 70px rgba(0,0,0,0.7);
+            animation: quizAppear 0.3s ease;
+        }
+
+        @keyframes quizAppear {
+            from {
+                opacity: 0;
+                transform: scale(0.95) translateY(15px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .quiz-title {
+            font-size: 22px;
+            font-weight: 900;
+            color: #fff;
+        }
+
+        .quiz-title i {
+            color: var(--accent-cyan);
+            margin-right: 8px;
+        }
+
+        .quiz-close {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            border: 1px solid rgba(255,255,255,0.15);
+            background: rgba(255,255,255,0.06);
+            color: #fff;
+            cursor: pointer;
+            font-size: 17px;
+            transition: 0.2s;
+        }
+
+        .quiz-close:hover {
+            background: rgba(255, 51, 102, 0.2);
+            border-color: #ff3366;
+            color: #ff6688;
+        }
+
+        .quiz-progress-info {
+            display: flex;
+            justify-content: space-between;
+            color: var(--text-dim);
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .quiz-progress {
+            width: 100%;
+            height: 8px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 20px;
+            overflow: hidden;
+            margin-bottom: 25px;
+        }
+
+        .quiz-progress-bar {
+            height: 100%;
+            width: 20%;
+            background: linear-gradient(
+                90deg,
+                var(--accent-cyan),
+                var(--accent-purple)
+            );
+            border-radius: 20px;
+            transition: width 0.3s ease;
+        }
+
+        .quiz-question {
+            font-size: 20px;
+            line-height: 1.45;
+            font-weight: 750;
+            color: #fff;
+            margin-bottom: 22px;
+        }
+
+        .quiz-options {
+            display: grid;
+            gap: 12px;
+        }
+
+        .quiz-option {
+            width: 100%;
+            padding: 15px 17px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.12);
+            background: rgba(255,255,255,0.045);
+            color: #e9edf5;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .quiz-option:hover {
+            border-color: rgba(0,242,254,0.55);
+            background: rgba(0,242,254,0.08);
+            transform: translateX(3px);
+        }
+
+        .quiz-option.selected {
+            border-color: var(--accent-cyan);
+            background: rgba(0,242,254,0.12);
+            box-shadow: 0 0 15px rgba(0,242,254,0.08);
+        }
+
+        .quiz-option.correct {
+            border-color: #00f2ad;
+            background: rgba(0,242,173,0.12);
+        }
+
+        .quiz-option.incorrect {
+            border-color: #ff3366;
+            background: rgba(255,51,102,0.12);
+        }
+
+        .quiz-next {
+            width: 100%;
+            margin-top: 20px;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(
+                135deg,
+                var(--accent-purple),
+                #7b2cff
+            );
+            color: #fff;
+            font-size: 15px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: 0.25s;
+        }
+
+        .quiz-next:hover {
+            filter: brightness(1.15);
+            transform: translateY(-1px);
+        }
+
+        .quiz-next:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* RESULTADO */
+        .quiz-result {
+            text-align: center;
+            display: none;
+        }
+
+        .quiz-result-icon {
+            width: 95px;
+            height: 95px;
+            margin: 5px auto 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(186,85,211,0.12);
+            border: 2px solid var(--accent-purple);
+            box-shadow: 0 0 30px rgba(186,85,211,0.2);
+            font-size: 42px;
+        }
+
+        .quiz-score {
+            font-size: 48px;
+            font-weight: 950;
+            color: var(--accent-cyan);
+            margin-bottom: 8px;
+        }
+
+        .quiz-result h2 {
+            font-size: 25px;
+            margin-bottom: 10px;
+        }
+
+        .quiz-result p {
+            color: var(--text-dim);
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 22px;
+        }
+
+        .result-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .result-btn {
+            padding: 12px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            color: #fff;
+            font-weight: 800;
+        }
+
+        .result-retry {
+            background: linear-gradient(
+                135deg,
+                var(--accent-purple),
+                #7b2cff
+            );
+        }
+
+        .result-close {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.12);
+        }
+
+        @media (max-width: 850px) {
+            .panel-info {
+                display: none;
+            }
+
+            .panel-controles {
+                width: 280px;
+            }
+
+            .lab-badge {
+                display: none;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .navbar {
+                padding: 12px 15px;
+            }
+
+            .logo {
+                font-size: 18px;
+            }
+
+            .panel-controles {
+                top: 70px;
+                left: 10px;
+                width: 250px;
+                padding: 14px;
+            }
+
+            .quiz-modal {
+                padding: 20px;
+            }
+
+            .quiz-question {
+                font-size: 17px;
+            }
+
+            .result-buttons {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <header class="navbar">
+        <div class="nav-left">
+            <a href="noveno.html" class="btn-volver">
+                <i class="fa-solid fa-arrow-left"></i>
+                Volver a Noveno
+            </a>
+
+            <div class="logo">
+                EcoLab <span>IA</span>
+            </div>
+        </div>
+
+        <div class="lab-badge">
+            <i class="fa-solid fa-flask-vial"></i>
+            Lab 10: Reacciones Químicas
+        </div>
+    </header>
+
+    <!-- THREE.JS -->
+    <div id="webgl-container"></div>
+
+    <!-- PANEL CONTROLES -->
+    <div class="gui-panel panel-controles">
+
+        <div class="panel-title">
+            <i class="fa-solid fa-sliders"></i>
+            Controles
+        </div>
+
+        <div class="control-group">
+            <label for="select-reaccion">
+                Tipo de Enlace / Reacción
+            </label>
+
+            <select id="select-reaccion" class="select-custom">
+                <option value="ionic">
+                    Enlace Iónico (NaCl)
+                </option>
+
+                <option value="covalent_polar">
+                    Covalente Polar (H₂O)
+                </option>
+
+                <option value="covalent_apolar">
+                    Covalente Apolar (H₂)
+                </option>
+
+                <option value="synthesis">
+                    Síntesis (NH₃)
+                </option>
+            </select>
+        </div>
+
+        <div class="control-group">
+            <label for="slider-distancia">
+                Distancia Interatómica
+            </label>
+
+            <input
+                type="range"
+                id="slider-distancia"
+                class="slider-custom"
+                min="1.5"
+                max="6"
+                step="0.1"
+                value="4"
+            >
+        </div>
+
+        <div class="control-group">
+            <label for="slider-temp">
+                Temperatura (K)
+            </label>
+
+            <input
+                type="range"
+                id="slider-temp"
+                class="slider-custom"
+                min="200"
+                max="800"
+                step="10"
+                value="298"
+            >
+        </div>
+
+        <button id="btn-reaccionar" class="btn-action">
+            <i class="fa-solid fa-bolt"></i>
+            Reaccionar
+        </button>
+
+        <button
+            id="btn-reset"
+            class="btn-action"
+            style="background: rgba(255,255,255,0.1); margin-top: 6px;"
+        >
+            <i class="fa-solid fa-rotate-left"></i>
+            Reiniciar
+        </button>
+
+        <!-- BOTÓN EXAMEN -->
+        <button id="btn-examen" class="btn-action btn-examen">
+            <i class="fa-solid fa-clipboard-question"></i>
+            Exámenes
+        </button>
+
+    </div>
+
+    <!-- PANEL DATOS Y DESCRIPCIÓN -->
+    <div class="gui-panel panel-info">
+
+        <div class="panel-title">
+            <i class="fa-solid fa-atom"></i>
+            Análisis del Laboratorio
+        </div>
+
+        <div class="desc-box">
+
+            <h4>
+                <i class="fa-solid fa-circle-info"></i>
+                ¿Para qué sirve?
+            </h4>
+
+            <p>
+                Esta simulación 3D permite visualizar el comportamiento
+                de los electrones al momento de formar enlaces químicos
+                (iónicos y covalentes), analizando cómo la distancia entre
+                átomos y la temperatura influyen en la estabilidad molecular.
+            </p>
+
+        </div>
+
+        <div class="formula-box" id="formula-text">
+            Na + Cl → Na⁺ + Cl⁻
+        </div>
+
+        <div class="info-card">
+
+            <div class="info-card-header">
+                Clasificación
+            </div>
+
+            <div
+                class="info-card-value"
+                id="info-enlace"
+                style="color: var(--accent-purple);"
+            >
+                Iónico Electrovalente
+            </div>
+
+        </div>
+
+        <div class="info-card">
+
+            <div class="info-card-header">
+                Diferencia de Electronegatividad (ΔEN)
+            </div>
+
+            <div class="info-card-value" id="info-den">
+                2.1
+            </div>
+
+        </div>
+
+        <div class="info-card">
+
+            <div class="info-card-header">
+                Entalpía de Reacción (ΔH)
+            </div>
+
+            <div
+                class="info-card-value"
+                id="info-delta-h"
+                style="font-size:14px; color:var(--accent-cyan);"
+            >
+                ΔH = -411 kJ/mol
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- LEYENDA -->
+    <div class="gui-panel panel-leyenda">
+
+        <div class="leyenda-item">
+            <div
+                class="leyenda-dot"
+                style="background: #00f2fe;"
+            ></div>
+            <span>Electrones</span>
+        </div>
+
+        <div class="leyenda-item">
+            <div
+                class="leyenda-dot"
+                style="background: #ff3366;"
+            ></div>
+            <span>Átomo A</span>
+        </div>
+
+        <div class="leyenda-item">
+            <div
+                class="leyenda-dot"
+                style="background: #00ff88;"
+            ></div>
+            <span>Átomo B</span>
+        </div>
+
+    </div>
+
+
+    <!-- ==============================
+         MODAL DEL EXAMEN
+    ============================== -->
+
+    <div id="quiz-overlay" class="quiz-overlay">
+
+        <div class="quiz-modal">
+
+            <div class="quiz-header">
+
+                <div class="quiz-title">
+                    <i class="fa-solid fa-flask"></i>
+                    Evaluación del Laboratorio
+                </div>
+
+                <button
+                    id="quiz-close"
+                    class="quiz-close"
+                    title="Cerrar"
+                >
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+
+            </div>
+
+            <!-- PARTE DEL EXAMEN -->
+            <div id="quiz-content">
+
+                <div class="quiz-progress-info">
+                    <span id="quiz-question-number">
+                        Pregunta 1 de 5
+                    </span>
+
+                    <span id="quiz-score-small">
+                        Puntos: 0
+                    </span>
+                </div>
+
+                <div class="quiz-progress">
+                    <div
+                        id="quiz-progress-bar"
+                        class="quiz-progress-bar"
+                    ></div>
+                </div>
+
+                <div
+                    id="quiz-question"
+                    class="quiz-question"
+                ></div>
+
+                <div
+                    id="quiz-options"
+                    class="quiz-options"
+                ></div>
+
+                <button
+                    id="quiz-next"
+                    class="quiz-next"
+                    disabled
+                >
+                    Siguiente
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+
+            </div>
+
+
+            <!-- RESULTADO -->
+            <div id="quiz-result" class="quiz-result">
+
+                <div
+                    id="quiz-result-icon"
+                    class="quiz-result-icon"
+                >
+                    🧪
+                </div>
+
+                <div
+                    id="quiz-score"
+                    class="quiz-score"
+                >
+                    0/5
+                </div>
+
+                <h2 id="quiz-result-title">
+                    Resultado
+                </h2>
+
+                <p id="quiz-result-message">
+                    Aquí aparecerá tu resultado.
+                </p>
+
+                <div class="result-buttons">
+
+                    <button
+                        id="quiz-retry"
+                        class="result-btn result-retry"
+                    >
+                        <i class="fa-solid fa-rotate"></i>
+                        Repetir examen
+                    </button>
+
+                    <button
+                        id="quiz-result-close"
+                        class="result-btn result-close"
+                    >
+                        <i class="fa-solid fa-xmark"></i>
+                        Cerrar
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <script>
+
+        /* =====================================================
+           THREE.JS
+        ===================================================== */
+
+        const container =
+            document.getElementById('webgl-container');
+
+        const scene = new THREE.Scene();
+
+        scene.fog =
+            new THREE.FogExp2(0x05050d, 0.03);
+
+        const camera =
+            new THREE.PerspectiveCamera(
+                45,
+                window.innerWidth / window.innerHeight,
+                0.1,
+                1000
+            );
+
+        camera.position.set(0, 2, 10);
+
+        const renderer =
+            new THREE.WebGLRenderer({
+                antialias: true
+            });
+
+        renderer.setSize(
+            window.innerWidth,
+            window.innerHeight
+        );
+
+        renderer.setPixelRatio(
+            Math.min(window.devicePixelRatio, 2)
+        );
+
+        container.appendChild(renderer.domElement);
+
+        const controls =
+            new THREE.OrbitControls(
+                camera,
+                renderer.domElement
+            );
+
+        controls.enableDamping = true;
+
+        scene.add(
+            new THREE.AmbientLight(
+                0xffffff,
+                0.5
+            )
+        );
+
+        const pLight =
+            new THREE.PointLight(
+                0xba55d3,
+                2,
+                50
+            );
+
+        pLight.position.set(5, 5, 5);
+
+        scene.add(pLight);
+
+        const mainGroup =
+            new THREE.Group();
+
+        scene.add(mainGroup);
+
+        let atomA;
+        let atomB;
+        let electronGroup;
+
+        let electrons = [];
+
+
+        /* =====================================================
+           CONFIGURACIONES
+        ===================================================== */
+
+        const PRESETS = {
+
+            ionic: {
+                formula: "Na + Cl → Na⁺ + Cl⁻",
+                name: "Enlace Iónico",
+                den: "2.1",
+                deltaH: "ΔH = -411 kJ/mol",
+                colorA: 0xff3366,
+                colorB: 0x00ff88,
+                eCount: 1
+            },
+
+            covalent_polar: {
+                formula: "2H₂ + O₂ → 2H₂O",
+                name: "Covalente Polar",
+                den: "1.4",
+                deltaH: "ΔH = -285.8 kJ/mol",
+                colorA: 0xffffff,
+                colorB: 0xff0055,
+                eCount: 2
+            },
+
+            covalent_apolar: {
+                formula: "H + H → H₂",
+                name: "Covalente Apolar",
+                den: "0.0",
+                deltaH: "ΔH = -436 kJ/mol",
+                colorA: 0x00f2fe,
+                colorB: 0x00f2fe,
+                eCount: 2
+            },
+
+            synthesis: {
+                formula: "N₂ + 3H₂ → 2NH₃",
+                name: "Síntesis Covalente",
+                den: "0.9",
+                deltaH: "ΔH = -91.8 kJ/mol",
+                colorA: 0x9933ff,
+                colorB: 0x00f2fe,
+                eCount: 3
+            }
+
+        };
+
+
+        /* =====================================================
+           CREAR ÁTOMOS
+        ===================================================== */
+
+        function buildAtoms(type) {
+
+            while (
+                mainGroup.children.length > 0
+            ) {
+                mainGroup.remove(
+                    mainGroup.children[0]
+                );
+            }
+
+            electrons = [];
+
+            const config =
+                PRESETS[type];
+
+            const dist =
+                parseFloat(
+                    document.getElementById(
+                        'slider-distancia'
+                    ).value
+                );
+
+            atomA =
+                new THREE.Mesh(
+                    new THREE.SphereGeometry(
+                        0.8,
+                        32,
+                        32
+                    ),
+                    new THREE.MeshStandardMaterial({
+                        color: config.colorA,
+                        roughness: 0.2,
+                        emissive: config.colorA,
+                        emissiveIntensity: 0.2
+                    })
+                );
+
+            atomA.position.set(
+                -dist / 2,
+                0,
+                0
+            );
+
+
+            atomB =
+                new THREE.Mesh(
+                    new THREE.SphereGeometry(
+                        1.0,
+                        32,
+                        32
+                    ),
+                    new THREE.MeshStandardMaterial({
+                        color: config.colorB,
+                        roughness: 0.2,
+                        emissive: config.colorB,
+                        emissiveIntensity: 0.2
+                    })
+                );
+
+            atomB.position.set(
+                dist / 2,
+                0,
+                0
+            );
+
+
+            mainGroup.add(atomA);
+            mainGroup.add(atomB);
+
+
+            electronGroup =
+                new THREE.Group();
+
+            mainGroup.add(
+                electronGroup
+            );
+
+
+            const eGeom =
+                new THREE.SphereGeometry(
+                    0.12,
+                    16,
+                    16
+                );
+
+            const eMat =
+                new THREE.MeshBasicMaterial({
+                    color: 0x00f2fe
+                });
+
+
+            for (
+                let i = 0;
+                i < config.eCount;
+                i++
+            ) {
+
+                const eMesh =
+                    new THREE.Mesh(
+                        eGeom,
+                        eMat
+                    );
+
+                electronGroup.add(
+                    eMesh
+                );
+
+                electrons.push({
+                    mesh: eMesh,
+                    angle:
+                        (i * Math.PI * 2) /
+                        config.eCount,
+                    speed: 0.04
+                });
+
+            }
+
+        }
+
+
+        /* =====================================================
+           ACTUALIZAR INFORMACIÓN
+        ===================================================== */
+
+        function updateUI(type) {
+
+            const config =
+                PRESETS[type];
+
+            document.getElementById(
+                'formula-text'
+            ).innerText =
+                config.formula;
+
+            document.getElementById(
+                'info-enlace'
+            ).innerText =
+                config.name;
+
+            document.getElementById(
+                'info-den'
+            ).innerText =
+                config.den;
+
+            document.getElementById(
+                'info-delta-h'
+            ).innerText =
+                config.deltaH;
+
+        }
+
+
+        const selectReaccion =
+            document.getElementById(
+                'select-reaccion'
+            );
+
+        const sliderDistancia =
+            document.getElementById(
+                'slider-distancia'
+            );
+
+
+        selectReaccion.addEventListener(
+            'change',
+            (e) => {
+
+                buildAtoms(
+                    e.target.value
+                );
+
+                updateUI(
+                    e.target.value
+                );
+
+            }
+        );
+
+
+        sliderDistancia.addEventListener(
+            'input',
+            (e) => {
+
+                const val =
+                    parseFloat(
+                        e.target.value
+                    );
+
+                atomA.position.x =
+                    -val / 2;
+
+                atomB.position.x =
+                    val / 2;
+
+            }
+        );
+
+
+        /* =====================================================
+           BOTÓN REACCIONAR
+        ===================================================== */
+
+        document
+            .getElementById('btn-reaccionar')
+            .addEventListener(
+                'click',
+                () => {
+
+                    let currentDist =
+                        parseFloat(
+                            sliderDistancia.value
+                        );
+
+                    let interval =
+                        setInterval(
+                            () => {
+
+                                if (
+                                    currentDist > 2.0
+                                ) {
+
+                                    currentDist -= 0.1;
+
+                                    sliderDistancia.value =
+                                        currentDist;
+
+                                    atomA.position.x =
+                                        -currentDist / 2;
+
+                                    atomB.position.x =
+                                        currentDist / 2;
+
+                                } else {
+
+                                    clearInterval(
+                                        interval
+                                    );
+
+                                }
+
+                            },
+                            25
+                        );
+
+                }
+            );
+
+
+        /* =====================================================
+           BOTÓN REINICIAR
+        ===================================================== */
+
+        document
+            .getElementById('btn-reset')
+            .addEventListener(
+                'click',
+                () => {
+
+                    sliderDistancia.value = 4;
+
+                    atomA.position.x = -2;
+                    atomB.position.x = 2;
+
+                }
+            );
+
+
+        /* =====================================================
+           ANIMACIÓN
+        ===================================================== */
+
+        const clock =
+            new THREE.Clock();
+
+        function animate() {
+
+            requestAnimationFrame(
+                animate
+            );
+
+            const time =
+                clock.getElapsedTime();
+
+            const type =
+                selectReaccion.value;
+
+            const dist =
+                parseFloat(
+                    sliderDistancia.value
+                );
+
+            const temp =
+                parseFloat(
+                    document.getElementById(
+                        'slider-temp'
+                    ).value
+                );
+
+
+            const tempVib =
+                (temp - 298) * 0.0004;
+
+            atomA.position.y =
+                Math.sin(
+                    time * 6
+                ) * tempVib;
+
+            atomB.position.y =
+                Math.cos(
+                    time * 6
+                ) * tempVib;
+
+
+            electrons.forEach(
+                (eObj) => {
+
+                    eObj.angle +=
+                        eObj.speed *
+                        (temp / 250);
+
+
+                    if (
+                        type === 'ionic'
+                    ) {
+
+                        eObj.mesh.position.x =
+                            atomB.position.x +
+                            Math.cos(
+                                eObj.angle
+                            ) * 1.3;
+
+                        eObj.mesh.position.y =
+                            atomB.position.y +
+                            Math.sin(
+                                eObj.angle
+                            ) * 1.3;
+
+                    } else {
+
+                        if (
+                            dist <= 2.5
+                        ) {
+
+                            eObj.mesh.position.x =
+                                Math.cos(
+                                    eObj.angle
+                                ) *
+                                (dist / 2 + 0.2);
+
+                            eObj.mesh.position.y =
+                                Math.sin(
+                                    eObj.angle
+                                ) * 1.1;
+
+                        } else {
+
+                            eObj.mesh.position.x =
+                                atomA.position.x +
+                                Math.cos(
+                                    eObj.angle
+                                ) * 1.1;
+
+                            eObj.mesh.position.y =
+                                atomA.position.y +
+                                Math.sin(
+                                    eObj.angle
+                                ) * 1.1;
+
+                        }
+
+                    }
+
+                }
+            );
+
+
+            mainGroup.rotation.y =
+                time * 0.15;
+
+            controls.update();
+
+            renderer.render(
+                scene,
+                camera
+            );
+
+        }
+
+
+        /* =====================================================
+           RESIZE
+        ===================================================== */
+
+        window.addEventListener(
+            'resize',
+            () => {
+
+                camera.aspect =
+                    window.innerWidth /
+                    window.innerHeight;
+
+                camera.updateProjectionMatrix();
+
+                renderer.setSize(
+                    window.innerWidth,
+                    window.innerHeight
+                );
+
+            }
+        );
+
+
+        /* =====================================================
+           BANCO DE PREGUNTAS
+        ===================================================== */
+
+        const questionBank = [
+
+            {
+                question:
+                    "¿Qué es un enlace químico?",
+
+                options: [
+                    "Una interacción que mantiene unidos a los átomos",
+                    "Un cambio de temperatura",
+                    "Una corriente eléctrica",
+                    "Una separación de moléculas"
+                ],
+
+                answer: 0
+            },
+
+
+            {
+                question:
+                    "¿Qué ocurre en un enlace iónico?",
+
+                options: [
+                    "Los átomos comparten electrones por igual",
+                    "Se transfieren electrones entre átomos",
+                    "Los protones cambian de átomo",
+                    "Los neutrones desaparecen"
+                ],
+
+                answer: 1
+            },
+
+
+            {
+                question:
+                    "¿Qué tipo de enlace presenta el NaCl?",
+
+                options: [
+                    "Covalente apolar",
+                    "Covalente polar",
+                    "Iónico",
+                    "Metálico"
+                ],
+
+                answer: 2
+            },
+
+
+            {
+                question:
+                    "¿Qué ocurre en un enlace covalente?",
+
+                options: [
+                    "Los átomos comparten electrones",
+                    "Los átomos pierden todos sus protones",
+                    "Se destruyen los electrones",
+                    "Los neutrones se transfieren"
+                ],
+
+                answer: 0
+            },
+
+
+            {
+                question:
+                    "¿Qué característica tiene un enlace covalente polar?",
+
+                options: [
+                    "Los electrones se comparten de manera desigual",
+                    "No existen electrones",
+                    "Siempre se transfieren electrones",
+                    "Los átomos tienen la misma carga"
+                ],
+
+                answer: 0
+            },
+
+
+            {
+                question:
+                    "¿Qué ocurre en un enlace covalente apolar?",
+
+                options: [
+                    "Los electrones se comparten de forma similar",
+                    "Un átomo pierde todos sus electrones",
+                    "Se forman únicamente iones",
+                    "Los protones son compartidos"
+                ],
+
+                answer: 0
+            },
+
+
+            {
+                question:
+                    "¿Qué representa la diferencia de electronegatividad (ΔEN)?",
+
+                options: [
+                    "La diferencia de masa entre átomos",
+                    "La diferencia en la capacidad de atraer electrones",
+                    "La cantidad de protones",
+                    "La temperatura de la molécula"
+                ],
+
+                answer: 1
+            },
+
+
+            {
+                question:
+                    "¿Cuál tiene una diferencia de electronegatividad de 0.0 en esta simulación?",
+
+                options: [
+                    "NaCl",
+                    "H₂O",
+                    "H₂",
+                    "NH₃"
+                ],
+
+                answer: 2
+            },
+
+
+            {
+                question:
+                    "¿Cuál es la diferencia de electronegatividad mostrada para NaCl?",
+
+                options: [
+                    "0.0",
+                    "0.9",
+                    "1.4",
+                    "2.1"
+                ],
+
+                answer: 3
+            },
+
+
+            {
+                question:
+                    "¿Cuál es la diferencia de electronegatividad mostrada para H₂O?",
+
+                options: [
+                    "1.4",
+                    "2.1",
+                    "0.0",
+                    "0.9"
+                ],
+
+                answer: 0
+            },
+
+
+            {
+                question:
+                    "¿Qué sucede al disminuir la distancia entre los átomos en la simulación?",
+
+                options: [
+                    "Los átomos se alejan",
+                    "Los átomos se aproximan",
+                    "Los electrones desaparecen",
+                    "La temperatura se vuelve cero"
+                ],
+
+                answer: 1
+            },
+
+
+            {
+                question:
+                    "¿Qué efecto tiene aumentar la temperatura en la simulación?",
+
+                options: [
+                    "Aumenta la vibración de los átomos",
+                    "Elimina los átomos",
+                    "Detiene completamente los electrones",
+                    "Convierte todos los enlaces en iónicos"
+                ],
+
+                answer: 0
+            },
+
+
+            {
+                question:
+                    "¿Qué partículas participan directamente en la formación de enlaces químicos?",
+
+                options: [
+                    "Electrones",
+                    "Neutrones únicamente",
+                    "Fotones únicamente",
+                    "Núcleos sin electrones"
+                ],
+
+                answer: 0
+            },
+
+
+            {
+                question:
+                    "¿Qué representa la entalpía de reacción (ΔH)?",
+
+                options: [
+                    "Un cambio de energía asociado a una reacción",
+                    "El número de electrones",
+                    "La masa de un átomo",
+                    "La cantidad de neutrones"
+                ],
+
+                answer: 0
+            },
+
+
+            {
+                question:
+                    "¿Cuál es el valor de ΔH mostrado para la formación de H₂?",
+
+                options: [
+                    "−91.8 kJ/mol",
+                    "−285.8 kJ/mol",
+                    "−411 kJ/mol",
+                    "−436 kJ/mol"
+                ],
+
+                answer: 3
+            },
+
+
+            {
+                question:
+                    "¿Cuál es el objetivo principal de este laboratorio?",
+
+                options: [
+                    "Observar y comprender la formación de enlaces químicos",
+                    "Medir la velocidad del sonido",
+                    "Estudiar el movimiento de planetas",
+                    "Calcular la gravedad terrestre"
+                ],
+
+                answer: 0
+            },
+
+
+            {
+                question:
+                    "¿Qué representa la fórmula Na + Cl → Na⁺ + Cl⁻?",
+
+                options: [
+                    "Una transferencia de electrones",
+                    "Una evaporación",
+                    "Una reacción nuclear",
+                    "Una separación de protones"
+                ],
+
+                answer: 0
+            },
+
+
+            {
+                question:
+                    "¿Qué elemento tiene mayor electronegatividad en un enlace NaCl?",
+
+                options: [
+                    "Sodio",
+                    "Cloro",
+                    "Ambos tienen exactamente la misma",
+                    "Ninguno"
+                ],
+
+                answer: 1
+            },
+
+
+            {
+                question:
+                    "¿Cuál de estas opciones corresponde a una reacción de síntesis mostrada?",
+
+                options: [
+                    "N₂ + 3H₂ → 2NH₃",
+                    "Na + Cl → Na⁺ + Cl⁻",
+                    "H + H → H₂",
+                    "H₂O → H + O"
+                ],
+
+                answer: 0
+            }
+
+        ];
+
+
+        /* =====================================================
+           VARIABLES DEL EXAMEN
+        ===================================================== */
+
+        let quizQuestions = [];
+        let currentQuestion = 0;
+        let quizScore = 0;
+        let selectedAnswer = null;
+
+
+        /* =====================================================
+           MEZCLAR PREGUNTAS
+        ===================================================== */
+
+        function shuffleArray(array) {
+
+            const copy =
+                [...array];
+
+            for (
+                let i = copy.length - 1;
+                i > 0;
+                i--
+            ) {
+
+                const j =
+                    Math.floor(
+                        Math.random() *
+                        (i + 1)
+                    );
+
+                [
+                    copy[i],
+                    copy[j]
+                ] =
+                [
+                    copy[j],
+                    copy[i]
+                ];
+
+            }
+
+            return copy;
+
+        }
+
+
+        /* =====================================================
+           ELEMENTOS DEL EXAMEN
+        ===================================================== */
+
+        const quizOverlay =
+            document.getElementById(
+                'quiz-overlay'
+            );
+
+        const quizContent =
+            document.getElementById(
+                'quiz-content'
+            );
+
+        const quizResult =
+            document.getElementById(
+                'quiz-result'
+            );
+
+        const quizQuestion =
+            document.getElementById(
+                'quiz-question'
+            );
+
+        const quizOptions =
+            document.getElementById(
+                'quiz-options'
+            );
+
+        const quizNext =
+            document.getElementById(
+                'quiz-next'
+            );
+
+        const quizProgressBar =
+            document.getElementById(
+                'quiz-progress-bar'
+            );
+
+        const quizQuestionNumber =
+            document.getElementById(
+                'quiz-question-number'
+            );
+
+        const quizScoreSmall =
+            document.getElementById(
+                'quiz-score-small'
+            );
+
+
+        /* =====================================================
+           ABRIR EXAMEN
+        ===================================================== */
+
+        function openQuiz() {
+
+            quizQuestions =
+                shuffleArray(
+                    questionBank
+                ).slice(0, 5);
+
+            currentQuestion = 0;
+            quizScore = 0;
+            selectedAnswer = null;
+
+            quizContent.style.display =
+                'block';
+
+            quizResult.style.display =
+                'none';
+
+            quizOverlay.classList.add(
+                'active'
+            );
+
+            showQuestion();
+
+        }
+
+
+        /* =====================================================
+           MOSTRAR PREGUNTA
+        ===================================================== */
+
+        function showQuestion() {
+
+            const question =
+                quizQuestions[
+                    currentQuestion
+                ];
+
+            selectedAnswer = null;
+
+            quizQuestionNumber.innerText =
+                `Pregunta ${currentQuestion + 1} de 5`;
+
+            quizScoreSmall.innerText =
+                `Puntos: ${quizScore}`;
+
+            quizProgressBar.style.width =
+                `${((currentQuestion + 1) / 5) * 100}%`;
+
+            quizQuestion.innerText =
+                question.question;
+
+            quizOptions.innerHTML =
+                '';
+
+            question.options.forEach(
+                (option, index) => {
+
+                    const button =
+                        document.createElement(
+                            'button'
+                        );
+
+                    button.className =
+                        'quiz-option';
+
+                    button.innerText =
+                        `${String.fromCharCode(65 + index)}. ${option}`;
+
+                    button.addEventListener(
+                        'click',
+                        () => selectAnswer(
+                            index,
+                            button
+                        )
+                    );
+
+                    quizOptions.appendChild(
+                        button
+                    );
+
+                }
+            );
+
+            quizNext.disabled = true;
+
+            if (
+                currentQuestion === 4
+            ) {
+
+                quizNext.innerHTML =
+                    `Finalizar examen <i class="fa-solid fa-check"></i>`;
+
+            } else {
+
+                quizNext.innerHTML =
+                    `Siguiente <i class="fa-solid fa-arrow-right"></i>`;
+
+            }
+
+        }
+
+
+        /* =====================================================
+           SELECCIONAR RESPUESTA
+        ===================================================== */
+
+        function selectAnswer(
+            index,
+            button
+        ) {
+
+            selectedAnswer =
+                index;
+
+            const allOptions =
+                document.querySelectorAll(
+                    '.quiz-option'
+                );
+
+            allOptions.forEach(
+                option => {
+                    option.classList.remove(
+                        'selected'
+                    );
+                }
+            );
+
+            button.classList.add(
+                'selected'
+            );
+
+            quizNext.disabled =
+                false;
+
+        }
+
+
+        /* =====================================================
+           SIGUIENTE PREGUNTA
+        ===================================================== */
+
+        function nextQuestion() {
+
+            if (
+                selectedAnswer === null
+            ) {
+                return;
+            }
+
+            const correctAnswer =
+                quizQuestions[
+                    currentQuestion
+                ].answer;
+
+            if (
+                selectedAnswer ===
+                correctAnswer
+            ) {
+
+                quizScore++;
+
+            }
+
+            if (
+                currentQuestion < 4
+            ) {
+
+                currentQuestion++;
+
+                showQuestion();
+
+            } else {
+
+                showResult();
+
+            }
+
+        }
+
+
+        /* =====================================================
+           RESULTADO
+        ===================================================== */
+
+        function showResult() {
+
+            quizContent.style.display =
+                'none';
+
+            quizResult.style.display =
+                'block';
+
+            document.getElementById(
+                'quiz-score'
+            ).innerText =
+                `${quizScore}/5`;
+
+
+            const resultTitle =
+                document.getElementById(
+                    'quiz-result-title'
+                );
+
+            const resultMessage =
+                document.getElementById(
+                    'quiz-result-message'
+                );
+
+            const resultIcon =
+                document.getElementById(
+                    'quiz-result-icon'
+                );
+
+
+            if (
+                quizScore === 5
+            ) {
+
+                resultIcon.innerText =
+                    '🏆';
+
+                resultTitle.innerText =
+                    '¡Excelente!';
+
+                resultMessage.innerText =
+                    'Dominas muy bien los conceptos de reacciones químicas y enlaces. ¡Excelente trabajo!';
+
+            }
+
+            else if (
+                quizScore === 4
+            ) {
+
+                resultIcon.innerText =
+                    '🌟';
+
+                resultTitle.innerText =
+                    '¡Muy bien!';
+
+                resultMessage.innerText =
+                    'Tienes un muy buen dominio del tema. Solo necesitas repasar algunos conceptos.';
+
+            }
+
+            else if (
+                quizScore === 3
+            ) {
+
+                resultIcon.innerText =
+                    '👍';
+
+                resultTitle.innerText =
+                    '¡Buen trabajo!';
+
+                resultMessage.innerText =
+                    'Comprendes los conceptos principales, pero puedes seguir practicando para mejorar.';
+
+            }
+
+            else if (
+                quizScore >= 1
+            ) {
+
+                resultIcon.innerText =
+                    '📚';
+
+                resultTitle.innerText =
+                    'Puedes mejorar';
+
+                resultMessage.innerText =
+                    'Te recomendamos repasar los tipos de enlaces, la electronegatividad y las reacciones químicas.';
+
+            }
+
+            else {
+
+                resultIcon.innerText =
+                    '🔬';
+
+                resultTitle.innerText =
+                    'Sigue practicando';
+
+                resultMessage.innerText =
+                    'Repasa el laboratorio y vuelve a realizar el examen. ¡Tú puedes mejorar!';
+
+            }
+
+        }
+
+
+        /* =====================================================
+           REINICIAR EXAMEN
+        ===================================================== */
+
+        function restartQuiz() {
+
+            quizQuestions =
+                shuffleArray(
+                    questionBank
+                ).slice(0, 5);
+
+            currentQuestion = 0;
+            quizScore = 0;
+
+            quizResult.style.display =
+                'none';
+
+            quizContent.style.display =
+                'block';
+
+            showQuestion();
+
+        }
+
+
+        /* =====================================================
+           CERRAR EXAMEN
+        ===================================================== */
+
+        function closeQuiz() {
+
+            quizOverlay.classList.remove(
+                'active'
+            );
+
+        }
+
+
+        /* =====================================================
+           EVENTOS DEL EXAMEN
+        ===================================================== */
+
+        document
+            .getElementById('btn-examen')
+            .addEventListener(
+                'click',
+                openQuiz
+            );
+
+
+        document
+            .getElementById('quiz-close')
+            .addEventListener(
+                'click',
+                closeQuiz
+            );
+
+
+        document
+            .getElementById('quiz-next')
+            .addEventListener(
+                'click',
+                nextQuestion
+            );
+
+
+        document
+            .getElementById('quiz-retry')
+            .addEventListener(
+                'click',
+                restartQuiz
+            );
+
+
+        document
+            .getElementById('quiz-result-close')
+            .addEventListener(
+                'click',
+                closeQuiz
+            );
+
+
+        /* Cerrar haciendo clic fuera */
+        quizOverlay.addEventListener(
+            'click',
+            (event) => {
+
+                if (
+                    event.target ===
+                    quizOverlay
+                ) {
+
+                    closeQuiz();
+
+                }
+
+            }
+        );
+
+
+        /* =====================================================
+           INICIALIZAR SIMULACIÓN
+        ===================================================== */
+
+        buildAtoms('ionic');
+
+        updateUI('ionic');
+
+        animate();
+
+    </script>
+
+</body>
+<script src="asistente.js"></script>
+</html>

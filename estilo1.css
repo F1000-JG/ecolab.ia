@@ -1,0 +1,504 @@
+/*==============================
+        ESTILO GENERAL
+===============================*/
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+
+    font-family:'Poppins',sans-serif;
+
+    background:#071826;
+
+    color:white;
+
+    overflow-x:hidden;
+
+}
+
+/*==============================
+        FONDO
+===============================*/
+
+.ondas{
+
+    position:fixed;
+
+    width:100%;
+    height:100%;
+
+    background:
+    radial-gradient(circle at 20% 20%,rgba(0,255,255,.08),transparent 30%),
+    radial-gradient(circle at 80% 30%,rgba(0,162,255,.10),transparent 30%),
+    radial-gradient(circle at 50% 90%,rgba(0,255,170,.08),transparent 35%);
+
+    z-index:-5;
+
+}
+
+/*==============================
+        IMAGENES
+===============================*/
+
+.adn{
+
+    position:absolute;
+
+    left:40px;
+
+    top:20px;
+
+    width:180px;
+
+    opacity:.9;
+
+}
+
+.molecula1{
+
+    position:absolute;
+
+    right:50px;
+
+    top:120px;
+
+    width:170px;
+
+}
+
+.molecula2{
+
+    position:absolute;
+
+    left:120px;
+
+    bottom:40px;
+
+    width:160px;
+
+}
+
+/*==============================
+        CONTENEDOR
+===============================*/
+
+.contenedor{
+
+    width:92%;
+
+    max-width:1400px;
+
+    margin:40px auto;
+
+}
+
+/*==============================
+        HEADER
+===============================*/
+
+header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:45px;
+
+}
+
+.logo{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+}
+
+.logo i{
+
+    font-size:40px;
+
+    color:#26d8ff;
+
+}
+
+.logo h2{
+
+    font-size:34px;
+
+    font-weight:700;
+
+}
+
+nav{
+
+    display:flex;
+
+    gap:25px;
+
+}
+
+nav a{
+
+    text-decoration:none;
+
+    color:white;
+
+    padding:12px 22px;
+
+    border-radius:30px;
+
+    transition:.4s;
+
+    font-weight:600;
+
+}
+
+nav a:hover{
+
+    background:linear-gradient(90deg,#00e5ff,#00ffa6);
+
+    color:#061521;
+
+}
+
+/*==============================
+        PRINCIPAL
+===============================*/
+
+.principal{
+
+    display:grid;
+
+    grid-template-columns:1.4fr .8fr;
+
+    gap:40px;
+
+}
+/*==================================
+      PANEL IZQUIERDO
+==================================*/
+
+.izquierda{
+
+    background:rgba(255,255,255,.05);
+
+    border:1px solid rgba(255,255,255,.15);
+
+    backdrop-filter:blur(18px);
+
+    border-radius:30px;
+
+    padding:70px;
+
+    box-shadow:0 0 35px rgba(0,200,255,.12);
+
+}
+
+.izquierda h1{
+
+    font-size:75px;
+
+    font-weight:800;
+
+    line-height:80px;
+
+    margin-bottom:30px;
+
+}
+
+.izquierda span{
+
+    background:linear-gradient(90deg,#00ffd5,#00a2ff);
+
+    -webkit-background-clip:text;
+
+    color:transparent;
+
+}
+
+.izquierda p{
+
+    width:80%;
+
+    font-size:22px;
+
+    line-height:40px;
+
+    color:#d6e8f5;
+
+    margin-bottom:50px;
+
+}
+
+.boton{
+
+    display:inline-block;
+
+    padding:18px 45px;
+
+    border-radius:40px;
+
+    text-decoration:none;
+
+    font-size:20px;
+
+    font-weight:bold;
+
+    color:white;
+
+    background:linear-gradient(90deg,#00ffd5,#0099ff);
+
+    transition:.4s;
+
+}
+
+.boton:hover{
+
+    transform:translateY(-5px);
+
+    box-shadow:0 0 30px #00d9ff;
+
+}
+
+/*==================================
+      PANEL DERECHO
+==================================*/
+
+.derecha{
+
+    background:rgba(255,255,255,.05);
+
+    backdrop-filter:blur(20px);
+
+    border:1px solid rgba(255,255,255,.15);
+
+    border-radius:30px;
+
+    padding:35px;
+
+    box-shadow:0 0 35px rgba(0,255,255,.12);
+
+}
+
+.derecha h2{
+
+    text-align:center;
+
+    margin-bottom:35px;
+
+    font-size:30px;
+
+}
+
+.paso{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:18px;
+
+    margin-bottom:25px;
+
+}
+
+.numero{
+
+    width:45px;
+
+    height:45px;
+
+    border-radius:50%;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    background:linear-gradient(90deg,#00ffd5,#00a2ff);
+
+    color:#05141f;
+
+    font-weight:bold;
+
+    font-size:18px;
+
+}
+
+.paso p{
+
+    font-size:18px;
+
+    color:#eef8ff;
+
+}
+
+/*==================================
+      EFECTOS
+==================================*/
+
+.adn{
+
+    animation:girar 18s linear infinite;
+
+}
+
+.molecula1{
+
+    animation:flotar 6s ease-in-out infinite;
+
+}
+
+.molecula2{
+
+    animation:flotar2 8s ease-in-out infinite;
+
+}
+
+@keyframes girar{
+
+    from{
+
+        transform:rotate(0deg);
+
+    }
+
+    to{
+
+        transform:rotate(360deg);
+
+    }
+
+}
+
+@keyframes flotar{
+
+    0%,100%{
+
+        transform:translateY(0);
+
+    }
+
+    50%{
+
+        transform:translateY(-18px);
+
+    }
+
+}
+
+@keyframes flotar2{
+
+    0%,100%{
+
+        transform:translateY(0);
+
+    }
+
+    50%{
+
+        transform:translateY(18px);
+
+    }
+
+}
+
+/*==================================
+      RESPONSIVE
+==================================*/
+
+@media(max-width:1000px){
+
+.principal{
+
+grid-template-columns:1fr;
+
+}
+
+.izquierda p{
+
+width:100%;
+
+}
+
+header{
+
+flex-direction:column;
+
+gap:20px;
+
+}
+
+nav{
+
+flex-wrap:wrap;
+
+justify-content:center;
+
+}
+
+.adn{
+
+width:120px;
+
+}
+
+.molecula1{
+
+width:110px;
+
+}
+
+.molecula2{
+
+width:100px;
+
+}
+
+}
+.ondas img{
+    position:absolute;
+    opacity:0.5;
+}
+
+.adn{
+    width:250px;
+    top:80px;
+    left:50px;
+}
+
+.molecula1{
+    width:200px;
+    top:150px;
+    right:80px;
+}
+
+.molecula2{
+    width:180px;
+    bottom:100px;
+    left:100px;
+}
+
+.ondas-img{
+    width:400px;
+    bottom:0;
+    right:0;
+}
+.logo-img{
+    width: 75px;
+    height: 75px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 3px solid #19d3ff;
+    padding: 5px;
+}

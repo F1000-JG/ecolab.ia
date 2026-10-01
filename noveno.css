@@ -1,0 +1,217 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #020b16;
+    color: white;
+    min-height: 100vh;
+}
+
+
+/* NAVBAR */
+
+.navbar {
+    height: 75px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 7%;
+    background: rgba(2, 11, 22, 0.95);
+    border-bottom: 1px solid rgba(0, 200, 255, 0.2);
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.logo span {
+    color: #19cfff;
+}
+
+nav {
+    display: flex;
+    gap: 30px;
+}
+
+nav a {
+    color: #c9d8e5;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+nav a:hover,
+nav .activo {
+    color: #19cfff;
+}
+
+
+/* HERO */
+
+.hero {
+    padding: 90px 8% 60px;
+    text-align: center;
+    background:
+        radial-gradient(circle at center,
+        rgba(0, 180, 255, 0.18),
+        transparent 50%);
+}
+
+.etiqueta {
+    color: #19cfff;
+    font-size: 13px;
+    letter-spacing: 3px;
+    margin-bottom: 15px;
+}
+
+.hero h1 {
+    font-size: 48px;
+    margin-bottom: 20px;
+}
+
+.hero h1 span {
+    color: #19cfff;
+}
+
+.hero p {
+    color: #aebdca;
+    font-size: 18px;
+}
+
+
+/* CONTENIDO */
+
+.contenido {
+    width: 85%;
+    max-width: 1200px;
+    margin: auto;
+    padding: 30px 0 80px;
+}
+
+.contenido h2 {
+    text-align: center;
+    font-size: 32px;
+}
+
+.descripcion {
+    text-align: center;
+    color: #91a4b5;
+    margin-top: 10px;
+    margin-bottom: 40px;
+}
+
+
+/* TARJETAS */
+
+.laboratorios {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+}
+
+.card {
+    background: rgba(11, 29, 45, 0.9);
+    border: 1px solid rgba(30, 200, 255, 0.18);
+    border-radius: 20px;
+    padding: 30px;
+    min-height: 330px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    transition: 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-8px);
+    border-color: #19cfff;
+    box-shadow: 0 15px 40px rgba(0, 180, 255, 0.15);
+}
+
+.card .icono {
+    font-size: 45px;
+    margin-bottom: 20px;
+}
+
+.card h3 {
+    font-size: 23px;
+    margin-bottom: 15px;
+}
+
+.card p {
+    color: #9fb1bf;
+    line-height: 1.6;
+    margin-bottom: 25px;
+}
+
+.card button {
+    margin-top: auto;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 20px;
+    background: #19cfff;
+    color: #02111d;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.card button:hover {
+    transform: scale(1.05);
+    background: white;
+}
+
+
+/* LABORATORIO 3 */
+
+.destacado {
+    border-color: rgba(25, 207, 255, 0.5);
+    background:
+        linear-gradient(
+            145deg,
+            rgba(9, 48, 70, 0.95),
+            rgba(5, 21, 35, 0.95)
+        );
+}
+
+.numero {
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: #19cfff;
+    margin-bottom: 8px;
+}
+
+
+/* FOOTER */
+
+footer {
+    text-align: center;
+    padding: 25px;
+    color: #718494;
+    border-top: 1px solid rgba(255,255,255,0.08);
+}
+
+
+/* RESPONSIVE */
+
+@media (max-width: 850px) {
+
+    .laboratorios {
+        grid-template-columns: 1fr;
+    }
+
+    .hero h1 {
+        font-size: 36px;
+    }
+
+    .navbar {
+        padding: 0 5%;
+    }
+
+    nav {
+        gap: 12px;
+    }
+}

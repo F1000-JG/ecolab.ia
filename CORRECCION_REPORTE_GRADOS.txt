@@ -1,0 +1,13 @@
+ECOLAB - CORRECCIÓN DE REPORTES POR GRADO
+
+Problema corregido:
+- El reporte individual consultaba todos los experimentos activos sin filtrar por el grado del estudiante.
+- Esto podía mostrar experimentos de 7.º, 8.º y 9.º dentro del PDF de un estudiante.
+- El reporte general también fue reforzado para asociar experimentos e intentos únicamente al grado del estudiante.
+
+Corrección aplicada:
+- php/generar_reporte.php ahora filtra experimento.grado usando el grado real almacenado en estudiante.
+- php/generar_reporte_general.php ahora relaciona experimentos e intentos con estudiante.grado.
+- El grado no se toma de parámetros manipulables del navegador para generar el PDF individual; se obtiene de PostgreSQL.
+
+No se modificaron archivos HTML en esta corrección.

@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="asistente.css">
+    <title>Laboratorio 4 - Cambios de Estado Pro</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Segoe UI', Roboto, -apple-system, sans-serif;
+            background-color: #03080e;
+            color: #ffffff;
+        }
+
+        /* CARD FLOTANTE DE INFORMACIÓN (ARRIBA IZQUIERDA) */
+        #info-card {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 10;
+            width: 300px;
+            padding: 16px 20px;
+            background: rgba(5, 14, 24, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(0, 240, 255, 0.25);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.7);
+        }
+
+        #info-card h2 {
+            margin: 0 0 10px;
+            font-size: 17px;
+            font-weight: 700;
+            color: #00f0ff;
+            text-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
+        }
+
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 6px 0;
+            font-size: 13px;
+            color: #a0c4df;
+        }
+
+        .highlight {
+            color: #ffffff;
+            font-weight: 700;
+            padding: 2px 8px;
+            background: rgba(0, 240, 255, 0.12);
+            border: 1px solid rgba(0, 240, 255, 0.3);
+            border-radius: 12px;
+            font-size: 12px;
+        }
+
+        .formula {
+            margin-top: 10px;
+            padding-top: 8px;
+            border-top: 1px solid rgba(0, 240, 255, 0.15);
+            color: #7b9bb9;
+            font-size: 11px;
+            line-height: 1.4;
+        }
+
+        .formula b { color: #00ffcc; }
+
+        /* BOTÓN PRINCIPAL EXAMEN (ARRIBA DERECHA) */
+        #open-quiz-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 10;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #8a00e6 0%, #00d4ff 100%);
+            border: none;
+            border-radius: 12px;
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(138, 0, 230, 0.4);
+            transition: all 0.25s ease;
+        }
+
+        #open-quiz-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(0, 212, 255, 0.6);
+        }
+
+        /* OVERLAY Y VENTANA EMERGENTE (MODAL EXAMEN) */
+        #quiz-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(2, 6, 12, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            z-index: 1000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #quiz-modal {
+            width: 90%;
+            max-width: 440px;
+            padding: 26px;
+            background: rgba(8, 16, 28, 0.95);
+            border: 1px solid rgba(0, 240, 255, 0.35);
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9), 0 0 30px rgba(0, 240, 255, 0.15);
+            position: relative;
+            animation: modalZoom 0.25s ease forwards;
+        }
+
+        @keyframes modalZoom {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            border-bottom: 1px solid rgba(0, 240, 255, 0.15);
+            padding-bottom: 10px;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 19px;
+            color: #00f0ff;
+        }
+
+        #close-quiz-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        #close-quiz-btn:hover {
+            background: rgba(255, 0, 85, 0.8);
+            border-color: #ff0055;
+        }
+
+        #quiz-question {
+            font-size: 14.5px;
+            line-height: 1.5;
+            color: #e2eeff;
+            margin-bottom: 18px;
+            font-weight: 600;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .quiz-btn {
+            background: rgba(0, 240, 255, 0.05);
+            border: 1px solid rgba(0, 240, 255, 0.25);
+            color: #d1e8ff;
+            padding: 11px 15px;
+            border-radius: 10px;
+            font-size: 13px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .quiz-btn:hover {
+            background: rgba(0, 240, 255, 0.2);
+            border-color: rgba(0, 240, 255, 0.7);
+            transform: translateX(4px);
+        }
+
+        .quiz-btn.correct {
+            background: rgba(0, 255, 136, 0.25) !important;
+            border-color: #00ff88 !important;
+            color: #ffffff !important;
+        }
+
+        .quiz-btn.incorrect {
+            background: rgba(255, 0, 85, 0.25) !important;
+            border-color: #ff0055 !important;
+            color: #ffffff !important;
+        }
+
+        .score-badge {
+            background: rgba(0, 240, 255, 0.15);
+            border: 1px solid rgba(0, 240, 255, 0.4);
+            padding: 4px 10px;
+            border-radius: 16px;
+            font-size: 12px;
+            color: #00f0ff;
+            font-weight: 700;
+        }
+
+        #modal-feedback {
+            margin-top: 14px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            display: none;
+        }
+
+        #modal-feedback.success {
+            background: rgba(0, 255, 136, 0.15);
+            border: 1px solid #00ff88;
+            color: #00ff88;
+        }
+
+        #modal-feedback.error {
+            background: rgba(255, 0, 85, 0.15);
+            border: 1px solid #ff0055;
+            color: #ff0055;
+        }
+
+        #next-question-btn {
+            margin-top: 16px;
+            width: 100%;
+            padding: 11px;
+            background: linear-gradient(135deg, #00d4ff 0%, #0088ff 100%);
+            border: none;
+            border-radius: 10px;
+            color: #000000;
+            font-weight: 800;
+            font-size: 13px;
+            cursor: pointer;
+            display: none;
+        }
+
+        /* BOTÓN VOLVER (ABAJO IZQUIERDA) */
+        #back-button {
+            position: absolute;
+            bottom: 24px;
+            left: 24px;
+            z-index: 20;
+            padding: 11px 20px;
+            background: rgba(5, 14, 24, 0.8);
+            border: 1px solid rgba(0, 240, 255, 0.3);
+            color: #00f0ff;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            transition: all 0.2s ease;
+        }
+
+        #back-button:hover {
+            background: rgba(0, 240, 255, 0.2);
+            border-color: #00f0ff;
+        }
+
+        /* INSTRUCCIÓN (ABAJO CENTRO) */
+        #instruction {
+            position: absolute;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            padding: 10px 22px;
+            background: rgba(5, 14, 24, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            color: #a0c4df;
+            border-radius: 20px;
+            font-size: 13px;
+        }
+
+        #instruction span { color: #00f0ff; font-weight: 700; }
+
+        /* LIL-GUI (ABAJO DERECHA) */
+        .lil-gui {
+            --background-color: rgba(5, 14, 24, 0.85) !important;
+            --text-color: #a0c4df !important;
+            --title-background-color: rgba(0, 136, 255, 0.25) !important;
+            --widget-color: rgba(0, 240, 255, 0.12) !important;
+            --hover-color: rgba(0, 240, 255, 0.25) !important;
+            --focus-color: #00f0ff !important;
+            --number-color: #00ffcc !important;
+            --string-color: #00ffcc !important;
+            font-family: inherit !important;
+            border-radius: 12px !important;
+            overflow: hidden !important;
+            border: 1px solid rgba(0, 240, 255, 0.25) !important;
+            backdrop-filter: blur(12px) !important;
+            top: auto !important;
+            bottom: 24px !important;
+            right: 20px !important;
+            left: auto !important;
+            z-index: 15 !important;
+        }
+    </style>
+
+    <!-- LIBRERÍAS EXTERNAS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lil-gui@0.18"></script>
+</head>
+
+<body>
+
+    <!-- BOTÓN VOLVER -->
+    <button id="back-button" onclick="window.location.href='noveno.html'">
+        ← Volver a Noveno
+    </button>
+
+    <!-- INFORMACIÓN DE ESTADO -->
+    <div id="info-card">
+        <h2>🌡️ Cambios de Estado</h2>
+
+        <div class="data-row">
+            <span>Temperatura:</span>
+            <span id="temperature" class="highlight">20 °C</span>
+        </div>
+        <div class="data-row">
+            <span>Estado actual:</span>
+            <span id="state" class="highlight">Líquido</span>
+        </div>
+        <div class="data-row">
+            <span>Energía térmica:</span>
+            <span id="energy" class="highlight">Media</span>
+        </div>
+        <div class="data-row">
+            <span>Proceso:</span>
+            <span id="process" class="highlight">Agua líquida</span>
+        </div>
+
+        <div class="formula">
+            <b>Fases térmicas:</b><br>
+            • <b>Fusión:</b> Sólido → Líquido (0 °C)<br>
+            • <b>Evaporación:</b> Líquido → Gas (100 °C)<br>
+            • <b>Condensación:</b> Vapor → Gotas
+        </div>
+    </div>
+
+    <!-- BOTÓN DESPLEGAR EXAMEN -->
+    <button id="open-quiz-btn" onclick="openQuiz()">📝 Iniciar Examen</button>
+
+    <!-- VENTANA EMERGENTE (MODAL EXAMEN INDEPENDIENTE) -->
+    <div id="quiz-overlay">
+        <div id="quiz-modal">
+            <div class="modal-header">
+                <h2>🧪 Examen Express</h2>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <span id="score-display" class="score-badge">Pts: 0</span>
+                    <button id="close-quiz-btn" onclick="closeQuiz()" title="Cerrar Examen">✕</button>
+                </div>
+            </div>
+            
+            <div id="quiz-question">Cargando pregunta...</div>
+            
+            <div id="quiz-options" class="quiz-options"></div>
+            
+            <div id="modal-feedback"></div>
+
+            <button id="next-question-btn" onclick="nextQuestion()">Siguiente pregunta ➔</button>
+        </div>
+    </div>
+
+    <!-- INSTRUCCIÓN -->
+    <div id="instruction">
+        Ajusta la temperatura en el <span>termostato</span> o realiza el <span>examen</span>.
+    </div>
+
+<script>
+
+// =====================================================
+// 1. ESCENA Y CONFIGURACIÓN EXACTA
+// =====================================================
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x03080e);
+
+const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+camera.position.set(10, 8, 14);
+
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+document.body.appendChild(renderer.domElement);
+
+const controls = new THREE.OrbitControls(camera, renderer.domElement);
+controls.target.set(0, 0, 0);
+controls.enableDamping = true;
+controls.dampingFactor = 0.05;
+
+// =====================================================
+// 2. ILUMINACIÓN Y ESTÍLO NEÓN
+// =====================================================
+scene.add(new THREE.AmbientLight(0x004466, 1.2));
+
+const dirLight = new THREE.DirectionalLight(0x00f0ff, 0.8);
+dirLight.position.set(5, 10, 7);
+scene.add(dirLight);
+
+const flameLight = new THREE.PointLight(0xffa500, 2, 8);
+flameLight.position.set(0, -1.2, 0);
+scene.add(flameLight);
+
+// Rejilla de fondo cyan extendida
+const gridHelper = new THREE.GridHelper(50, 50, 0x00d4ff, 0x00334e);
+gridHelper.position.y = -2.5;
+scene.add(gridHelper);
+
+// Línea neón horizontal de guía
+const lineGeo = new THREE.BufferGeometry().setFromPoints([
+    new THREE.Vector3(-25, -2.48, 0),
+    new THREE.Vector3(25, -2.48, 0)
+]);
+const lineMat = new THREE.LineBasicMaterial({ color: 0x00f0ff, linewidth: 2 });
+scene.add(new THREE.Line(lineGeo, lineMat));
+
+// =====================================================
+// 3. BASE NEGRA Y RECIPIENTE DE CRISTAL
+// =====================================================
+const base = new THREE.Mesh(
+    new THREE.BoxGeometry(6.6, 0.4, 4.2),
+    new THREE.MeshBasicMaterial({ color: 0x080e14 })
+);
+base.position.y = -2.3;
+scene.add(base);
+
+const tankWidth = 6, tankHeight = 4.5, tankDepth = 3.6;
+
+// Cristal transparente tenue
+const glassMat = new THREE.MeshBasicMaterial({
+    color: 0x003b5c,
+    transparent: true,
+    opacity: 0.15,
+    side: THREE.DoubleSide
+});
+const tank = new THREE.Mesh(new THREE.BoxGeometry(tankWidth, tankHeight, tankDepth), glassMat);
+tank.position.y = 0.05;
+scene.add(tank);
+
+// Bordes cyan brillante
+const edgesGeo = new THREE.EdgesGeometry(new THREE.BoxGeometry(tankWidth, tankHeight, tankDepth));
+const edgesMat = new THREE.LineBasicMaterial({ color: 0x00d4ff, linewidth: 1.5 });
+const tankEdges = new THREE.LineSegments(edgesGeo, edgesMat);
+tankEdges.position.copy(tank.position);
+scene.add(tankEdges);
+
+// =====================================================
+// 4. LÍQUIDO Y ELEMENTOS INTERNOS
+// =====================================================
+// Agua con tono azul cian profundo
+const waterMat = new THREE.MeshBasicMaterial({
+    color: 0x005580,
+    transparent: true,
+    opacity: 0.65
+});
+const water = new THREE.Mesh(new THREE.BoxGeometry(5.85, 2.5, 3.45), waterMat);
+water.position.y = -0.9;
+scene.add(water);
+
+// Cono interno calido (Mechero/Elemento)
+const coneMat = new THREE.MeshStandardMaterial({
+    color: 0xddcc99,
+    roughness: 0.4,
+    metalness: 0.2
+});
+const cone = new THREE.Mesh(new THREE.ConeGeometry(0.5, 1.1, 32), coneMat);
+cone.position.y = -0.9;
+scene.add(cone);
+
+// Hielo en bloque (< 0°C)
+const iceMat = new THREE.MeshBasicMaterial({ color: 0x44aaff, transparent: true, opacity: 0.75 });
+const ice = new THREE.Mesh(new THREE.BoxGeometry(5.7, 2.4, 3.3), iceMat);
+ice.position.y = -0.9;
+ice.visible = false;
+scene.add(ice);
+
+// Partículas de Vapor
+const vaporParticles = [];
+for (let i = 0; i < 35; i++) {
+    const p = new THREE.Mesh(
+        new THREE.SphereGeometry(0.06, 8, 8),
+        new THREE.MeshBasicMaterial({ color: 0x00f0ff, transparent: true, opacity: 0.4 })
+    );
+    p.position.set((Math.random() - 0.5) * 4.8, 0.4 + Math.random() * 3, (Math.random() - 0.5) * 2.8);
+    p.userData.speed = 0.01 + Math.random() * 0.015;
+    p.visible = false;
+    scene.add(p);
+    vaporParticles.push(p);
+}
+
+// =====================================================
+// 5. SIMULACIÓN Y CONTROL DE TEMPERATURA
+// =====================================================
+const params = { temperatura: 20 };
+
+function updateSimulation() {
+    const temp = params.temperatura;
+    let estado, proceso, energia;
+
+    if (temp < 0) {
+        estado = "Sólido"; proceso = "Congelación / Hielo"; energia = "Muy baja";
+        ice.visible = true; water.visible = false;
+    } else if (temp < 100) {
+        estado = "Líquido"; proceso = temp === 0 ? "Fusión / Derriéndose" : "Agua líquida"; energia = "Media";
+        ice.visible = false; water.visible = true;
+        const scaleLevel = Math.max(0.3, 1 - Math.max(0, temp - 70) / 70);
+        water.scale.y = scaleLevel;
+        water.position.y = -2.15 + (1.25 * scaleLevel);
+    } else {
+        estado = "Gas"; proceso = "Evaporación / Vapor"; energia = "Alta";
+        ice.visible = false; water.visible = true;
+        water.scale.y = 0.2; water.position.y = -1.9;
+    }
+
+    vaporParticles.forEach(p => p.visible = temp >= 75);
+    flameLight.intensity = temp > 0 ? Math.min(temp / 50, 2.5) : 0;
+
+    document.getElementById("temperature").innerText = `${temp.toFixed(0)} °C`;
+    document.getElementById("state").innerText = estado;
+    document.getElementById("energy").innerText = energia;
+    document.getElementById("process").innerText = proceso;
+}
+
+const gui = new lil.GUI({ title: "Termostato 🌡️" });
+const tempController = gui.add(params, "temperatura", -20, 150, 1).name("Temperatura").onChange(updateSimulation);
+updateSimulation();
+
+// =====================================================
+// 6. LÓGICA DEL EXAMEN (VENTANA EMERGENTE)
+// =====================================================
+const questionBank = [
+    { q: "¿A qué temperatura se produce el punto de ebullición del agua a nivel del mar?", options: ["0 °C", "50 °C", "100 °C", "150 °C"], correct: 2, targetTemp: 100, exp: "¡Excelente! A 100 °C el agua pasa a vapor." },
+    { q: "¿Qué cambio de estado ocurre cuando el agua pasa de Líquido a Sólido?", options: ["Fusión", "Solidificación", "Evaporación", "Sublimación"], correct: 1, targetTemp: -10, exp: "¡Grandioso! Bajo 0 °C se solidifica." },
+    { q: "Si la temperatura está en -15 °C, ¿en qué estado se encuentra el agua?", options: ["Líquido", "Gas", "Plasma", "Sólido"], correct: 3, targetTemp: -15, exp: "¡Muy bien! Bajo los 0 °C adopta forma sólida (hielo)." },
+    { q: "¿Cómo se llama el cambio de Sólido a Líquido al aumentar el calor?", options: ["Fusión", "Condensación", "Ebullición", "Congelación"], correct: 0, targetTemp: 0, exp: "¡Correcto! La fusión ocurre a 0 °C." },
+    { q: "¿Qué sucede con la energía cinética de las moléculas al aumentar la temperatura?", options: ["Disminuye", "Se mantiene igual", "Aumenta", "Desaparece"], correct: 2, targetTemp: 80, exp: "¡Exacto! Las moléculas se mueven más rápido." }
+];
+
+let availableQuestions = [];
+let currentQuestion = null;
+let score = 0;
+
+function openQuiz() {
+    document.getElementById("quiz-overlay").style.display = "flex";
+    resetQuiz();
+}
+
+function closeQuiz() {
+    document.getElementById("quiz-overlay").style.display = "none";
+}
+
+function resetQuiz() {
+    score = 0;
+    document.getElementById("score-display").innerText = `Pts: ${score}`;
+    availableQuestions = [...questionBank].sort(() => Math.random() - 0.5);
+    loadNextQuestion();
+}
+
+function loadNextQuestion() {
+    document.getElementById("modal-feedback").style.display = "none";
+
+    if (availableQuestions.length === 0) {
+        showFinalResults();
+        return;
+    }
+
+    currentQuestion = availableQuestions.pop();
+    document.getElementById("quiz-question").innerText = currentQuestion.q;
+    document.getElementById("next-question-btn").style.display = "none";
+
+    const container = document.getElementById("quiz-options");
+    container.innerHTML = "";
+
+    currentQuestion.options.forEach((opt, idx) => {
+        const btn = document.createElement("button");
+        btn.className = "quiz-btn";
+        btn.innerText = `${String.fromCharCode(65 + idx)}) ${opt}`;
+        btn.onclick = () => checkAnswer(idx, btn);
+        container.appendChild(btn);
+    });
+}
+
+function checkAnswer(selectedIndex, selectedBtn) {
+    const buttons = document.querySelectorAll(".quiz-btn");
+    buttons.forEach(btn => btn.style.pointerEvents = "none");
+
+    const feedback = document.getElementById("modal-feedback");
+
+    if (selectedIndex === currentQuestion.correct) {
+        selectedBtn.classList.add("correct");
+        score += 10;
+        document.getElementById("score-display").innerText = `Pts: ${score}`;
+        
+        feedback.innerText = `🎉 ${currentQuestion.exp}`;
+        feedback.className = "success";
+        
+        params.temperatura = currentQuestion.targetTemp;
+        tempController.updateDisplay();
+        updateSimulation();
+    } else {
+        selectedBtn.classList.add("incorrect");
+        buttons[currentQuestion.correct].classList.add("correct");
+        
+        feedback.innerText = "⚠️ Respuesta incorrecta. Revisa el concepto.";
+        feedback.className = "error";
+    }
+
+    feedback.style.display = "block";
+    document.getElementById("next-question-btn").style.display = "block";
+}
+
+function nextQuestion() {
+    loadNextQuestion();
+}
+
+function showFinalResults() {
+    document.getElementById("quiz-question").innerText = `🏆 ¡Examen finalizado! Obtuviste un puntaje de ${score} Pts.`;
+    document.getElementById("quiz-options").innerHTML = "";
+    document.getElementById("next-question-btn").style.display = "none";
+    
+    const feedback = document.getElementById("modal-feedback");
+    feedback.innerText = score >= 30 ? "🌟 ¡Felicidades, demostraste un gran dominio!" : "📖 Te recomendamos seguir practicando en el laboratorio.";
+    feedback.className = score >= 30 ? "success" : "error";
+    feedback.style.display = "block";
+}
+
+// =====================================================
+// 7. RENDER LOOP Y RESPONSIVE
+// =====================================================
+function animate() {
+    requestAnimationFrame(animate);
+    controls.update();
+
+    vaporParticles.forEach(p => {
+        if (p.visible) {
+            p.position.y += p.userData.speed;
+            if (p.position.y > 3.5) p.position.y = 0.4;
+        }
+    });
+
+    renderer.render(scene, camera);
+}
+animate();
+
+window.addEventListener("resize", () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+</script>
+</body>
+<script src="asistente.js"></script>
+</html>

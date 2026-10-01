@@ -1,0 +1,1706 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="asistente.css">
+    <title>QuantumLab 3D - Convección Avanzada</title>
+
+    <style>
+        :root {
+            --bg-dark: #02040a;
+            --panel-bg: rgba(6, 11, 25, 0.75);
+            --panel-border: rgba(0, 240, 255, 0.35);
+            --accent-cyan: #00f0ff;
+            --accent-pink: #ff0055;
+            --accent-yellow: #ffe600;
+            --text-main: #f0f6fc;
+            --text-muted: #8b949e;
+            --glow-cyan: 0 0 18px rgba(0, 240, 255, 0.5);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        #canvas-container {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+
+        .glass-panel {
+            position: absolute;
+            z-index: 10;
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: 16px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.7);
+        }
+
+        #header-panel {
+            top: 20px;
+            left: 20px;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-back {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--text-main);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .btn-back:hover {
+            background: rgba(0, 240, 255, 0.15);
+            border-color: var(--accent-cyan);
+            color: var(--accent-cyan);
+        }
+
+        .header-divider {
+            width: 1px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        h1 {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 800;
+        }
+
+        h1 span {
+            color: var(--accent-cyan);
+        }
+
+        #controls-panel {
+            top: 80px;
+            left: 20px;
+            width: 270px;
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .section-title {
+            font-size: 0.68rem;
+            color: var(--accent-cyan);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 700;
+        }
+
+        .slider-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.72rem;
+            color: var(--text-muted);
+        }
+
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            height: 5px;
+            border-radius: 3px;
+            outline: none;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--accent-cyan);
+            cursor: pointer;
+            box-shadow: var(--glow-cyan);
+        }
+
+        select {
+            width: 100%;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid var(--panel-border);
+            color: var(--accent-cyan);
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            outline: none;
+            cursor: pointer;
+        }
+
+        #info-panel {
+            top: 20px;
+            right: 20px;
+            width: 320px;
+            padding: 20px;
+        }
+
+        .element-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 8px;
+        }
+
+        .element-name {
+            font-size: 1.15rem;
+            font-weight: 800;
+        }
+
+        .element-symbol {
+            font-size: 0.85rem;
+            color: var(--accent-cyan);
+            font-family: monospace;
+            font-weight: bold;
+        }
+
+        .element-desc {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            line-height: 1.45;
+            margin-bottom: 12px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 8px 10px;
+            border-radius: 8px;
+        }
+
+        .stat-value {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--accent-yellow);
+            font-family: monospace;
+        }
+
+        .stat-title {
+            font-size: 0.62rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        #chart-panel {
+            bottom: 20px;
+            right: 20px;
+            width: 320px;
+            padding: 14px 18px;
+        }
+
+        #tempChart {
+            width: 100%;
+            height: 90px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        /* ============================
+           BOTÓN EXAMEN
+        ============================ */
+
+        #open-quiz-btn {
+            position: fixed;
+            bottom: 25px;
+            left: 20px;
+            z-index: 50;
+            background: linear-gradient(135deg, #00f0ff, #0066ff);
+            border: none;
+            color: white;
+            padding: 13px 20px;
+            border-radius: 12px;
+            font-size: 0.82rem;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.4);
+            transition: 0.25s;
+        }
+
+        #open-quiz-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.7);
+        }
+
+        /* ============================
+           OVERLAY DEL EXAMEN
+        ============================ */
+
+        #quiz-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.82);
+            backdrop-filter: blur(12px);
+            padding: 20px;
+        }
+
+        #quiz-modal {
+            width: min(650px, 95vw);
+            max-height: 90vh;
+            overflow-y: auto;
+            background: linear-gradient(
+                145deg,
+                rgba(8, 17, 35, 0.98),
+                rgba(3, 8, 20, 0.98)
+            );
+            border: 1px solid rgba(0, 240, 255, 0.4);
+            border-radius: 20px;
+            padding: 28px;
+            box-shadow:
+                0 0 50px rgba(0, 240, 255, 0.15),
+                0 20px 60px rgba(0,0,0,0.8);
+        }
+
+        .quiz-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 18px;
+        }
+
+        .quiz-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--accent-cyan);
+            font-size: 1.1rem;
+            font-weight: 800;
+        }
+
+        .quiz-counter {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-family: monospace;
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 6px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 25px;
+        }
+
+        #quiz-progress {
+            height: 100%;
+            width: 20%;
+            background: linear-gradient(90deg, #00f0ff, #ff0055);
+            transition: width 0.3s ease;
+        }
+
+        #question-text {
+            font-size: 1.15rem;
+            line-height: 1.5;
+            font-weight: 700;
+            margin-bottom: 22px;
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .quiz-option {
+            width: 100%;
+            text-align: left;
+            padding: 14px 16px;
+            border-radius: 11px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.035);
+            color: var(--text-main);
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: 0.2s;
+        }
+
+        .quiz-option:hover {
+            border-color: var(--accent-cyan);
+            background: rgba(0,240,255,0.08);
+            transform: translateX(3px);
+        }
+
+        .quiz-option.selected {
+            border-color: var(--accent-cyan);
+            background: rgba(0,240,255,0.15);
+            box-shadow: 0 0 15px rgba(0,240,255,0.15);
+        }
+
+        .quiz-option.correct {
+            border-color: #00ff88;
+            background: rgba(0,255,136,0.12);
+        }
+
+        .quiz-option.incorrect {
+            border-color: #ff0055;
+            background: rgba(255,0,85,0.12);
+        }
+
+        .quiz-actions {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        .quiz-btn {
+            border: none;
+            border-radius: 10px;
+            padding: 11px 18px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.8rem;
+            transition: 0.2s;
+        }
+
+        #quiz-exit-btn {
+            background: rgba(255,255,255,0.07);
+            color: var(--text-muted);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        #quiz-next-btn {
+            background: linear-gradient(135deg, #00f0ff, #0066ff);
+            color: white;
+        }
+
+        .quiz-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        /* RESULTADO */
+
+        #quiz-result {
+            display: none;
+            text-align: center;
+        }
+
+        .result-icon {
+            font-size: 4rem;
+            margin-bottom: 10px;
+        }
+
+        .result-title {
+            font-size: 1.6rem;
+            color: var(--accent-cyan);
+            margin-bottom: 8px;
+        }
+
+        .result-score {
+            font-size: 3rem;
+            font-weight: 900;
+            color: var(--accent-yellow);
+            font-family: monospace;
+            margin: 10px 0;
+        }
+
+        .result-message {
+            color: var(--text-muted);
+            line-height: 1.5;
+            margin-bottom: 25px;
+        }
+
+        .result-actions {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        #quiz-restart-btn {
+            background: linear-gradient(135deg, #00f0ff, #0066ff);
+            color: white;
+        }
+
+        #quiz-close-btn {
+            background: rgba(255,255,255,0.08);
+            color: var(--text-main);
+            border: 1px solid rgba(255,255,255,0.12);
+        }
+
+        @media (max-width: 700px) {
+            #info-panel {
+                width: 250px;
+            }
+
+            #controls-panel {
+                width: 230px;
+            }
+
+            #chart-panel {
+                width: 250px;
+            }
+
+            #quiz-modal {
+                padding: 20px;
+            }
+        }
+    </style>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+</head>
+
+<body>
+
+    <div id="canvas-container"></div>
+
+    <!-- HEADER -->
+    <div id="header-panel" class="glass-panel">
+        <a href="noveno.html" class="btn-back">← Volver</a>
+        <div class="header-divider"></div>
+        <h1>QuantumLab <span>Convección Pro</span></h1>
+    </div>
+
+    <!-- CONTROLES -->
+    <div id="controls-panel" class="glass-panel">
+        <div class="section-title">Controles de Experimento</div>
+
+        <div class="slider-group">
+            <div class="slider-label">
+                <span>Potencia Térmica</span>
+                <span id="heat-val" style="color:var(--accent-pink); font-weight:bold;">0 %</span>
+            </div>
+
+            <input
+                type="range"
+                id="heat-slider"
+                min="0"
+                max="100"
+                value="0"
+                oninput="setHeat(this.value)"
+            >
+        </div>
+
+        <div class="slider-group">
+            <div class="slider-label">
+                <span>Tipo de Fluido</span>
+            </div>
+
+            <select id="fluid-select" onchange="changeFluid(this.value)">
+                <option value="water">Agua (Baja Viscosidad)</option>
+                <option value="oil">Aceite Vegetal (Media Viscosidad)</option>
+                <option value="glycerin">Glicerina (Alta Viscosidad)</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- INFORMACIÓN -->
+    <div id="info-panel" class="glass-panel">
+
+        <div class="element-header">
+            <div class="element-name">Dinámica de Fluidos</div>
+            <div class="element-symbol">ΔT → Δρ</div>
+        </div>
+
+        <div class="element-desc">
+            Simulación avanzada con visualización de vectores de flujo y curva de calor en tiempo real.
+        </div>
+
+        <div class="stats-grid">
+
+            <div class="stat-card">
+                <div class="stat-value" id="val-temp">20 °C</div>
+                <div class="stat-title">Temp. Promedio</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-value" id="val-density">0.998 g/cm³</div>
+                <div class="stat-title">Densidad Mín.</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-value" id="val-flow">Estático</div>
+                <div class="stat-title">Régimen</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-value" id="val-viscosity">1.0 cP</div>
+                <div class="stat-title">Viscosidad</div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- GRÁFICA -->
+    <div id="chart-panel" class="glass-panel">
+
+        <div class="section-title" style="margin-bottom:8px;">
+            Monitoreo Térmico (Temp vs Tiempo)
+        </div>
+
+        <canvas id="tempChart"></canvas>
+
+        <p style="font-size: 0.7rem; color: var(--text-muted); margin-top: 8px; line-height: 1.35;">
+            Visualiza la velocidad de calentamiento del fluido en tiempo real y detecta el punto donde alcanza el equilibrio térmico.
+        </p>
+
+    </div>
+
+    <!-- BOTÓN EXAMEN -->
+    <button id="open-quiz-btn" onclick="openQuiz()">
+        📝 Exámenes
+    </button>
+
+    <!-- =========================
+         EXAMEN
+    ========================== -->
+
+    <div id="quiz-overlay">
+
+        <div id="quiz-modal">
+
+            <!-- PREGUNTAS -->
+            <div id="quiz-content">
+
+                <div class="quiz-header">
+
+                    <div class="quiz-title">
+                        🌡️ Evaluación de Convección
+                    </div>
+
+                    <div class="quiz-counter" id="quiz-counter">
+                        Pregunta 1 de 5
+                    </div>
+
+                </div>
+
+                <div class="progress-container">
+                    <div id="quiz-progress"></div>
+                </div>
+
+                <div id="question-text"></div>
+
+                <div class="options-container" id="options-container"></div>
+
+                <div class="quiz-actions">
+
+                    <button
+                        class="quiz-btn"
+                        id="quiz-exit-btn"
+                        onclick="closeQuiz()">
+                        ← Salir
+                    </button>
+
+                    <button
+                        class="quiz-btn"
+                        id="quiz-next-btn"
+                        onclick="nextQuestion()">
+                        Continuar →
+                    </button>
+
+                </div>
+
+            </div>
+
+            <!-- RESULTADO -->
+            <div id="quiz-result">
+
+                <div class="result-icon">🏆</div>
+
+                <div class="result-title">
+                    ¡Evaluación terminada!
+                </div>
+
+                <div class="result-score" id="final-score">
+                    0/5
+                </div>
+
+                <div class="result-message" id="result-message"></div>
+
+                <div class="result-actions">
+
+                    <button
+                        class="quiz-btn"
+                        id="quiz-restart-btn"
+                        onclick="restartQuiz()">
+                        🔄 Repetir examen
+                    </button>
+
+                    <button
+                        class="quiz-btn"
+                        id="quiz-close-btn"
+                        onclick="closeQuiz()">
+                        ✕ Cerrar
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+
+        /* ==========================================
+           CONFIGURACIÓN THREE.JS
+        ========================================== */
+
+        const scene = new THREE.Scene();
+
+        scene.fog = new THREE.FogExp2(0x02040a, 0.02);
+
+        const camera = new THREE.PerspectiveCamera(
+            45,
+            window.innerWidth / window.innerHeight,
+            0.1,
+            1000
+        );
+
+        camera.position.set(0, 3, 10);
+
+        const renderer = new THREE.WebGLRenderer({
+            antialias: true,
+            alpha: true
+        });
+
+        renderer.setSize(
+            window.innerWidth,
+            window.innerHeight
+        );
+
+        renderer.setPixelRatio(
+            Math.min(window.devicePixelRatio, 2)
+        );
+
+        document
+            .getElementById('canvas-container')
+            .appendChild(renderer.domElement);
+
+        const controls = new THREE.OrbitControls(
+            camera,
+            renderer.domElement
+        );
+
+        controls.enableDamping = true;
+
+        scene.add(
+            new THREE.AmbientLight(0xffffff, 0.5)
+        );
+
+        const topLight = new THREE.DirectionalLight(
+            0x00f0ff,
+            1.8
+        );
+
+        topLight.position.set(5, 10, 5);
+
+        scene.add(topLight);
+
+        const heatPointLight = new THREE.PointLight(
+            0xff0055,
+            0,
+            12
+        );
+
+        heatPointLight.position.set(0, -2.5, 0);
+
+        scene.add(heatPointLight);
+
+        const simGroup = new THREE.Group();
+
+        scene.add(simGroup);
+
+
+        /* ==========================================
+           RECIPIENTE DE VIDRIO
+        ========================================== */
+
+        const glassMat = new THREE.MeshPhysicalMaterial({
+            color: 0xdff9ff,
+            transparent: true,
+            opacity: 0.35,
+            roughness: 0.05,
+            transmission: 0.9,
+            thickness: 1.5,
+            ior: 1.5
+        });
+
+        const beakerBody = new THREE.Mesh(
+            new THREE.CylinderGeometry(
+                1.6,
+                1.6,
+                3.4,
+                64,
+                1,
+                true
+            ),
+            glassMat
+        );
+
+        beakerBody.position.y = -0.5;
+
+        simGroup.add(beakerBody);
+
+        const glowOutline = new THREE.Mesh(
+            new THREE.CylinderGeometry(
+                1.61,
+                1.61,
+                3.42,
+                32,
+                1,
+                true
+            ),
+            new THREE.MeshBasicMaterial({
+                color: 0x00f0ff,
+                wireframe: true,
+                transparent: true,
+                opacity: 0.15
+            })
+        );
+
+        glowOutline.position.y = -0.5;
+
+        simGroup.add(glowOutline);
+
+
+        /* ==========================================
+           VECTORES DE FLUJO
+        ========================================== */
+
+        const arrowsGroup = new THREE.Group();
+
+        simGroup.add(arrowsGroup);
+
+        const upArrow = new THREE.ArrowHelper(
+            new THREE.Vector3(0, 1, 0),
+            new THREE.Vector3(0, -1.5, 0),
+            1.2,
+            0xff0055,
+            0.3,
+            0.2
+        );
+
+        const downArrowLeft = new THREE.ArrowHelper(
+            new THREE.Vector3(0, -1, 0),
+            new THREE.Vector3(-1.2, 0.5, 0),
+            1.2,
+            0x00f0ff,
+            0.3,
+            0.2
+        );
+
+        const downArrowRight = new THREE.ArrowHelper(
+            new THREE.Vector3(0, -1, 0),
+            new THREE.Vector3(1.2, 0.5, 0),
+            1.2,
+            0x00f0ff,
+            0.3,
+            0.2
+        );
+
+        arrowsGroup.add(upArrow);
+        arrowsGroup.add(downArrowLeft);
+        arrowsGroup.add(downArrowRight);
+
+        arrowsGroup.visible = false;
+
+
+        /* ==========================================
+           PARTÍCULAS
+        ========================================== */
+
+        const particleCount = 350;
+
+        const particles = [];
+
+        const particleGeo = new THREE.SphereGeometry(
+            0.06,
+            12,
+            12
+        );
+
+        const colorCyan = new THREE.Color(0x00f0ff);
+        const colorHot = new THREE.Color(0xff0055);
+
+        for (let i = 0; i < particleCount; i++) {
+
+            const mat = new THREE.MeshStandardMaterial({
+                color: 0x00f0ff,
+                roughness: 0.2,
+                emissive: 0x00f0ff,
+                emissiveIntensity: 0.2
+            });
+
+            const p = new THREE.Mesh(
+                particleGeo,
+                mat
+            );
+
+            const angle =
+                Math.random() * Math.PI * 2;
+
+            const r =
+                Math.sqrt(Math.random()) * 1.3;
+
+            const y =
+                -2.0 + Math.random() * 3.0;
+
+            p.position.set(
+                r * Math.cos(angle),
+                y,
+                r * Math.sin(angle)
+            );
+
+            p.userData = {
+                temp: 0,
+                angle: angle,
+                radius: r
+            };
+
+            particles.push(p);
+
+            simGroup.add(p);
+        }
+
+        let heatPower = 0;
+
+        let fluidViscosity = 1.0;
+
+
+        /* ==========================================
+           CONTROL DE CALOR
+        ========================================== */
+
+        function setHeat(val) {
+
+            heatPower = parseFloat(val) / 100;
+
+            document.getElementById('heat-val').innerText =
+                val + ' %';
+
+            heatPointLight.intensity =
+                heatPower * 4;
+
+            arrowsGroup.visible =
+                heatPower > 0;
+
+            const flowText =
+                document.getElementById('val-flow');
+
+            if (heatPower === 0) {
+
+                flowText.innerText = 'Estático';
+
+            } else if (heatPower < 0.5) {
+
+                flowText.innerText = 'Laminar';
+
+            } else {
+
+                flowText.innerText = 'Turbulento';
+            }
+        }
+
+
+        /* ==========================================
+           CAMBIO DE FLUIDO
+        ========================================== */
+
+        function changeFluid(type) {
+
+            if (type === 'water') {
+
+                fluidViscosity = 1.0;
+
+                document.getElementById(
+                    'val-viscosity'
+                ).innerText = '1.0 cP';
+
+            } else if (type === 'oil') {
+
+                fluidViscosity = 0.4;
+
+                document.getElementById(
+                    'val-viscosity'
+                ).innerText = '50.0 cP';
+
+            } else if (type === 'glycerin') {
+
+                fluidViscosity = 0.15;
+
+                document.getElementById(
+                    'val-viscosity'
+                ).innerText = '1200 cP';
+            }
+        }
+
+
+        /* ==========================================
+           GRÁFICA
+        ========================================== */
+
+        const chartCanvas =
+            document.getElementById('tempChart');
+
+        const ctx =
+            chartCanvas.getContext('2d');
+
+        chartCanvas.width =
+            chartCanvas.clientWidth;
+
+        chartCanvas.height =
+            chartCanvas.clientHeight;
+
+        let historyData =
+            new Array(50).fill(20);
+
+        function updateChart(newTemp) {
+
+            historyData.push(newTemp);
+
+            historyData.shift();
+
+            ctx.clearRect(
+                0,
+                0,
+                chartCanvas.width,
+                chartCanvas.height
+            );
+
+            ctx.beginPath();
+
+            ctx.strokeStyle = '#00f0ff';
+
+            ctx.lineWidth = 2;
+
+            const step =
+                chartCanvas.width /
+                (historyData.length - 1);
+
+            for (
+                let i = 0;
+                i < historyData.length;
+                i++
+            ) {
+
+                const x =
+                    i * step;
+
+                const y =
+                    chartCanvas.height -
+                    ((historyData[i] - 20) / 80) *
+                    chartCanvas.height;
+
+                if (i === 0) {
+
+                    ctx.moveTo(x, y);
+
+                } else {
+
+                    ctx.lineTo(x, y);
+                }
+            }
+
+            ctx.stroke();
+        }
+
+
+        /* ==========================================
+           ANIMACIÓN
+        ========================================== */
+
+        const clock =
+            new THREE.Clock();
+
+        let chartTimer = 0;
+
+        function animate() {
+
+            requestAnimationFrame(animate);
+
+            controls.update();
+
+            const delta =
+                clock.getDelta();
+
+            const time =
+                clock.getElapsedTime();
+
+            particles.forEach(p => {
+
+                if (heatPower > 0) {
+
+                    if (p.position.y < -1.7) {
+
+                        p.userData.temp =
+                            Math.min(
+                                1,
+                                p.userData.temp +
+                                delta *
+                                (1 + heatPower * 3)
+                            );
+
+                    } else if (p.position.y > 0.8) {
+
+                        p.userData.temp =
+                            Math.max(
+                                0,
+                                p.userData.temp -
+                                delta * 1.5
+                            );
+                    }
+
+                    const speed =
+                        (0.3 + heatPower * 1.2) *
+                        delta *
+                        fluidViscosity;
+
+                    if (p.userData.temp > 0.4) {
+
+                        p.position.y +=
+                            speed *
+                            (0.8 + p.userData.temp);
+
+                        p.userData.radius =
+                            Math.max(
+                                0.1,
+                                p.userData.radius -
+                                speed * 0.5
+                            );
+
+                    } else {
+
+                        p.position.y -=
+                            speed * 0.7;
+
+                        p.userData.radius =
+                            Math.min(
+                                1.35,
+                                p.userData.radius +
+                                speed * 0.6
+                            );
+                    }
+
+                    p.userData.angle +=
+                        (0.5 + heatPower * 1.5) *
+                        delta *
+                        fluidViscosity;
+
+                    p.position.x =
+                        Math.cos(p.userData.angle) *
+                        p.userData.radius;
+
+                    p.position.z =
+                        Math.sin(p.userData.angle) *
+                        p.userData.radius;
+
+                    if (p.position.y > 0.9)
+                        p.position.y = 0.9;
+
+                    if (p.position.y < -2.0)
+                        p.position.y = -2.0;
+
+                    p.material.color.lerpColors(
+                        colorCyan,
+                        colorHot,
+                        p.userData.temp
+                    );
+
+                    p.material.emissive.lerpColors(
+                        colorCyan,
+                        colorHot,
+                        p.userData.temp
+                    );
+                }
+            });
+
+
+            /* ACTUALIZAR INTERFAZ */
+
+            chartTimer += delta;
+
+            if (chartTimer > 0.1) {
+
+                const avgTemp =
+                    Math.round(
+                        20 + heatPower * 75
+                    );
+
+                document.getElementById(
+                    'val-temp'
+                ).innerText =
+                    avgTemp + ' °C';
+
+                document.getElementById(
+                    'val-density'
+                ).innerText =
+                    (
+                        0.998 -
+                        heatPower * 0.035
+                    ).toFixed(3) +
+                    ' g/cm³';
+
+                updateChart(avgTemp);
+
+                chartTimer = 0;
+            }
+
+            simGroup.rotation.y =
+                time * 0.05;
+
+            renderer.render(
+                scene,
+                camera
+            );
+        }
+
+
+        /* ==========================================
+           RESIZE CORREGIDO
+        ========================================== */
+
+        window.addEventListener(
+            'resize',
+            () => {
+
+                camera.aspect =
+                    window.innerWidth /
+                    window.innerHeight;
+
+                camera.updateProjectionMatrix();
+
+                renderer.setSize(
+                    window.innerWidth,
+                    window.innerHeight
+                );
+            }
+        );
+
+
+        /* ==========================================
+           BANCO DE PREGUNTAS
+        ========================================== */
+
+        const questionBank = [
+
+            {
+                question: "¿Qué es la convección?",
+                options: [
+                    "Transferencia de calor mediante el movimiento de un fluido",
+                    "Transferencia de calor únicamente por luz",
+                    "Cambio de estado de un sólido",
+                    "Movimiento de electrones en un metal"
+                ],
+                answer: 0
+            },
+
+            {
+                question: "¿Qué ocurre generalmente con la densidad de un fluido cuando aumenta su temperatura?",
+                options: [
+                    "Aumenta mucho",
+                    "Disminuye",
+                    "Permanece siempre igual",
+                    "Desaparece"
+                ],
+                answer: 1
+            },
+
+            {
+                question: "¿Qué sucede con el fluido caliente dentro de la simulación?",
+                options: [
+                    "Desciende",
+                    "Permanece inmóvil",
+                    "Asciende",
+                    "Se convierte en sólido"
+                ],
+                answer: 2
+            },
+
+            {
+                question: "¿Qué sucede con el fluido más frío?",
+                options: [
+                    "Desciende",
+                    "Siempre asciende",
+                    "Desaparece",
+                    "Se convierte en gas"
+                ],
+                answer: 0
+            },
+
+            {
+                question: "¿Qué representa la flecha de color rosa/rojo?",
+                options: [
+                    "El movimiento descendente del fluido frío",
+                    "El movimiento ascendente del fluido caliente",
+                    "La velocidad de la cámara",
+                    "La presión atmosférica"
+                ],
+                answer: 1
+            },
+
+            {
+                question: "¿Qué representan las flechas de color cian?",
+                options: [
+                    "El movimiento descendente del fluido más frío",
+                    "El calor producido por la luz",
+                    "La evaporación",
+                    "La densidad máxima"
+                ],
+                answer: 0
+            },
+
+            {
+                question: "¿Qué ocurre al aumentar la potencia térmica?",
+                options: [
+                    "Disminuye el movimiento del fluido",
+                    "Aumenta el calentamiento y el movimiento convectivo",
+                    "El fluido deja de existir",
+                    "La viscosidad siempre llega a cero"
+                ],
+                answer: 1
+            },
+
+            {
+                question: "¿Qué ocurre cuando la potencia térmica es 0 %?",
+                options: [
+                    "El régimen aparece como estático",
+                    "El régimen siempre es turbulento",
+                    "El fluido hierve",
+                    "La temperatura llega a 100 °C"
+                ],
+                answer: 0
+            },
+
+            {
+                question: "¿Qué régimen muestra la simulación cuando la potencia es menor al 50 %, pero mayor que 0 %?",
+                options: [
+                    "Turbulento",
+                    "Estático",
+                    "Laminar",
+                    "Congelado"
+                ],
+                answer: 2
+            },
+
+            {
+                question: "¿Qué régimen muestra la simulación cuando la potencia térmica es igual o mayor al 50 %?",
+                options: [
+                    "Laminar",
+                    "Turbulento",
+                    "Estático",
+                    "Sin flujo"
+                ],
+                answer: 1
+            },
+
+            {
+                question: "¿Qué propiedad representa la resistencia de un fluido al movimiento o flujo?",
+                options: [
+                    "Temperatura",
+                    "Densidad",
+                    "Viscosidad",
+                    "Luminosidad"
+                ],
+                answer: 2
+            },
+
+            {
+                question: "¿Cuál de estos fluidos tiene mayor viscosidad en la simulación?",
+                options: [
+                    "Agua",
+                    "Aceite vegetal",
+                    "Glicerina",
+                    "Todos tienen la misma"
+                ],
+                answer: 2
+            },
+
+            {
+                question: "¿Cuál es la viscosidad mostrada para el agua?",
+                options: [
+                    "1200 cP",
+                    "50.0 cP",
+                    "1.0 cP",
+                    "500 cP"
+                ],
+                answer: 2
+            },
+
+            {
+                question: "¿Qué relación representa ΔT → Δρ en la simulación?",
+                options: [
+                    "Relación entre temperatura y densidad",
+                    "Relación entre luz y sonido",
+                    "Relación entre presión y electricidad",
+                    "Relación entre masa y color"
+                ],
+                answer: 0
+            },
+
+            {
+                question: "¿Qué genera principalmente las corrientes de convección?",
+                options: [
+                    "Diferencias de temperatura y densidad",
+                    "La oscuridad del recipiente",
+                    "El tamaño de la pantalla",
+                    "La ausencia de partículas"
+                ],
+                answer: 0
+            },
+
+            {
+                question: "¿Cuál es el objetivo principal de este experimento?",
+                options: [
+                    "Observar cómo el calentamiento produce movimiento en el fluido",
+                    "Medir la velocidad de la luz",
+                    "Estudiar únicamente los sólidos",
+                    "Eliminar la transferencia de calor"
+                ],
+                answer: 0
+            }
+
+        ];
+
+
+        /* ==========================================
+           FUNCIONES DEL EXAMEN
+        ========================================== */
+
+        let quizQuestions = [];
+
+        let currentQuestion = 0;
+
+        let selectedAnswer = null;
+
+        let score = 0;
+
+
+        function shuffleArray(array) {
+
+            const newArray =
+                [...array];
+
+            for (
+                let i = newArray.length - 1;
+                i > 0;
+                i--
+            ) {
+
+                const j =
+                    Math.floor(
+                        Math.random() *
+                        (i + 1)
+                    );
+
+                [
+                    newArray[i],
+                    newArray[j]
+                ] = [
+                    newArray[j],
+                    newArray[i]
+                ];
+            }
+
+            return newArray;
+        }
+
+
+        function openQuiz() {
+
+            quizQuestions =
+                shuffleArray(
+                    questionBank
+                ).slice(0, 5);
+
+            currentQuestion = 0;
+
+            selectedAnswer = null;
+
+            score = 0;
+
+            document.getElementById(
+                'quiz-overlay'
+            ).style.display = 'flex';
+
+            document.getElementById(
+                'quiz-content'
+            ).style.display = 'block';
+
+            document.getElementById(
+                'quiz-result'
+            ).style.display = 'none';
+
+            showQuestion();
+        }
+
+
+        function showQuestion() {
+
+            const question =
+                quizQuestions[
+                    currentQuestion
+                ];
+
+            selectedAnswer = null;
+
+            document.getElementById(
+                'quiz-counter'
+            ).innerText =
+                `Pregunta ${currentQuestion + 1} de 5`;
+
+            document.getElementById(
+                'quiz-progress'
+            ).style.width =
+                `${((currentQuestion + 1) / 5) * 100}%`;
+
+            document.getElementById(
+                'question-text'
+            ).innerText =
+                question.question;
+
+            const optionsContainer =
+                document.getElementById(
+                    'options-container'
+                );
+
+            optionsContainer.innerHTML = '';
+
+            question.options.forEach(
+                (option, index) => {
+
+                    const button =
+                        document.createElement('button');
+
+                    button.className =
+                        'quiz-option';
+
+                    button.innerText =
+                        option;
+
+                    button.onclick = () =>
+                        selectAnswer(
+                            index,
+                            button
+                        );
+
+                    optionsContainer.appendChild(
+                        button
+                    );
+                }
+            );
+
+            const nextButton =
+                document.getElementById(
+                    'quiz-next-btn'
+                );
+
+            if (currentQuestion === 4) {
+
+                nextButton.innerText =
+                    'Finalizar ✓';
+
+            } else {
+
+                nextButton.innerText =
+                    'Continuar →';
+            }
+        }
+
+
+        function selectAnswer(
+            index,
+            button
+        ) {
+
+            selectedAnswer = index;
+
+            const options =
+                document.querySelectorAll(
+                    '.quiz-option'
+                );
+
+            options.forEach(
+                option => {
+                    option.classList.remove(
+                        'selected'
+                    );
+                }
+            );
+
+            button.classList.add(
+                'selected'
+            );
+        }
+
+
+        function nextQuestion() {
+
+            if (selectedAnswer === null) {
+
+                alert(
+                    '⚠️ Selecciona una respuesta antes de continuar.'
+                );
+
+                return;
+            }
+
+            const correctAnswer =
+                quizQuestions[
+                    currentQuestion
+                ].answer;
+
+            if (
+                selectedAnswer ===
+                correctAnswer
+            ) {
+
+                score++;
+            }
+
+            if (currentQuestion < 4) {
+
+                currentQuestion++;
+
+                showQuestion();
+
+            } else {
+
+                showResult();
+            }
+        }
+
+
+        function showResult() {
+
+            document.getElementById(
+                'quiz-content'
+            ).style.display = 'none';
+
+            document.getElementById(
+                'quiz-result'
+            ).style.display = 'block';
+
+            document.getElementById(
+                'final-score'
+            ).innerText =
+                `${score}/5`;
+
+            const message =
+                document.getElementById(
+                    'result-message'
+                );
+
+            if (score === 5) {
+
+                message.innerText =
+                    '🌟 ¡Excelente! Dominas muy bien la convección y la transferencia de calor.';
+
+            } else if (score === 4) {
+
+                message.innerText =
+                    '👏 ¡Muy bien! Tienes un excelente conocimiento sobre el fenómeno de convección.';
+
+            } else if (score === 3) {
+
+                message.innerText =
+                    '👍 ¡Buen trabajo! Comprendes los conceptos principales, pero puedes seguir practicando.';
+
+            } else if (score >= 1) {
+
+                message.innerText =
+                    '📚 Sigue practicando. Repasa los conceptos de temperatura, densidad y movimiento de los fluidos.';
+
+            } else {
+
+                message.innerText =
+                    '🔬 Necesitas repasar el experimento y volver a intentarlo. ¡Tú puedes mejorar!';
+            }
+        }
+
+
+        function restartQuiz() {
+
+            openQuiz();
+        }
+
+
+        function closeQuiz() {
+
+            document.getElementById(
+                'quiz-overlay'
+            ).style.display = 'none';
+        }
+
+
+        /* Cerrar haciendo clic fuera */
+
+        document.getElementById(
+            'quiz-overlay'
+        ).addEventListener(
+            'click',
+            function(event) {
+
+                if (
+                    event.target ===
+                    this
+                ) {
+
+                    closeQuiz();
+                }
+            }
+        );
+
+
+        /* ==========================================
+           INICIAR SIMULACIÓN
+        ========================================== */
+
+        setHeat(0);
+
+        animate();
+
+    </script>
+
+</body>
+<script src="asistente.js"></script>
+</html>

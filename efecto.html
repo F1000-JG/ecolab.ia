@@ -1,0 +1,2300 @@
+                                                                                                                                                                                                                                                      <!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="asistente.css">
+<title>Efecto Invernadero | EcoLab IA</title>
+
+<style>
+
+/* =====================================================
+   ESTILOS GENERALES
+===================================================== */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+    background: #071b22;
+}
+
+
+/* =====================================================
+   ESCENARIO
+===================================================== */
+
+#greenhouse {
+
+    position: relative;
+
+    width: 100vw;
+    height: 100vh;
+
+    overflow: hidden;
+
+    background:
+    linear-gradient(
+        to bottom,
+        #68c7ed 0%,
+        #b9e5f3 48%,
+        #83cc70 49%,
+        #4e9b4b 100%
+    );
+}
+
+
+/* =====================================================
+   SOL
+===================================================== */
+
+#sun-decoration {
+
+    position: absolute;
+
+    top: 70px;
+    right: 90px;
+
+    width: 105px;
+    height: 105px;
+
+    border-radius: 50%;
+
+    background: #ffd84d;
+
+    box-shadow:
+    0 0 35px rgba(255,216,77,.9),
+    0 0 80px rgba(255,216,77,.5);
+
+    z-index: 1;
+}
+
+
+/* =====================================================
+   RAYOS
+===================================================== */
+
+.sun-ray {
+
+    position: absolute;
+
+    width: 7px;
+    height: 42px;
+
+    border-radius: 10px;
+
+    background: #ffd84d;
+
+    z-index: 0;
+}
+
+.ray1 {
+    top: 40px;
+    right: 138px;
+}
+
+.ray2 {
+    top: 85px;
+    right: 225px;
+    transform: rotate(65deg);
+}
+
+.ray3 {
+    top: 165px;
+    right: 205px;
+    transform: rotate(110deg);
+}
+
+.ray4 {
+    top: 175px;
+    right: 125px;
+    transform: rotate(180deg);
+}
+
+
+/* =====================================================
+   NUBES
+===================================================== */
+
+.cloud {
+
+    position: absolute;
+
+    width: 130px;
+    height: 40px;
+
+    border-radius: 50px;
+
+    background: rgba(255,255,255,.75);
+
+    z-index: 1;
+}
+
+.cloud::before {
+
+    content: "";
+
+    position: absolute;
+
+    width: 60px;
+    height: 60px;
+
+    left: 20px;
+    bottom: 10px;
+
+    border-radius: 50%;
+
+    background: inherit;
+}
+
+.cloud::after {
+
+    content: "";
+
+    position: absolute;
+
+    width: 70px;
+    height: 70px;
+
+    right: 15px;
+    bottom: 8px;
+
+    border-radius: 50%;
+
+    background: inherit;
+}
+
+#cloud1 {
+    top: 125px;
+    left: 12%;
+}
+
+#cloud2 {
+    top: 220px;
+    left: 55%;
+    transform: scale(.75);
+}
+
+
+/* =====================================================
+   TARJETA DE INFORMACIÓN
+===================================================== */
+
+#info-card {
+
+    position: absolute;
+
+    top: 20px;
+    left: 20px;
+
+    width: 285px;
+
+    padding: 18px;
+
+    border-radius: 15px;
+
+    background: rgba(4,20,25,.92);
+
+    color: white;
+
+    z-index: 30;
+
+    box-shadow:
+    0 8px 25px rgba(0,0,0,.4);
+}
+
+#info-card h2 {
+
+    margin: 0 0 12px;
+
+    color: #8cff8c;
+
+    font-size: 20px;
+}
+
+#info-card p {
+
+    margin: 8px 0;
+
+    font-size: 13px;
+}
+
+.dato {
+
+    color: #ffd84d;
+
+    font-weight: bold;
+}
+
+#temperature-info {
+
+    margin-top: 12px;
+
+    padding: 10px;
+
+    border-radius: 10px;
+
+    background: rgba(255,255,255,.08);
+
+    color: #d9f0f0;
+
+    font-size: 12px;
+
+    line-height: 1.5;
+}
+
+
+/* =====================================================
+   PROGRESO
+===================================================== */
+
+#progress-container {
+
+    margin-top: 14px;
+
+    padding: 10px;
+
+    border-radius: 10px;
+
+    background: rgba(255,255,255,.06);
+
+    font-size: 11px;
+
+    text-align: center;
+}
+
+#progress-bar-background {
+
+    width: 100%;
+    height: 9px;
+
+    margin-top: 8px;
+
+    border-radius: 10px;
+
+    overflow: hidden;
+
+    background: #27434a;
+}
+
+#progress-bar {
+
+    width: 0%;
+
+    height: 100%;
+
+    background: #ffd84d;
+
+    transition: width .4s;
+}
+
+
+/* =====================================================
+   PANEL DE CONTROL
+===================================================== */
+
+#control-panel {
+
+    position: absolute;
+
+    top: 20px;
+    right: 20px;
+
+    width: 265px;
+
+    padding: 18px;
+
+    border-radius: 15px;
+
+    background: rgba(4,20,25,.92);
+
+    color: white;
+
+    z-index: 30;
+
+    box-shadow:
+    0 8px 25px rgba(0,0,0,.4);
+}
+
+#control-panel h2 {
+
+    margin-top: 0;
+
+    text-align: center;
+
+    color: #ffd84d;
+
+    font-size: 18px;
+}
+
+#control-panel p {
+
+    font-size: 12px;
+
+    line-height: 1.5;
+
+    color: #d6e5e6;
+}
+
+button {
+
+    width: 100%;
+
+    margin-top: 10px;
+
+    padding: 11px;
+
+    border: none;
+
+    border-radius: 9px;
+
+    cursor: pointer;
+
+    font-weight: bold;
+
+    transition: .25s;
+}
+
+button:hover {
+    transform: translateY(-2px);
+}
+
+#start-button {
+
+    background: #8cff8c;
+
+    color: #06200d;
+}
+
+#reset-button {
+
+    background: #e9eeee;
+
+    color: #173038;
+}
+
+#finish-button {
+
+    background: #ffd84d;
+
+    color: #2c2200;
+}
+
+#finish-button:disabled {
+
+    opacity: .45;
+
+    cursor: not-allowed;
+}
+
+
+/* =====================================================
+   TERMÓMETRO AMBIENTAL
+===================================================== */
+
+#ambient-thermometer {
+
+    position: absolute;
+
+    left: 50%;
+    top: 105px;
+
+    transform: translateX(-50%);
+
+    width: 155px;
+
+    padding: 9px;
+
+    border-radius: 12px;
+
+    background: rgba(4,20,25,.85);
+
+    color: white;
+
+    text-align: center;
+
+    z-index: 20;
+
+    box-shadow: 0 5px 15px rgba(0,0,0,.3);
+
+    font-size: 12px;
+}
+
+#ambient-temperature {
+
+    display: block;
+
+    margin-top: 4px;
+
+    color: #8cff8c;
+
+    font-size: 20px;
+
+    font-weight: bold;
+}
+
+
+/* =====================================================
+   ÁREA DEL EXPERIMENTO
+===================================================== */
+
+#experiment-area {
+
+    position: absolute;
+
+    left: 50%;
+    top: 58%;
+
+    transform: translate(-50%, -50%);
+
+    width: 790px;
+    height: 410px;
+
+    display: flex;
+
+    align-items: flex-end;
+
+    justify-content: center;
+
+    gap: 60px;
+
+    z-index: 10;
+}
+
+
+/* =====================================================
+   RECIPIENTES
+===================================================== */
+
+.container {
+
+    position: relative;
+
+    width: 185px;
+    height: 285px;
+
+    border: 5px solid rgba(255,255,255,.88);
+
+    border-radius: 22px 22px 30px 30px;
+
+    background: rgba(210,240,245,.18);
+
+    box-shadow:
+    inset 0 0 25px rgba(255,255,255,.25),
+    0 10px 25px rgba(0,0,0,.25);
+
+    backdrop-filter: blur(2px);
+
+    transition: .4s;
+
+    overflow: visible;
+}
+
+.container.heating {
+
+    box-shadow:
+    0 0 28px rgba(255,150,50,.65),
+    inset 0 0 30px rgba(255,180,80,.25),
+    0 10px 25px rgba(0,0,0,.25);
+}
+
+
+/* =====================================================
+   TAPADERA
+===================================================== */
+
+.lid {
+
+    position: absolute;
+
+    top: -18px;
+    left: 13px;
+
+    width: 154px;
+    height: 28px;
+
+    border-radius: 9px;
+
+    background: rgba(230,245,245,.88);
+
+    border: 3px solid rgba(255,255,255,.9);
+
+    z-index: 8;
+}
+
+
+/* =====================================================
+   NOMBRE DEL RECIPIENTE
+===================================================== */
+
+.container-label {
+
+    position: absolute;
+
+    top: 30px;
+    left: 0;
+
+    width: 100%;
+
+    text-align: center;
+
+    color: white;
+
+    font-size: 17px;
+
+    font-weight: bold;
+
+    text-shadow:
+    0 2px 5px rgba(0,0,0,.85);
+
+    z-index: 20;
+}
+
+
+/* =====================================================
+   VASO
+===================================================== */
+
+.glass {
+
+    position: absolute;
+
+    bottom: 20px;
+    left: 28px;
+
+    width: 115px;
+    height: 135px;
+
+    border: 4px solid rgba(255,255,255,.85);
+
+    border-top: none;
+
+    border-radius: 0 0 18px 18px;
+
+    background: rgba(255,255,255,.08);
+
+    overflow: hidden;
+}
+
+
+/* =====================================================
+   AGUA
+===================================================== */
+
+.water {
+
+    position: absolute;
+
+    bottom: 0;
+    left: 0;
+
+    width: 100%;
+    height: 78%;
+
+    background: rgba(70,175,220,.68);
+
+    transition: .4s;
+}
+
+
+/* =====================================================
+   BEBIDA CARBONATADA
+===================================================== */
+
+.soda {
+
+    position: absolute;
+
+    bottom: 0;
+    left: 0;
+
+    width: 100%;
+    height: 78%;
+
+    background: rgba(75,170,90,.65);
+
+    transition: .4s;
+}
+
+
+/* =====================================================
+   BURBUJAS
+===================================================== */
+
+.bubble {
+
+    position: absolute;
+
+    bottom: 15px;
+
+    width: 8px;
+    height: 8px;
+
+    border-radius: 50%;
+
+    background: rgba(255,255,255,.8);
+
+    animation: bubbleUp 2.5s infinite ease-in;
+}
+
+.b1 {
+    left: 25px;
+    animation-delay: .2s;
+}
+
+.b2 {
+    left: 55px;
+    animation-delay: .8s;
+}
+
+.b3 {
+    left: 80px;
+    animation-delay: 1.4s;
+}
+
+@keyframes bubbleUp {
+
+    0% {
+        transform: translateY(0);
+        opacity: .2;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(-95px);
+        opacity: 0;
+    }
+}
+
+
+/* =====================================================
+   CONTROL VACÍO
+===================================================== */
+
+.control-empty {
+
+    position: absolute;
+
+    left: 18px;
+    right: 18px;
+
+    top: 125px;
+
+    padding: 12px 5px;
+
+    border: 2px dashed rgba(255,255,255,.6);
+
+    border-radius: 10px;
+
+    background: rgba(255,255,255,.10);
+
+    color: rgba(255,255,255,.9);
+
+    font-size: 12px;
+
+    font-weight: bold;
+
+    text-align: center;
+
+    z-index: 4;
+}
+
+
+/* =====================================================
+   TERMÓMETRO
+===================================================== */
+
+.thermometer {
+
+    position: absolute;
+
+    right: -45px;
+    top: 65px;
+
+    width: 29px;
+    height: 130px;
+
+    border-radius: 16px;
+
+    background: #eeeeee;
+
+    border: 3px solid #333;
+
+    z-index: 22;
+
+    box-shadow:
+    0 3px 8px rgba(0,0,0,.35);
+}
+
+
+/* =====================================================
+   LÍNEA ROJA
+===================================================== */
+
+.thermometer-fill {
+
+    position: absolute;
+
+    bottom: 20px;
+    left: 7px;
+
+    width: 8px;
+    height: 45px;
+
+    border-radius: 10px;
+
+    background: #e94343;
+
+    transition: height .5s;
+}
+
+
+/* =====================================================
+   BULBO
+===================================================== */
+
+.thermometer-bulb {
+
+    position: absolute;
+
+    bottom: -11px;
+    left: 2px;
+
+    width: 20px;
+    height: 20px;
+
+    border-radius: 50%;
+
+    background: #e94343;
+
+    border: 2px solid #333;
+}
+
+
+/* =====================================================
+   TEMPERATURAS
+===================================================== */
+
+.temperature {
+
+    position: absolute;
+
+    top: 215px;
+
+    right: -63px;
+
+    min-width: 78px;
+
+    padding: 8px 6px;
+
+    border-radius: 9px;
+
+    background: #14241b;
+
+    border: 2px solid #ffd84d;
+
+    color: #ffd84d;
+
+    text-align: center;
+
+    font-size: 16px;
+
+    font-weight: bold;
+
+    letter-spacing: .5px;
+
+    z-index: 40;
+
+    box-shadow:
+    0 4px 10px rgba(0,0,0,.55);
+
+    white-space: nowrap;
+}
+
+
+/* =====================================================
+   CONTROL
+===================================================== */
+
+#control-container {
+
+    border-color: rgba(205,230,235,.9);
+}
+
+
+/* =====================================================
+   ETIQUETAS DE LOS VASOS
+===================================================== */
+
+.liquid-label {
+
+    position: absolute;
+
+    bottom: 62px;
+
+    left: 0;
+
+    width: 100%;
+
+    text-align: center;
+
+    color: white;
+
+    font-size: 11px;
+
+    font-weight: bold;
+
+    text-shadow: 0 1px 3px #333;
+
+    z-index: 10;
+}
+
+
+/* =====================================================
+   INSTRUCCIÓN
+===================================================== */
+
+#instruction {
+
+    position: absolute;
+
+    bottom: 20px;
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    padding: 12px 22px;
+
+    border-radius: 12px;
+
+    background: rgba(0,0,0,.72);
+
+    color: white;
+
+    font-size: 13px;
+
+    text-align: center;
+
+    z-index: 30;
+}
+
+#instruction span {
+
+    color: #ffd84d;
+
+    font-weight: bold;
+}
+
+
+/* =====================================================
+   EVALUACIÓN
+===================================================== */
+
+#evaluation-screen {
+
+    position: fixed;
+
+    inset: 0;
+
+    display: none;
+
+    justify-content: center;
+    align-items: center;
+
+    padding: 20px;
+
+    background: rgba(2,10,14,.92);
+
+    z-index: 100;
+
+    color: white;
+}
+
+#evaluation-card {
+
+    width: min(650px,95vw);
+
+    max-height: 90vh;
+
+    overflow-y: auto;
+
+    padding: 30px;
+
+    border-radius: 25px;
+
+    background:
+    linear-gradient(
+        145deg,
+        #123c36,
+        #071b22
+    );
+
+    box-shadow:
+    0 20px 60px rgba(0,0,0,.7);
+}
+
+.evaluation-header {
+
+    text-align: center;
+}
+
+.evaluation-header h2 {
+
+    color: #8cff8c;
+
+    margin: 8px 0;
+}
+
+.evaluation-icon {
+
+    font-size: 45px;
+}
+
+#question-counter {
+
+    margin-top: 20px;
+
+    color: #ffd84d;
+
+    font-size: 13px;
+
+    font-weight: bold;
+}
+
+#question-text {
+
+    line-height: 1.5;
+
+    font-size: 18px;
+}
+
+.answer {
+
+    width: 100%;
+
+    margin-top: 10px;
+
+    padding: 14px;
+
+    border: 1px solid #456468;
+
+    border-radius: 10px;
+
+    background: rgba(255,255,255,.06);
+
+    color: white;
+
+    text-align: left;
+
+    cursor: pointer;
+}
+
+.answer:hover {
+
+    background: rgba(140,255,140,.1);
+
+    border-color: #8cff8c;
+}
+
+.answer.selected {
+
+    background: rgba(140,255,140,.2);
+
+    border-color: #8cff8c;
+}
+
+#next-question {
+
+    background: #8cff8c;
+
+    color: #06200d;
+}
+
+#next-question:disabled {
+
+    opacity: .4;
+
+    cursor: not-allowed;
+}
+
+
+/* =====================================================
+   RESULTADO
+===================================================== */
+
+#result-screen {
+
+    display: none;
+
+    text-align: center;
+}
+
+#result-screen h2 {
+
+    color: #8cff8c;
+}
+
+.result-icon {
+
+    font-size: 60px;
+}
+
+#score {
+
+    font-size: 40px;
+
+    color: #ffd84d;
+
+    font-weight: bold;
+
+    margin: 20px 0;
+}
+
+#feedback {
+
+    line-height: 1.6;
+
+    color: #dce8e9;
+}
+
+#restart-quiz {
+
+    background: #ffd84d;
+
+    color: #2c2200;
+}
+
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media(max-width: 950px) {
+
+    #experiment-area {
+
+        transform:
+        translate(-50%, -50%)
+        scale(.80);
+    }
+
+}
+
+@media(max-width: 700px) {
+
+    #info-card {
+
+        width: 205px;
+
+        top: 10px;
+        left: 10px;
+    }
+
+    #control-panel {
+
+        width: 190px;
+
+        top: 10px;
+        right: 10px;
+    }
+
+    #experiment-area {
+
+        transform:
+        translate(-50%, -50%)
+        scale(.55);
+    }
+
+    #instruction {
+
+        display: none;
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div id="greenhouse">
+
+
+<!-- =====================================================
+     DECORACIÓN
+===================================================== -->
+
+<div id="sun-decoration"></div>
+
+<div class="sun-ray ray1"></div>
+<div class="sun-ray ray2"></div>
+<div class="sun-ray ray3"></div>
+<div class="sun-ray ray4"></div>
+
+<div class="cloud" id="cloud1"></div>
+<div class="cloud" id="cloud2"></div>
+
+
+<!-- =====================================================
+     INFORMACIÓN
+===================================================== -->
+
+<div id="info-card">
+
+<h2>🌎 Efecto Invernadero</h2>
+
+<p>
+⏱️ Tiempo:
+<span id="time-count" class="dato">0</span>
+min
+</p>
+
+<p>
+🌡️ Temperatura ambiental:
+<span id="ambient-info" class="dato">25°C</span>
+</p>
+
+<div id="temperature-info">
+
+Prepara los recipientes y presiona
+<strong>Iniciar experimento</strong>
+para comenzar.
+
+</div>
+
+<div id="progress-container">
+
+<span id="progress-text">
+
+0% de exposición
+
+</span>
+
+<div id="progress-bar-background">
+
+<div id="progress-bar"></div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- =====================================================
+     PANEL DE CONTROL
+===================================================== -->
+
+<div id="control-panel">
+
+<h2>☀️ Control del experimento</h2>
+
+<p>
+Observa cómo cambia la temperatura de los recipientes al estar expuestos al Sol.
+</p>
+
+<p>
+Cada segundo representa <strong>1 minuto</strong> del experimento.
+</p>
+
+<button id="start-button">
+
+☀️ Iniciar experimento
+
+</button>
+
+<button id="reset-button">
+
+↻ Reiniciar simulación
+
+</button>
+
+<button id="finish-button" disabled>
+
+📝 Realizar evaluación
+
+</button>
+
+</div>
+
+
+<!-- =====================================================
+     TEMPERATURA AMBIENTAL
+===================================================== -->
+
+<div id="ambient-thermometer">
+
+🌡️ Temperatura ambiental
+
+<span id="ambient-temperature">
+25°C
+</span>
+
+</div>
+
+
+<!-- =====================================================
+     EXPERIMENTO
+===================================================== -->
+
+<div id="experiment-area">
+
+
+<!-- =====================================================
+     RECIPIENTE A - AGUA
+===================================================== -->
+
+<div class="container" id="container-a">
+
+<div class="lid"></div>
+
+<div class="container-label">
+
+Recipiente A
+
+</div>
+
+<div class="glass">
+
+<div class="water"></div>
+
+</div>
+
+<div class="liquid-label">
+
+💧 Agua
+
+</div>
+
+<div class="thermometer">
+
+<div
+class="thermometer-fill"
+id="fill-a">
+</div>
+
+<div class="thermometer-bulb">
+</div>
+
+</div>
+
+<div class="temperature" id="temp-a">
+
+25°C
+
+</div>
+
+</div>
+
+
+<!-- =====================================================
+     RECIPIENTE B - BEBIDA CARBONATADA
+===================================================== -->
+
+<div class="container" id="container-b">
+
+<div class="lid"></div>
+
+<div class="container-label">
+
+Recipiente B
+
+</div>
+
+<div class="glass">
+
+<div class="soda">
+
+<div class="bubble b1"></div>
+<div class="bubble b2"></div>
+<div class="bubble b3"></div>
+
+</div>
+
+</div>
+
+<div class="liquid-label">
+
+🥤 Bebida carbonatada
+
+</div>
+
+<div class="thermometer">
+
+<div
+class="thermometer-fill"
+id="fill-b">
+</div>
+
+<div class="thermometer-bulb">
+</div>
+
+</div>
+
+<div class="temperature" id="temp-b">
+
+25°C
+
+</div>
+
+</div>
+
+
+<!-- =====================================================
+     RECIPIENTE CONTROL - SIN LÍQUIDO
+===================================================== -->
+
+<div class="container" id="control-container">
+
+<div class="lid"></div>
+
+<div class="container-label">
+
+Control
+
+</div>
+
+<div class="control-empty">
+
+🚫 Sin líquido
+
+</div>
+
+<div class="thermometer">
+
+<div
+class="thermometer-fill"
+id="fill-control">
+</div>
+
+<div class="thermometer-bulb">
+</div>
+
+</div>
+
+<div class="temperature" id="temp-control">
+
+25°C
+
+</div>
+
+</div>
+
+
+</div>
+
+
+<!-- =====================================================
+     INSTRUCCIÓN
+===================================================== -->
+
+<div id="instruction">
+
+☀️ Presiona <span>Iniciar experimento</span>
+y observa cómo aumentan las temperaturas.
+
+</div>
+
+
+<!-- =====================================================
+     EVALUACIÓN
+===================================================== -->
+
+<div id="evaluation-screen">
+
+<div id="evaluation-card">
+
+
+<div id="quiz-screen">
+
+<div class="evaluation-header">
+
+<div class="evaluation-icon">
+🌎
+</div>
+
+<h2>
+Evaluación del Experimento
+</h2>
+
+<p>
+Responde las preguntas según lo observado.
+</p>
+
+</div>
+
+
+<div id="question-counter">
+
+Pregunta 1 de 5
+
+</div>
+
+
+<h3 id="question-text">
+</h3>
+
+
+<div id="answers-container">
+</div>
+
+
+<button id="next-question" disabled>
+
+Continuar →
+
+</button>
+
+</div>
+
+
+<!-- =====================================================
+     RESULTADO
+===================================================== -->
+
+<div id="result-screen">
+
+<div class="result-icon">
+🏆
+</div>
+
+<h2>
+¡Evaluación terminada!
+</h2>
+
+<div id="score">
+0 / 5
+</div>
+
+<p id="feedback">
+</p>
+
+<button id="restart-quiz">
+
+🌎 Volver al experimento
+
+</button>
+
+</div>
+
+
+</div>
+
+</div>
+
+
+<script>
+
+/* =====================================================
+   VARIABLES
+===================================================== */
+
+let running = false;
+
+let elapsedTime = 0;
+
+let experimentInterval;
+
+
+/* =====================================================
+   TEMPERATURAS
+===================================================== */
+
+let temperatureA = 25;
+
+let temperatureB = 25;
+
+let temperatureControl = 25;
+
+let ambientTemperature = 25;
+
+
+/* =====================================================
+   BOTONES
+===================================================== */
+
+const startButton =
+document.getElementById("start-button");
+
+const resetButton =
+document.getElementById("reset-button");
+
+const finishButton =
+document.getElementById("finish-button");
+
+
+/* =====================================================
+   INICIAR
+===================================================== */
+
+startButton.addEventListener("click", function() {
+
+    if (running) return;
+
+    running = true;
+
+    startButton.disabled = true;
+
+    startButton.innerText =
+    "☀️ Experimento en progreso...";
+
+    document.getElementById(
+        "temperature-info"
+    ).innerHTML =
+    "☀️ <strong>Exposición al Sol iniciada.</strong><br>" +
+    "Observa los termómetros mientras aumenta el tiempo.";
+
+
+    experimentInterval =
+    setInterval(updateExperiment, 1000);
+
+});
+
+
+/* =====================================================
+   ACTUALIZAR EXPERIMENTO
+===================================================== */
+
+function updateExperiment() {
+
+    elapsedTime++;
+
+
+    /*
+       1 segundo = 1 minuto
+    */
+
+    const minutes =
+    elapsedTime;
+
+
+    document.getElementById(
+        "time-count"
+    ).innerText =
+    minutes;
+
+
+    /* =================================================
+       TEMPERATURAS
+    ================================================= */
+
+    if (minutes <= 60) {
+
+        /*
+          Recipiente A:
+          agua
+        */
+
+        temperatureA =
+        25 + (minutes * 0.23);
+
+
+        /*
+          Recipiente B:
+          bebida carbonatada
+        */
+
+        temperatureB =
+        25 + (minutes * 0.30);
+
+
+        /*
+          Recipiente de control:
+          solamente termómetro
+        */
+
+        temperatureControl =
+        25 + (minutes * 0.10);
+
+
+        /*
+          Ambiente
+        */
+
+        ambientTemperature =
+        25 + (minutes * 0.04);
+
+    }
+
+
+    updateTemperatures();
+
+
+    /* =================================================
+       BARRA
+    ================================================= */
+
+    const percentage =
+    Math.min(
+        (minutes / 60) * 100,
+        100
+    );
+
+
+    document.getElementById(
+        "progress-bar"
+    ).style.width =
+    percentage + "%";
+
+
+    document.getElementById(
+        "progress-text"
+    ).innerText =
+    Math.round(percentage) +
+    "% de exposición";
+
+
+    /* =================================================
+       TERMINAR
+    ================================================= */
+
+    if (minutes >= 60) {
+
+        finishExperiment();
+
+    }
+
+}
+
+
+/* =====================================================
+   ACTUALIZAR TEMPERATURAS
+===================================================== */
+
+function updateTemperatures() {
+
+
+    document.getElementById(
+        "temp-a"
+    ).innerText =
+    Math.round(temperatureA) + "°C";
+
+
+    document.getElementById(
+        "temp-b"
+    ).innerText =
+    Math.round(temperatureB) + "°C";
+
+
+    document.getElementById(
+        "temp-control"
+    ).innerText =
+    Math.round(temperatureControl) + "°C";
+
+
+    document.getElementById(
+        "ambient-temperature"
+    ).innerText =
+    Math.round(ambientTemperature) + "°C";
+
+
+    document.getElementById(
+        "ambient-info"
+    ).innerText =
+    Math.round(ambientTemperature) + "°C";
+
+
+    /* =================================================
+       ALTURA TERMÓMETRO A
+    ================================================= */
+
+    const heightA =
+    45 + ((temperatureA - 25) * 3);
+
+    document.getElementById(
+        "fill-a"
+    ).style.height =
+    Math.min(heightA,105) + "px";
+
+
+    /* =================================================
+       ALTURA TERMÓMETRO B
+    ================================================= */
+
+    const heightB =
+    45 + ((temperatureB - 25) * 3);
+
+    document.getElementById(
+        "fill-b"
+    ).style.height =
+    Math.min(heightB,105) + "px";
+
+
+    /* =================================================
+       ALTURA TERMÓMETRO CONTROL
+    ================================================= */
+
+    const heightControl =
+    45 + ((temperatureControl - 25) * 3);
+
+    document.getElementById(
+        "fill-control"
+    ).style.height =
+    Math.min(heightControl,105) + "px";
+
+
+    /* =================================================
+       EFECTO DE CALOR
+    ================================================= */
+
+    if (temperatureA > 30) {
+
+        document
+        .getElementById("container-a")
+        .classList.add("heating");
+
+    }
+
+
+    if (temperatureB > 30) {
+
+        document
+        .getElementById("container-b")
+        .classList.add("heating");
+
+    }
+
+}
+
+
+/* =====================================================
+   FINALIZAR EXPERIMENTO
+===================================================== */
+
+function finishExperiment() {
+
+    clearInterval(experimentInterval);
+
+    running = false;
+
+    startButton.disabled = true;
+
+    finishButton.disabled = false;
+
+    startButton.innerText =
+    "✓ Exposición completada";
+
+
+    document.getElementById(
+        "temperature-info"
+    ).innerHTML =
+
+    "🌡️ <strong>Experimento terminado.</strong><br><br>" +
+
+    "💧 Recipiente A: " +
+    Math.round(temperatureA) +
+    "°C<br>" +
+
+    "🥤 Recipiente B: " +
+    Math.round(temperatureB) +
+    "°C<br>" +
+
+    "🚫 Control: " +
+    Math.round(temperatureControl) +
+    "°C<br><br>" +
+
+    "Compara las temperaturas obtenidas.";
+
+}
+
+
+/* =====================================================
+   REINICIAR
+===================================================== */
+
+resetButton.addEventListener("click", function() {
+
+
+    clearInterval(experimentInterval);
+
+    running = false;
+
+    elapsedTime = 0;
+
+
+    temperatureA = 25;
+
+    temperatureB = 25;
+
+    temperatureControl = 25;
+
+    ambientTemperature = 25;
+
+
+    startButton.disabled = false;
+
+    startButton.innerText =
+    "☀️ Iniciar experimento";
+
+
+    finishButton.disabled = true;
+
+
+    document.getElementById(
+        "time-count"
+    ).innerText = "0";
+
+
+    document.getElementById(
+        "progress-bar"
+    ).style.width = "0%";
+
+
+    document.getElementById(
+        "progress-text"
+    ).innerText =
+    "0% de exposición";
+
+
+    document.getElementById(
+        "temperature-info"
+    ).innerText =
+    "Prepara los recipientes y presiona Iniciar experimento para comenzar.";
+
+
+    document.getElementById(
+        "container-a"
+    ).classList.remove("heating");
+
+
+    document.getElementById(
+        "container-b"
+    ).classList.remove("heating");
+
+
+    updateTemperatures();
+
+});
+
+
+/* =====================================================
+   ABRIR EVALUACIÓN
+===================================================== */
+
+finishButton.addEventListener("click", function() {
+
+    document.getElementById(
+        "evaluation-screen"
+    ).style.display =
+    "flex";
+
+
+    startQuiz();
+
+});
+
+
+/* =====================================================
+   PREGUNTAS
+===================================================== */
+
+const questions = [
+
+{
+question:
+"¿Qué contiene el recipiente A?",
+
+answers:
+[
+"Agua",
+"Suelo",
+"Bebida carbonatada",
+"Nada"
+],
+
+correct: 0
+},
+
+
+{
+question:
+"¿Qué contiene el recipiente B?",
+
+answers:
+[
+"Agua",
+"Bebida carbonatada",
+"Suelo",
+"Solamente aire"
+],
+
+correct: 1
+},
+
+
+{
+question:
+"¿Por qué se utiliza un recipiente de control?",
+
+answers:
+[
+"Para comparar los cambios de temperatura",
+"Para aumentar la temperatura",
+"Para contener agua",
+"Para producir luz"
+],
+
+correct: 0
+},
+
+
+{
+question:
+"¿Qué instrumento permite medir la temperatura?",
+
+answers:
+[
+"El marcador",
+"La cinta adhesiva",
+"El termómetro",
+"La tapadera"
+],
+
+correct: 2
+},
+
+
+{
+question:
+"¿Qué se puede observar al exponer los recipientes al Sol?",
+
+answers:
+[
+"Un aumento de temperatura",
+"Una disminución inmediata de temperatura",
+"Que los termómetros dejan de funcionar",
+"Que desaparece el Sol"
+],
+
+correct: 0
+}
+
+];
+
+
+/* =====================================================
+   VARIABLES DEL QUIZ
+===================================================== */
+
+let currentQuestion = 0;
+
+let score = 0;
+
+let selectedAnswer = null;
+
+
+/* =====================================================
+   INICIAR QUIZ
+===================================================== */
+
+function startQuiz() {
+
+    currentQuestion = 0;
+
+    score = 0;
+
+    selectedAnswer = null;
+
+
+    document.getElementById(
+        "quiz-screen"
+    ).style.display =
+    "block";
+
+
+    document.getElementById(
+        "result-screen"
+    ).style.display =
+    "none";
+
+
+    showQuestion();
+
+}
+
+
+/* =====================================================
+   MOSTRAR PREGUNTA
+===================================================== */
+
+function showQuestion() {
+
+    selectedAnswer = null;
+
+
+    const question =
+    questions[currentQuestion];
+
+
+    document.getElementById(
+        "question-counter"
+    ).innerText =
+
+    "Pregunta " +
+    (currentQuestion + 1) +
+    " de " +
+    questions.length;
+
+
+    document.getElementById(
+        "question-text"
+    ).innerText =
+    question.question;
+
+
+    const container =
+    document.getElementById(
+        "answers-container"
+    );
+
+
+    container.innerHTML = "";
+
+
+    question.answers.forEach(
+        function(answer,index) {
+
+
+            const button =
+            document.createElement(
+                "button"
+            );
+
+
+            button.className =
+            "answer";
+
+
+            button.innerText =
+            String.fromCharCode(65 + index) +
+            ". " +
+            answer;
+
+
+            button.addEventListener(
+                "click",
+                function() {
+
+
+                    document
+                    .querySelectorAll(
+                        ".answer"
+                    )
+                    .forEach(option => {
+
+                        option.classList.remove(
+                            "selected"
+                        );
+
+                    });
+
+
+                    button.classList.add(
+                        "selected"
+                    );
+
+
+                    selectedAnswer =
+                    index;
+
+
+                    document.getElementById(
+                        "next-question"
+                    ).disabled =
+                    false;
+
+                }
+            );
+
+
+            container.appendChild(
+                button
+            );
+
+        }
+    );
+
+
+    const nextButton =
+    document.getElementById(
+        "next-question"
+    );
+
+
+    nextButton.disabled = true;
+
+
+    if (
+        currentQuestion ===
+        questions.length - 1
+    ) {
+
+        nextButton.innerText =
+        "Finalizar evaluación ✓";
+
+    }
+
+    else {
+
+        nextButton.innerText =
+        "Continuar →";
+
+    }
+
+}
+
+
+/* =====================================================
+   SIGUIENTE PREGUNTA
+===================================================== */
+
+document.getElementById(
+    "next-question"
+).addEventListener(
+    "click",
+    function() {
+
+
+        if (
+            selectedAnswer === null
+        ) {
+
+            return;
+
+        }
+
+
+        if (
+            selectedAnswer ===
+            questions[currentQuestion].correct
+        ) {
+
+            score++;
+
+        }
+
+
+        currentQuestion++;
+
+
+        if (
+            currentQuestion <
+            questions.length
+        ) {
+
+            showQuestion();
+
+        }
+
+        else {
+
+            showResult();
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   RESULTADO
+===================================================== */
+
+function showResult() {
+
+
+    document.getElementById(
+        "quiz-screen"
+    ).style.display =
+    "none";
+
+
+    document.getElementById(
+        "result-screen"
+    ).style.display =
+    "block";
+
+
+    document.getElementById(
+        "score"
+    ).innerText =
+    score +
+    " / " +
+    questions.length;
+
+
+    let message = "";
+
+
+    if (score === 5) {
+
+        message =
+        "🌟 ¡Excelente trabajo! Comprendiste muy bien el experimento y la función del recipiente de control.";
+
+    }
+
+    else if (score >= 4) {
+
+        message =
+        "👏 ¡Muy buen trabajo! Comprendiste la mayoría de los conceptos del experimento.";
+
+    }
+
+    else if (score >= 3) {
+
+        message =
+        "👍 Buen trabajo. Puedes repetir la simulación para observar nuevamente los cambios de temperatura.";
+
+    }
+
+    else {
+
+        message =
+        "📚 Te recomendamos repetir el experimento y observar con atención los termómetros.";
+
+    }
+
+
+    document.getElementById(
+        "feedback"
+    ).innerText =
+    message;
+
+}
+
+
+/* =====================================================
+   VOLVER A LA SIMULACIÓN
+===================================================== */
+
+document.getElementById(
+    "restart-quiz"
+).addEventListener(
+    "click",
+    function() {
+
+        document.getElementById(
+            "evaluation-screen"
+        ).style.display =
+        "none";
+
+    }
+);
+
+</script>
+
+</body>
+<script src="asistente.js"></script>
+</html>

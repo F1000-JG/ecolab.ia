@@ -1,0 +1,2191 @@
+                                                                                                                                                                                                                                                                          <!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="asistente.css">
+<title>Horno Solar | EcoLab IA</title>
+
+<style>
+
+/* =====================================================
+   ESTILOS GENERALES
+===================================================== */
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    overflow:hidden;
+    font-family:Arial,sans-serif;
+    background:#071b22;
+}
+
+
+/* =====================================================
+   ESCENARIO
+===================================================== */
+
+#solar-lab{
+
+    position:relative;
+
+    width:100vw;
+    height:100vh;
+
+    overflow:hidden;
+
+    background:
+    linear-gradient(
+        to bottom,
+        #70c5ed 0%,
+        #b9e7f5 53%,
+        #80c967 54%,
+        #4d9c49 100%
+    );
+}
+
+
+/* =====================================================
+   SOL
+===================================================== */
+
+#sun-decoration{
+
+    position:absolute;
+
+    top:70px;
+    right:85px;
+
+    width:105px;
+    height:105px;
+
+    border-radius:50%;
+
+    background:#ffd84d;
+
+    box-shadow:
+    0 0 35px rgba(255,216,77,.8),
+    0 0 70px rgba(255,216,77,.4);
+
+    z-index:1;
+}
+
+
+/* =====================================================
+   NUBES
+===================================================== */
+
+.cloud{
+
+    position:absolute;
+
+    width:130px;
+    height:40px;
+
+    border-radius:50px;
+
+    background:rgba(255,255,255,.78);
+
+    z-index:1;
+}
+
+.cloud::before{
+
+    content:"";
+
+    position:absolute;
+
+    width:60px;
+    height:60px;
+
+    left:20px;
+    bottom:8px;
+
+    border-radius:50%;
+
+    background:inherit;
+}
+
+.cloud::after{
+
+    content:"";
+
+    position:absolute;
+
+    width:70px;
+    height:70px;
+
+    right:15px;
+    bottom:7px;
+
+    border-radius:50%;
+
+    background:inherit;
+}
+
+#cloud1{
+    top:120px;
+    left:13%;
+}
+
+#cloud2{
+    top:230px;
+    left:58%;
+    transform:scale(.75);
+}
+
+
+/* =====================================================
+   TARJETA INFORMACIÓN
+===================================================== */
+
+#info-card{
+
+    position:absolute;
+
+    top:20px;
+    left:20px;
+
+    width:285px;
+
+    padding:18px;
+
+    border-radius:15px;
+
+    background:rgba(4,20,25,.9);
+
+    color:white;
+
+    z-index:30;
+
+    box-shadow:
+    0 8px 25px rgba(0,0,0,.4);
+}
+
+#info-card h2{
+
+    margin:0 0 12px;
+
+    color:#8cff8c;
+
+    font-size:20px;
+}
+
+#info-card p{
+
+    margin:8px 0;
+
+    font-size:13px;
+
+    line-height:1.45;
+}
+
+.dato{
+
+    color:#ffd84d;
+
+    font-weight:bold;
+}
+
+#experiment-info{
+
+    margin-top:12px;
+
+    padding:10px;
+
+    border-radius:10px;
+
+    background:rgba(255,255,255,.08);
+
+    color:#d9f0f0;
+
+    font-size:12px;
+
+    line-height:1.5;
+}
+
+
+/* =====================================================
+   PROGRESO
+===================================================== */
+
+#progress-container{
+
+    margin-top:14px;
+
+    padding:10px;
+
+    border-radius:10px;
+
+    background:rgba(255,255,255,.06);
+
+    font-size:11px;
+
+    text-align:center;
+}
+
+#progress-bar-background{
+
+    width:100%;
+
+    height:8px;
+
+    margin-top:8px;
+
+    border-radius:10px;
+
+    overflow:hidden;
+
+    background:#27434a;
+}
+
+#progress-bar{
+
+    width:0%;
+
+    height:100%;
+
+    background:#8cff8c;
+
+    transition:.4s;
+}
+
+
+/* =====================================================
+   PANEL CONTROL
+===================================================== */
+
+#control-panel{
+
+    position:absolute;
+
+    top:20px;
+    right:20px;
+
+    width:270px;
+
+    padding:18px;
+
+    border-radius:15px;
+
+    background:rgba(4,20,25,.92);
+
+    color:white;
+
+    z-index:30;
+
+    box-shadow:
+    0 8px 25px rgba(0,0,0,.4);
+}
+
+#control-panel h2{
+
+    margin:0 0 12px;
+
+    text-align:center;
+
+    color:#ffd84d;
+
+    font-size:18px;
+}
+
+#control-panel p{
+
+    font-size:12px;
+
+    line-height:1.5;
+
+    color:#d6e5e6;
+}
+
+button{
+
+    width:100%;
+
+    margin-top:10px;
+
+    padding:11px;
+
+    border:none;
+
+    border-radius:9px;
+
+    cursor:pointer;
+
+    font-weight:bold;
+
+    transition:.25s;
+}
+
+button:hover{
+
+    transform:translateY(-2px);
+}
+
+#next-button{
+
+    background:#8cff8c;
+
+    color:#06200d;
+}
+
+#reset-button{
+
+    background:#e9eeee;
+
+    color:#173038;
+}
+
+#finish-button{
+
+    background:#ffd84d;
+
+    color:#2c2200;
+}
+
+#finish-button:disabled{
+
+    opacity:.45;
+
+    cursor:not-allowed;
+}
+
+
+/* =====================================================
+   HORNO CENTRAL
+===================================================== */
+
+#solar-oven{
+
+    position:absolute;
+
+    left:50%;
+    top:52%;
+
+    width:600px;
+    height:430px;
+
+    transform:translate(-50%,-50%);
+
+    z-index:10;
+}
+
+
+/* =====================================================
+   CAJA
+===================================================== */
+
+#box{
+
+    position:absolute;
+
+    left:130px;
+    top:170px;
+
+    width:350px;
+    height:190px;
+
+    background:#b9783e;
+
+    border:6px solid #865229;
+
+    border-radius:8px 8px 18px 18px;
+
+    box-shadow:
+    0 15px 25px rgba(0,0,0,.3);
+
+    transition:.5s;
+
+    z-index:5;
+}
+
+
+/* =====================================================
+   INTERIOR
+===================================================== */
+
+#inside{
+
+    position:absolute;
+
+    left:20px;
+    top:20px;
+
+    width:298px;
+    height:142px;
+
+    background:#d9d0a9;
+
+    border:5px solid #93602f;
+
+    overflow:hidden;
+}
+
+
+/* =====================================================
+   PAPEL ALUMINIO
+===================================================== */
+
+#aluminum{
+
+    position:absolute;
+
+    inset:0;
+
+    opacity:0;
+
+    background:
+    repeating-linear-gradient(
+        45deg,
+        #e9e9e9 0px,
+        #bdbdbd 5px,
+        #f8f8f8 10px,
+        #a9a9a9 15px
+    );
+
+    transition:.5s;
+}
+
+#aluminum.active{
+
+    opacity:1;
+}
+
+
+/* =====================================================
+   PLATO
+===================================================== */
+
+#plate{
+
+    position:absolute;
+
+    width:145px;
+    height:42px;
+
+    left:76px;
+    top:78px;
+
+    border-radius:50%;
+
+    background:#f5f5f5;
+
+    border:6px solid #c9c9c9;
+
+    opacity:0;
+
+    z-index:4;
+
+    transition:.5s;
+}
+
+#plate.active{
+
+    opacity:1;
+}
+
+
+/* =====================================================
+   ALIMENTO
+===================================================== */
+
+#food{
+
+    position:absolute;
+
+    width:85px;
+    height:38px;
+
+    left:106px;
+    top:79px;
+
+    border-radius:50%;
+
+    background:#e59a38;
+
+    opacity:0;
+
+    z-index:6;
+
+    transition:.7s;
+
+    box-shadow:
+    inset 0 -7px 8px rgba(100,40,10,.25);
+}
+
+#food.active{
+
+    opacity:1;
+}
+
+#food.hot{
+
+    background:#b85d27;
+
+    transform:scale(.92);
+}
+
+
+/* =====================================================
+   TAPA
+===================================================== */
+
+#lid{
+
+    position:absolute;
+
+    left:115px;
+    top:95px;
+
+    width:380px;
+    height:175px;
+
+    background:#c68748;
+
+    border:6px solid #865229;
+
+    border-radius:10px;
+
+    transform-origin:bottom center;
+
+    transform:rotateX(58deg) rotateZ(-3deg);
+
+    transition:.7s;
+
+    z-index:12;
+
+    box-shadow:
+    0 12px 20px rgba(0,0,0,.25);
+}
+
+
+/* =====================================================
+   ABERTURA
+===================================================== */
+
+#window{
+
+    position:absolute;
+
+    left:42px;
+    top:28px;
+
+    width:290px;
+    height:112px;
+
+    border-radius:7px;
+
+    background:rgba(150,225,235,.48);
+
+    border:5px solid rgba(255,255,255,.8);
+
+    opacity:0;
+
+    transition:.5s;
+}
+
+#window.active{
+
+    opacity:1;
+}
+
+
+/* =====================================================
+   MANIJA
+===================================================== */
+
+#handle{
+
+    position:absolute;
+
+    width:80px;
+    height:12px;
+
+    left:145px;
+    top:-18px;
+
+    border-radius:10px;
+
+    background:#714621;
+}
+
+
+/* =====================================================
+   RAYOS SOLARES
+===================================================== */
+
+.solar-ray{
+
+    position:absolute;
+
+    width:170px;
+    height:5px;
+
+    border-radius:10px;
+
+    background:#ffd84d;
+
+    box-shadow:
+    0 0 10px #ffd84d;
+
+    opacity:0;
+
+    z-index:3;
+
+    transition:.4s;
+}
+
+.solar-ray.active{
+
+    opacity:1;
+
+    animation:solarMove 1s infinite alternate;
+}
+
+#ray1{
+
+    top:190px;
+    left:360px;
+
+    transform:rotate(145deg);
+}
+
+#ray2{
+
+    top:235px;
+    left:380px;
+
+    transform:rotate(158deg);
+}
+
+#ray3{
+
+    top:280px;
+    left:395px;
+
+    transform:rotate(170deg);
+}
+
+@keyframes solarMove{
+
+    from{
+        opacity:.45;
+    }
+
+    to{
+        opacity:1;
+    }
+}
+
+
+/* =====================================================
+   CALOR
+===================================================== */
+
+.heat{
+
+    position:absolute;
+
+    left:225px;
+    top:190px;
+
+    width:100px;
+    height:100px;
+
+    opacity:0;
+
+    z-index:9;
+}
+
+.heat.active{
+
+    opacity:1;
+}
+
+.heat span{
+
+    position:absolute;
+
+    width:5px;
+    height:50px;
+
+    border-left:4px solid rgba(255,155,50,.75);
+
+    border-radius:50%;
+
+    bottom:0;
+
+    animation:heat 1.4s infinite ease-in-out;
+}
+
+.heat span:nth-child(1){
+    left:5px;
+}
+
+.heat span:nth-child(2){
+    left:30px;
+    animation-delay:.2s;
+}
+
+.heat span:nth-child(3){
+    left:55px;
+    animation-delay:.4s;
+}
+
+.heat span:nth-child(4){
+    left:80px;
+    animation-delay:.6s;
+}
+
+@keyframes heat{
+
+    0%{
+        transform:translateY(15px);
+        opacity:0;
+    }
+
+    40%{
+        opacity:1;
+    }
+
+    100%{
+        transform:translateY(-25px);
+        opacity:0;
+    }
+}
+
+
+/* =====================================================
+   ETIQUETAS
+===================================================== */
+
+.label{
+
+    position:absolute;
+
+    padding:7px 11px;
+
+    border-radius:9px;
+
+    background:rgba(4,20,25,.9);
+
+    color:white;
+
+    font-size:11px;
+
+    font-weight:bold;
+
+    opacity:0;
+
+    transition:.4s;
+
+    z-index:25;
+}
+
+.label.active{
+
+    opacity:1;
+}
+
+#label-box{
+
+    left:55px;
+    bottom:70px;
+}
+
+#label-aluminum{
+
+    left:370px;
+    top:170px;
+}
+
+#label-food{
+
+    left:405px;
+    bottom:115px;
+}
+
+#label-sun{
+
+    right:185px;
+    top:150px;
+
+    color:#ffd84d;
+}
+
+
+/* =====================================================
+   INDICADORES
+===================================================== */
+
+#temperature{
+
+    position:absolute;
+
+    left:50%;
+    bottom:80px;
+
+    transform:translateX(-50%);
+
+    padding:10px 18px;
+
+    border-radius:12px;
+
+    background:rgba(4,20,25,.88);
+
+    color:#ffd84d;
+
+    font-weight:bold;
+
+    font-size:14px;
+
+    z-index:30;
+}
+
+
+/* =====================================================
+   INSTRUCCIÓN
+===================================================== */
+
+#instruction{
+
+    position:absolute;
+
+    bottom:20px;
+    left:50%;
+
+    transform:translateX(-50%);
+
+    padding:12px 22px;
+
+    border-radius:12px;
+
+    background:rgba(0,0,0,.72);
+
+    color:white;
+
+    font-size:13px;
+
+    text-align:center;
+
+    z-index:30;
+}
+
+#instruction span{
+
+    color:#ffd84d;
+
+    font-weight:bold;
+}
+
+
+/* =====================================================
+   EVALUACIÓN
+===================================================== */
+
+#evaluation-screen{
+
+    position:fixed;
+
+    inset:0;
+
+    display:none;
+
+    justify-content:center;
+    align-items:center;
+
+    padding:20px;
+
+    background:rgba(2,10,14,.9);
+
+    z-index:100;
+
+    color:white;
+}
+
+#evaluation-card{
+
+    width:min(650px,95vw);
+
+    max-height:90vh;
+
+    overflow-y:auto;
+
+    padding:30px;
+
+    border-radius:25px;
+
+    background:
+    linear-gradient(
+        145deg,
+        #123c36,
+        #071b22
+    );
+
+    box-shadow:
+    0 20px 60px rgba(0,0,0,.7);
+}
+
+.evaluation-header{
+
+    text-align:center;
+}
+
+.evaluation-header h2{
+
+    color:#8cff8c;
+
+    margin:8px 0;
+}
+
+.evaluation-icon{
+
+    font-size:45px;
+}
+
+#question-counter{
+
+    margin-top:20px;
+
+    color:#ffd84d;
+
+    font-size:13px;
+
+    font-weight:bold;
+}
+
+#question-text{
+
+    line-height:1.5;
+
+    font-size:18px;
+}
+
+.answer{
+
+    width:100%;
+
+    margin-top:10px;
+
+    padding:14px;
+
+    border:1px solid #456468;
+
+    border-radius:10px;
+
+    background:rgba(255,255,255,.06);
+
+    color:white;
+
+    text-align:left;
+
+    cursor:pointer;
+}
+
+.answer:hover{
+
+    background:rgba(140,255,140,.1);
+
+    border-color:#8cff8c;
+}
+
+.answer.selected{
+
+    background:rgba(140,255,140,.2);
+
+    border-color:#8cff8c;
+}
+
+#next-question{
+
+    background:#8cff8c;
+
+    color:#06200d;
+}
+
+#next-question:disabled{
+
+    opacity:.4;
+
+    cursor:not-allowed;
+}
+
+
+/* =====================================================
+   RESULTADO
+===================================================== */
+
+#result-screen{
+
+    display:none;
+
+    text-align:center;
+}
+
+#result-screen h2{
+
+    color:#8cff8c;
+}
+
+.result-icon{
+
+    font-size:60px;
+}
+
+#score{
+
+    font-size:40px;
+
+    color:#ffd84d;
+
+    font-weight:bold;
+
+    margin:20px 0;
+}
+
+#feedback{
+
+    line-height:1.6;
+
+    color:#dce8e9;
+}
+
+#restart-quiz{
+
+    background:#ffd84d;
+
+    color:#2c2200;
+}
+
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media(max-width:850px){
+
+    #info-card{
+
+        width:220px;
+    }
+
+    #control-panel{
+
+        width:210px;
+    }
+
+    #solar-oven{
+
+        transform:
+        translate(-50%,-50%)
+        scale(.72);
+    }
+
+}
+
+@media(max-width:650px){
+
+    #info-card{
+
+        width:190px;
+
+        padding:12px;
+    }
+
+    #info-card h2{
+
+        font-size:15px;
+    }
+
+    #info-card p{
+
+        font-size:10px;
+    }
+
+    #control-panel{
+
+        width:180px;
+
+        padding:12px;
+    }
+
+    #control-panel h2{
+
+        font-size:14px;
+    }
+
+    #control-panel p{
+
+        font-size:10px;
+    }
+
+    #solar-oven{
+
+        transform:
+        translate(-50%,-50%)
+        scale(.52);
+    }
+
+    #instruction{
+
+        display:none;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div id="solar-lab">
+
+
+<!-- =====================================================
+     DECORACIÓN
+===================================================== -->
+
+<div id="sun-decoration"></div>
+
+<div class="cloud" id="cloud1"></div>
+
+<div class="cloud" id="cloud2"></div>
+
+
+<!-- =====================================================
+     INFORMACIÓN
+===================================================== -->
+
+<div id="info-card">
+
+<h2>☀️ Horno Solar</h2>
+
+<p>
+🔧 Paso:
+<span id="step-count" class="dato">0</span>
+/ 5
+</p>
+
+<p>
+🌡️ Temperatura:
+<span id="temperature-info" class="dato">25 °C</span>
+</p>
+
+<p>
+⏱️ Tiempo:
+<span id="time-info" class="dato">0 min</span>
+</p>
+
+<div id="experiment-info">
+
+Observa cómo la energía del Sol puede transformarse en calor dentro de una caja.
+
+</div>
+
+<div id="progress-container">
+
+<span id="progress-text">
+0% del experimento
+</span>
+
+<div id="progress-bar-background">
+
+<div id="progress-bar"></div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- =====================================================
+     PANEL DE CONTROL
+===================================================== -->
+
+<div id="control-panel">
+
+<h2>🔬 Realiza el experimento</h2>
+
+<p>
+Construye el horno siguiendo los pasos.
+</p>
+
+<p>
+Observa qué ocurre cuando la energía solar entra en la caja.
+</p>
+
+<p>
+Completa los 5 pasos para desbloquear la evaluación.
+</p>
+
+<button id="next-button">
+▶ Comenzar
+</button>
+
+<button id="reset-button">
+↻ Reiniciar simulación
+</button>
+
+<button id="finish-button" disabled>
+📝 Realizar evaluación
+</button>
+
+</div>
+
+
+<!-- =====================================================
+     RAYOS
+===================================================== -->
+
+<div class="solar-ray" id="ray1"></div>
+
+<div class="solar-ray" id="ray2"></div>
+
+<div class="solar-ray" id="ray3"></div>
+
+
+<!-- =====================================================
+     HORNO
+===================================================== -->
+
+<div id="solar-oven">
+
+
+<div id="box">
+
+<div id="inside">
+
+<div id="aluminum"></div>
+
+<div id="plate"></div>
+
+<div id="food"></div>
+
+<div class="heat" id="heat">
+
+<span></span>
+<span></span>
+<span></span>
+<span></span>
+
+</div>
+
+</div>
+
+</div>
+
+
+<div id="lid">
+
+<div id="handle"></div>
+
+<div id="window"></div>
+
+</div>
+
+
+</div>
+
+
+<!-- =====================================================
+     ETIQUETAS
+===================================================== -->
+
+<div class="label active" id="label-box">
+
+📦 Caja de cartón
+
+</div>
+
+<div class="label" id="label-aluminum">
+
+✨ Papel aluminio
+
+</div>
+
+<div class="label" id="label-food">
+
+🍎 Alimento
+
+</div>
+
+<div class="label" id="label-sun">
+
+☀️ Energía solar
+
+</div>
+
+
+<!-- =====================================================
+     TEMPERATURA
+===================================================== -->
+
+<div id="temperature">
+
+🌡️ 25 °C
+
+</div>
+
+
+<!-- =====================================================
+     INSTRUCCIÓN
+===================================================== -->
+
+<div id="instruction">
+
+🔧 Presiona <span>Comenzar</span> para construir el horno solar.
+
+</div>
+
+
+<!-- =====================================================
+     EVALUACIÓN
+===================================================== -->
+
+<div id="evaluation-screen">
+
+<div id="evaluation-card">
+
+
+<div id="quiz-screen">
+
+<div class="evaluation-header">
+
+<div class="evaluation-icon">
+☀️
+</div>
+
+<h2>
+Evaluación del Experimento
+</h2>
+
+<p>
+Responde según lo observado durante la simulación.
+</p>
+
+</div>
+
+<div id="question-counter">
+Pregunta 1 de 5
+</div>
+
+<h3 id="question-text"></h3>
+
+<div id="answers-container"></div>
+
+<button id="next-question" disabled>
+Continuar →
+</button>
+
+</div>
+
+
+<div id="result-screen">
+
+<div class="result-icon">
+🏆
+</div>
+
+<h2>
+¡Evaluación terminada!
+</h2>
+
+<div id="score">
+0 / 5
+</div>
+
+<p id="feedback"></p>
+
+<button id="restart-quiz">
+☀️ Volver a la simulación
+</button>
+
+</div>
+
+
+</div>
+
+</div>
+
+
+<script>
+
+/* =====================================================
+   VARIABLES
+===================================================== */
+
+let currentStep=0;
+
+let temperature=25;
+
+let selectedAnswer=null;
+
+let currentQuestion=0;
+
+let score=0;
+
+
+/* =====================================================
+   ELEMENTOS
+===================================================== */
+
+const nextButton=
+document.getElementById("next-button");
+
+const finishButton=
+document.getElementById("finish-button");
+
+
+/* =====================================================
+   PASOS
+===================================================== */
+
+const steps=[
+
+{
+
+title:
+"Paso 1 · Preparar la caja",
+
+info:
+"Primero se utiliza una caja de cartón. Se marca un rectángulo en la tapa y se cortan tres lados.",
+
+instruction:
+"📦 Prepara la caja de cartón. La abertura de la tapa permitirá aprovechar la luz del Sol.",
+
+observation:
+"La caja funciona como la estructura principal del horno."
+
+},
+
+{
+
+title:
+"Paso 2 · Colocar el aluminio",
+
+info:
+"El interior de la caja se forra con papel aluminio para reflejar la radiación solar hacia el interior.",
+
+instruction:
+"✨ Ahora coloca el papel aluminio dentro de la caja.",
+
+observation:
+"El interior se vuelve reflectante y puede dirigir mejor la radiación solar."
+
+},
+
+{
+
+title:
+"Paso 3 · Colocar el alimento",
+
+info:
+"El alimento se coloca sobre un plato dentro de la caja. Después se cubre la abertura con plástico transparente.",
+
+instruction:
+"🍎 Coloca el alimento y cubre la abertura con plástico transparente.",
+
+observation:
+"El alimento queda dentro del horno y listo para recibir energía solar."
+
+},
+
+{
+
+title:
+"Paso 4 · Exponer al Sol",
+
+info:
+"El horno se coloca bajo el Sol con la abertura orientada hacia la radiación solar.",
+
+instruction:
+"☀️ Coloca el horno al Sol. Observa cómo los rayos entran en la caja.",
+
+observation:
+"La radiación solar comienza a convertirse en energía térmica.",
+
+temperature:40
+
+},
+
+{
+
+title:
+"Paso 5 · Observar el calentamiento",
+
+info:
+"Con el paso del tiempo, el calor se acumula dentro del horno y aumenta la temperatura del alimento.",
+
+instruction:
+"🌡️ Observa el aumento de temperatura y el cambio del alimento.",
+
+observation:
+"El alimento se calienta gracias a la energía solar acumulada dentro del horno.",
+
+temperature:70
+
+}
+
+];
+
+
+/* =====================================================
+   SIGUIENTE PASO
+===================================================== */
+
+nextButton.addEventListener(
+"click",
+function(){
+
+if(currentStep>=5)return;
+
+currentStep++;
+
+const step=steps[currentStep-1];
+
+document.getElementById(
+"step-count"
+).innerText=currentStep;
+
+document.getElementById(
+"experiment-info"
+).innerText=step.info;
+
+document.getElementById(
+"instruction"
+).innerHTML=
+step.instruction;
+
+document.getElementById(
+"progress-bar"
+).style.width=
+(currentStep/5*100)+"%";
+
+document.getElementById(
+"progress-text"
+).innerText=
+Math.round(currentStep/5*100)+
+"% del experimento";
+
+
+/* PASO 1 */
+
+if(currentStep===1){
+
+document.getElementById(
+"lid"
+).style.transform=
+"rotateX(65deg) rotateZ(-3deg)";
+
+document.getElementById(
+"label-box"
+).classList.add("active");
+
+nextButton.innerText=
+"▶ Colocar aluminio";
+
+}
+
+
+/* PASO 2 */
+
+if(currentStep===2){
+
+document.getElementById(
+"aluminum"
+).classList.add("active");
+
+document.getElementById(
+"label-aluminum"
+).classList.add("active");
+
+nextButton.innerText=
+"▶ Colocar alimento";
+
+}
+
+
+/* PASO 3 */
+
+if(currentStep===3){
+
+document.getElementById(
+"plate"
+).classList.add("active");
+
+document.getElementById(
+"food"
+).classList.add("active");
+
+document.getElementById(
+"window"
+).classList.add("active");
+
+nextButton.innerText=
+"▶ Llevar al Sol";
+
+}
+
+
+/* PASO 4 */
+
+if(currentStep===4){
+
+document.getElementById(
+"ray1"
+).classList.add("active");
+
+document.getElementById(
+"ray2"
+).classList.add("active");
+
+document.getElementById(
+"ray3"
+).classList.add("active");
+
+document.getElementById(
+"label-sun"
+).classList.add("active");
+
+temperature=40;
+
+document.getElementById(
+"temperature"
+).innerText=
+"🌡️ 40 °C";
+
+document.getElementById(
+"temperature-info"
+).innerText=
+"40 °C";
+
+document.getElementById(
+"time-info"
+).innerText=
+"10 min";
+
+nextButton.innerText=
+"▶ Observar calentamiento";
+
+}
+
+
+/* PASO 5 */
+
+if(currentStep===5){
+
+document.getElementById(
+"heat"
+).classList.add("active");
+
+document.getElementById(
+"food"
+).classList.add("hot");
+
+temperature=70;
+
+document.getElementById(
+"temperature"
+).innerText=
+"🌡️ 70 °C";
+
+document.getElementById(
+"temperature-info"
+).innerText=
+"70 °C";
+
+document.getElementById(
+"time-info"
+).innerText=
+"20 min";
+
+document.getElementById(
+"label-food"
+).classList.add("active");
+
+nextButton.innerText=
+"✓ Experimento terminado";
+
+nextButton.disabled=true;
+
+finishButton.disabled=false;
+
+}
+
+
+/* ACTUALIZAR ESTADO */
+
+document.getElementById(
+"step-count"
+).innerText=currentStep;
+
+}
+);
+
+
+/* =====================================================
+   REINICIAR
+===================================================== */
+
+document.getElementById(
+"reset-button"
+).addEventListener(
+"click",
+function(){
+
+currentStep=0;
+
+temperature=25;
+
+document.getElementById(
+"step-count"
+).innerText="0";
+
+document.getElementById(
+"temperature-info"
+).innerText="25 °C";
+
+document.getElementById(
+"time-info"
+).innerText="0 min";
+
+document.getElementById(
+"temperature"
+).innerText="🌡️ 25 °C";
+
+document.getElementById(
+"progress-bar"
+).style.width="0%";
+
+document.getElementById(
+"progress-text"
+).innerText=
+"0% del experimento";
+
+document.getElementById(
+"experiment-info"
+).innerText=
+"Observa cómo la energía del Sol puede transformarse en calor dentro de una caja.";
+
+document.getElementById(
+"instruction"
+).innerHTML=
+'🔧 Presiona <span>Comenzar</span> para construir el horno solar.';
+
+document.getElementById(
+"aluminum"
+).classList.remove("active");
+
+document.getElementById(
+"plate"
+).classList.remove("active");
+
+document.getElementById(
+"food"
+).classList.remove("active","hot");
+
+document.getElementById(
+"window"
+).classList.remove("active");
+
+document.getElementById(
+"heat"
+).classList.remove("active");
+
+document.getElementById(
+"ray1"
+).classList.remove("active");
+
+document.getElementById(
+"ray2"
+).classList.remove("active");
+
+document.getElementById(
+"ray3"
+).classList.remove("active");
+
+document.getElementById(
+"label-aluminum"
+).classList.remove("active");
+
+document.getElementById(
+"label-food"
+).classList.remove("active");
+
+document.getElementById(
+"label-sun"
+).classList.remove("active");
+
+document.getElementById(
+"label-box"
+).classList.add("active");
+
+document.getElementById(
+"lid"
+).style.transform=
+"rotateX(58deg) rotateZ(-3deg)";
+
+nextButton.disabled=false;
+
+nextButton.innerText=
+"▶ Comenzar";
+
+finishButton.disabled=true;
+
+}
+);
+
+
+/* =====================================================
+   PREGUNTAS
+===================================================== */
+
+const questions=[
+
+{
+
+question:
+"¿Cuál es la principal fuente de energía del horno solar?",
+
+answers:[
+"El agua",
+"El Sol",
+"El cartón",
+"El viento"
+],
+
+correct:1
+
+},
+
+{
+
+question:
+"¿Para qué se utiliza el papel aluminio dentro del horno?",
+
+answers:[
+"Para absorber agua",
+"Para enfriar el alimento",
+"Para reflejar la radiación solar",
+"Para decorar la caja"
+],
+
+correct:2
+
+},
+
+{
+
+question:
+"¿Qué función cumple el plástico transparente?",
+
+answers:[
+"Permite entrar la luz y ayuda a conservar el calor",
+"Bloquea toda la luz",
+"Enfría el horno",
+"Produce electricidad"
+],
+
+correct:0
+
+},
+
+{
+
+question:
+"¿Qué sucede con la temperatura dentro del horno cuando recibe radiación solar?",
+
+answers:[
+"Disminuye",
+"Aumenta",
+"Permanece siempre igual",
+"Se convierte en agua"
+],
+
+correct:1
+
+},
+
+{
+
+question:
+"¿Qué condición permite que el horno solar funcione mejor?",
+
+answers:[
+"Un día soleado",
+"Una noche oscura",
+"Una tormenta fuerte",
+"Un lugar sin luz"
+],
+
+correct:0
+
+}
+
+];
+
+
+/* =====================================================
+   ABRIR EVALUACIÓN
+===================================================== */
+
+finishButton.addEventListener(
+"click",
+function(){
+
+document.getElementById(
+"evaluation-screen"
+).style.display="flex";
+
+startQuiz();
+
+}
+);
+
+
+/* =====================================================
+   INICIAR QUIZ
+===================================================== */
+
+function startQuiz(){
+
+currentQuestion=0;
+
+score=0;
+
+selectedAnswer=null;
+
+document.getElementById(
+"quiz-screen"
+).style.display="block";
+
+document.getElementById(
+"result-screen"
+).style.display="none";
+
+showQuestion();
+
+}
+
+
+/* =====================================================
+   MOSTRAR PREGUNTA
+===================================================== */
+
+function showQuestion(){
+
+selectedAnswer=null;
+
+const question=
+questions[currentQuestion];
+
+document.getElementById(
+"question-counter"
+).innerText=
+"Pregunta "+
+(currentQuestion+1)+
+" de "+
+questions.length;
+
+document.getElementById(
+"question-text"
+).innerText=
+question.question;
+
+const container=
+document.getElementById(
+"answers-container"
+);
+
+container.innerHTML="";
+
+question.answers.forEach(
+function(answer,index){
+
+const button=
+document.createElement("button");
+
+button.className="answer";
+
+button.innerText=
+String.fromCharCode(65+index)+
+". "+
+answer;
+
+button.addEventListener(
+"click",
+function(){
+
+document
+.querySelectorAll(".answer")
+.forEach(
+option=>{
+option.classList.remove("selected");
+}
+);
+
+button.classList.add("selected");
+
+selectedAnswer=index;
+
+document.getElementById(
+"next-question"
+).disabled=false;
+
+}
+);
+
+container.appendChild(button);
+
+}
+);
+
+document.getElementById(
+"next-question"
+).disabled=true;
+
+if(
+currentQuestion===
+questions.length-1
+){
+
+document.getElementById(
+"next-question"
+).innerText=
+"Finalizar evaluación ✓";
+
+}else{
+
+document.getElementById(
+"next-question"
+).innerText=
+"Continuar →";
+
+}
+
+}
+
+
+/* =====================================================
+   SIGUIENTE PREGUNTA
+===================================================== */
+
+document.getElementById(
+"next-question"
+).addEventListener(
+"click",
+function(){
+
+if(selectedAnswer===null)return;
+
+if(
+selectedAnswer===
+questions[currentQuestion].correct
+){
+
+score++;
+
+}
+
+currentQuestion++;
+
+if(
+currentQuestion<
+questions.length
+){
+
+showQuestion();
+
+}else{
+
+showResult();
+
+}
+
+}
+);
+
+
+/* =====================================================
+   RESULTADO
+===================================================== */
+
+function showResult(){
+
+document.getElementById(
+"quiz-screen"
+).style.display="none";
+
+document.getElementById(
+"result-screen"
+).style.display="block";
+
+document.getElementById(
+"score"
+).innerText=
+score+
+" / "+
+questions.length;
+
+let message="";
+
+if(score===5){
+
+message=
+"🌟 ¡Excelente! Comprendiste cómo se construye el horno solar y cómo aprovecha la energía del Sol para producir calor.";
+
+}else if(score>=4){
+
+message=
+"👏 ¡Muy buen trabajo! Comprendiste la mayoría de los conceptos del horno solar.";
+
+}else if(score>=3){
+
+message=
+"👍 Buen trabajo. Puedes volver a observar la simulación para comprender mejor cómo se concentra el calor.";
+
+}else{
+
+message=
+"📚 Te recomendamos repetir la simulación y observar qué función cumple cada material.";
+
+}
+
+document.getElementById(
+"feedback"
+).innerText=message;
+
+}
+
+
+/* =====================================================
+   VOLVER
+===================================================== */
+
+document.getElementById(
+"restart-quiz"
+).addEventListener(
+"click",
+function(){
+
+document.getElementById(
+"evaluation-screen"
+).style.display="none";
+
+}
+);
+
+</script>
+
+</div>
+<script src="asistente.js"></script>
+</body>
+
+</html>

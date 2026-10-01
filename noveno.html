@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Noveno Grado | EcoLab IA Pro</title>
+    
+    <!-- Tipografía Ultra Moderna -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* Paleta Cyber-Aqua Hyper-Pro */
+            --bg-main: #020617;
+            --card-bg: rgba(13, 22, 45, 0.7);
+            --card-border: rgba(0, 242, 254, 0.18);
+            
+            --text-title: #ffffff;
+            --text-body: #94a3b8;
+            
+            /* Neones principal */
+            --aqua-primary: #00f2fe;
+            --aqua-glow: rgba(0, 242, 254, 0.6);
+            --cyan-accent: #38bdf8;
+            --blue-deep: #0284c7;
+            
+            --fisica-glow: #00f2fe;
+            --bio-glow: #00f2c3;
+            --quimica-glow: #38bdf8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-body);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            min-height: 100vh;
+            line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* --- FONDO INTERACTIVO DE PARTICULAS Y ORBES FLOTANTES --- */
+        .orb-flotante {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(90px);
+            z-index: 0;
+            pointer-events: none;
+            animation: flotarOrb 14s infinite ease-in-out alternate;
+        }
+
+        .orb-1 {
+            width: 400px;
+            height: 400px;
+            background: rgba(0, 242, 254, 0.15);
+            top: -80px;
+            left: -80px;
+        }
+
+        .orb-2 {
+            width: 500px;
+            height: 500px;
+            background: rgba(56, 189, 248, 0.12);
+            bottom: 5%;
+            right: -120px;
+            animation-delay: -6s;
+        }
+
+        .orb-3 {
+            width: 350px;
+            height: 350px;
+            background: rgba(0, 242, 195, 0.1);
+            top: 40%;
+            left: 15%;
+            animation-delay: -10s;
+        }
+
+        @keyframes flotarOrb {
+            0% { transform: translateY(0) scale(1) rotate(0deg); }
+            50% { transform: translateY(-50px) scale(1.15) rotate(180deg); }
+            100% { transform: translateY(40px) scale(0.9) rotate(360deg); }
+        }
+
+        /* PARTÍCULAS LUMINOSAS SUSPENDIDAS */
+        .particle-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--aqua-primary);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--aqua-primary), 0 0 20px var(--aqua-primary);
+            animation: floatParticle 8s infinite linear;
+            opacity: 0.6;
+        }
+
+        .p1 { top: 20%; left: 10%; animation-duration: 9s; }
+        .p2 { top: 70%; left: 85%; animation-duration: 12s; animation-delay: -3s; }
+        .p3 { top: 40%; left: 75%; animation-duration: 7s; animation-delay: -1s; }
+        .p4 { top: 85%; left: 20%; animation-duration: 11s; animation-delay: -5s; }
+        .p5 { top: 15%; left: 60%; animation-duration: 10s; animation-delay: -2s; }
+
+        @keyframes floatParticle {
+            0% { transform: translateY(0) translateX(0); opacity: 0; }
+            50% { opacity: 0.8; }
+            100% { transform: translateY(-100px) translateX(30px); opacity: 0; }
+        }
+
+        /* --- HEADER CYBER-GLASS --- */
+        .navbar-container {
+            position: sticky;
+            top: 20px;
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            padding: 0 20px;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 1200px;
+            padding: 12px 28px;
+            background: rgba(6, 11, 25, 0.8);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--card-border);
+            border-radius: 100px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 242, 254, 0.12);
+        }
+
+        .nav-btn-pill {
+            background: linear-gradient(135deg, var(--aqua-primary), var(--cyan-accent));
+            color: #030712;
+            font-weight: 800;
+            font-size: 13px;
+            padding: 10px 24px;
+            border-radius: 50px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 0 20px var(--aqua-glow);
+        }
+
+        .nav-btn-pill:hover {
+            transform: translateY(-2px) scale(1.03);
+            box-shadow: 0 0 35px rgba(0, 242, 254, 0.9);
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 900;
+            color: var(--text-title);
+            letter-spacing: -0.5px;
+        }
+
+        .logo span {
+            color: var(--aqua-primary);
+            text-shadow: 0 0 15px var(--aqua-glow);
+        }
+
+        nav a.activo {
+            color: var(--aqua-primary);
+            background: rgba(0, 242, 254, 0.1);
+            border: 1px solid rgba(0, 242, 254, 0.4);
+            padding: 8px 22px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 700;
+            box-shadow: inset 0 0 15px rgba(0, 242, 254, 0.2);
+        }
+
+        /* MAIN HERO */
+        main {
+            position: relative;
+            z-index: 10;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 24px 100px;
+        }
+
+        .hero {
+            text-align: center;
+            max-width: 780px;
+            margin: 0 auto 80px;
+        }
+
+        .etiqueta {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            padding: 8px 20px;
+            border-radius: 100px;
+            background: rgba(0, 242, 254, 0.1);
+            color: var(--aqua-primary);
+            border: 1px solid rgba(0, 242, 254, 0.4);
+            margin-bottom: 24px;
+            box-shadow: 0 0 20px rgba(0, 242, 254, 0.25);
+            animation: pulsoResplandor 3s infinite alternate;
+        }
+
+        @keyframes pulsoResplandor {
+            0% { box-shadow: 0 0 10px rgba(0, 242, 254, 0.2); }
+            100% { box-shadow: 0 0 30px rgba(0, 242, 254, 0.6); }
+        }
+
+        .hero h1 {
+            font-size: 56px;
+            font-weight: 900;
+            letter-spacing: -2px;
+            color: var(--text-title);
+            line-height: 1.1;
+            margin-bottom: 22px;
+        }
+
+        .hero h1 span {
+            background: linear-gradient(135deg, #ffffff 10%, var(--aqua-primary) 70%, var(--cyan-accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 25px rgba(0, 242, 254, 0.4));
+        }
+
+        .hero p {
+            font-size: 18px;
+            color: var(--text-body);
+        }
+
+        /* MÓDULOS DE MATERIAS */
+        .seccion-laboratorios {
+            margin-bottom: 90px;
+        }
+
+        .header-modulo {
+            text-align: center;
+            margin-bottom: 50px;
+            max-width: 650px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .badge-modulo {
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 6px 18px;
+            border-radius: 50px;
+            display: inline-block;
+            margin-bottom: 14px;
+        }
+
+        .header-modulo h2 {
+            font-size: 36px;
+            font-weight: 800;
+            letter-spacing: -1px;
+            color: var(--text-title);
+            margin-bottom: 10px;
+        }
+
+        /* Estilo para las nuevas descripciones de módulo */
+        .header-modulo p {
+            font-size: 15px;
+            color: var(--text-body);
+            line-height: 1.5;
+        }
+
+        /* GRID RESPONSIVO */
+        .grid-laboratorios {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 28px;
+        }
+
+        /* TARJETAS CYBER CON ESCANEO LUMINOSO */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 34px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: -100%;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, transparent, rgba(0, 242, 254, 0.15), transparent);
+            transition: all 0.6s ease;
+            pointer-events: none;
+        }
+
+        .card:hover::before {
+            top: 100%;
+        }
+
+        .card:hover {
+            transform: translateY(-8px) scale(1.02);
+            background: rgba(15, 28, 60, 0.85);
+            border-color: rgba(0, 242, 254, 0.6);
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.9), 0 0 35px rgba(0, 242, 254, 0.3);
+        }
+
+        .card-header-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .icono-flotante {
+            font-size: 26px;
+            width: 58px;
+            height: 58px;
+            border-radius: 18px;
+            background: rgba(0, 242, 254, 0.08);
+            border: 1px solid rgba(0, 242, 254, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 20px rgba(0, 242, 254, 0.15);
+            animation: flotarIcono 4s infinite ease-in-out alternate;
+        }
+
+        .card:nth-child(even) .icono-flotante {
+            animation-delay: -2s;
+        }
+
+        @keyframes flotarIcono {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-10px); }
+        }
+
+        .badge-experimento {
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            padding: 5px 14px;
+            border-radius: 8px;
+            background: rgba(0, 242, 254, 0.12);
+            color: var(--aqua-primary);
+            border: 1px solid rgba(0, 242, 254, 0.35);
+            box-shadow: 0 0 12px rgba(0, 242, 254, 0.2);
+        }
+
+        .card h3 {
+            font-size: 22px;
+            font-weight: 800;
+            margin-bottom: 14px;
+            letter-spacing: -0.4px;
+            background: linear-gradient(135deg, #ffffff 30%, var(--aqua-primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 12px rgba(0, 242, 254, 0.4));
+        }
+
+        .card p {
+            font-size: 14px;
+            color: var(--text-body);
+            margin-bottom: 32px;
+            line-height: 1.6;
+        }
+
+        .btn-simulacion {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 15px;
+            border-radius: 16px;
+            font-size: 14px;
+            font-weight: 800;
+            text-decoration: none;
+            background: rgba(0, 242, 254, 0.08);
+            color: var(--aqua-primary);
+            border: 1px solid rgba(0, 242, 254, 0.35);
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 2;
+        }
+
+        .btn-simulacion:hover {
+            background: var(--aqua-primary);
+            color: #030712;
+            box-shadow: 0 0 35px var(--aqua-glow);
+            border-color: var(--aqua-primary);
+        }
+
+        /* ESTILOS ESPECÍFICOS POR MATERIA */
+        .mod-fisica .badge-modulo { background: rgba(0, 242, 254, 0.12); color: var(--fisica-glow); border: 1px solid rgba(0, 242, 254, 0.35); box-shadow: 0 0 15px rgba(0, 242, 254, 0.2); }
+        .mod-bio .badge-modulo { background: rgba(0, 242, 195, 0.12); color: var(--bio-glow); border: 1px solid rgba(0, 242, 195, 0.35); box-shadow: 0 0 15px rgba(0, 242, 195, 0.2); }
+        .mod-quimica .badge-modulo { background: rgba(56, 189, 248, 0.12); color: var(--quimica-glow); border: 1px solid rgba(56, 189, 248, 0.35); box-shadow: 0 0 15px rgba(56, 189, 248, 0.2); }
+
+        /* ADAPTACIÓN RESPONSIVA */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 38px; }
+            .grid-laboratorios { grid-template-columns: 1fr; }
+            .navbar { padding: 10px 18px; }
+            .logo { font-size: 16px; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- FONDO DE LUZ Y PARTÍCULAS DINÁMICAS -->
+    <div class="orb-flotante orb-1"></div>
+    <div class="orb-flotante orb-2"></div>
+    <div class="orb-flotante orb-3"></div>
+
+    <div class="particle-container">
+        <div class="particle p1"></div>
+        <div class="particle p2"></div>
+        <div class="particle p3"></div>
+        <div class="particle p4"></div>
+        <div class="particle p5"></div>
+    </div>
+
+    <!-- MENÚ FLOTANTE AQUA CYBER -->
+    <div class="navbar-container">
+        <header class="navbar">
+            <div style="display: flex; align-items: center; gap: 16px;">
+                <a href="laboratorio.html" class="nav-btn-pill">
+                    <span>⚡</span> Inicio
+                </a>
+                <div class="logo">
+                    EcoLab <span>IA</span>
+                </div>
+            </div>
+
+            <nav>
+                <a href="noveno.html" class="activo">Noveno Grado</a>
+            </nav>
+        </header>
+    </div>
+
+    <main>
+
+        <!-- HERO PRINCIPAL -->
+        <section class="hero">
+            
+            <h1>Ciencias de <span>Noveno Grado</span></h1>
+            <p>Explora, experimenta y comprende fenómenos científicos complejos mediante simulaciones interactivas en tiempo real.</p>
+        </section>
+
+        <!-- MÓDULO FÍSICA -->
+        <section class="seccion-laboratorios mod-fisica">
+            <div class="header-modulo">
+                <span class="badge-modulo">Módulo Didáctico</span>
+                <h2>⚡ Experimentos de Física</h2>
+                <p>Estudia las leyes del movimiento, mecánica de fluidos y termodinámica mediante modelos tridimensionales interactivos.</p>
+            </div>
+
+            <div class="grid-laboratorios">
+                <article class="card">
+                    <div>
+                        <div class="card-header-info">
+                            <div class="icono-flotante">🌊</div>
+                            <span class="badge-experimento">EXP 01</span>
+                        </div>
+                        <h3>Presión y Nivel del Agua</h3>
+                        <p>Explora cómo cambia la presión del agua dependiendo de la profundidad y observa sus efectos mediante una simulación 3D.</p>
+                    </div>
+                    <a href="laboratorio1.html" class="btn-simulacion">Iniciar Experimento 3D →</a>
+                </article>
+
+                <article class="card">
+                    <div>
+                        <div class="card-header-info">
+                            <div class="icono-flotante">⚙️</div>
+                            <span class="badge-experimento">EXP 02</span>
+                        </div>
+                        <h3>Jeringas Hidráulicas</h3>
+                        <p>Comprende el Principio de Pascal y observa cómo la presión aplicada a un líquido puede transmitirse a través de un sistema hidráulico.</p>
+                    </div>
+                    <a href="laboratorio2.html" class="btn-simulacion">Iniciar Experimento 3D →</a>
+                </article>
+
+                <article class="card">
+                    <div>
+                        <div class="card-header-info">
+                            <div class="icono-flotante">🔥</div>
+                            <span class="badge-experimento">EXP 03</span>
+                        </div>
+                        <h3>Cambios de Estado</h3>
+                        <p>Observa cómo el agua cambia entre sólido, líquido y gas al modificar la temperatura cinético-molecular.</p>
+                    </div>
+                    <a href="laboratorio3.html" class="btn-simulacion">Iniciar Experimento 3D →</a>
+                </article>
+            </div>
+        </section>
+
+        <!-- MÓDULO BIOLOGÍA -->
+        <section class="seccion-laboratorios mod-bio">
+            <div class="header-modulo">
+                <span class="badge-modulo">Módulo Didáctico</span>
+                <h2>🌱 Experimentos de Biología</h2>
+                <p>Descubre los secretos de la vida celular, genética celular y procesos metabólicos fundamentales a escala microscópica.</p>
+            </div>
+
+            <div class="grid-laboratorios">
+                <article class="card">
+                    <div>
+                        <div class="card-header-info">
+                            <div class="icono-flotante">🧬</div>
+                            <span class="badge-experimento">EXP 04</span>
+                        </div>
+                        <h3>Genética y Herencia</h3>
+                        <p>Explora cómo se transmiten las características genéticas realizando cruces y evaluando probabilidades de fenotipo.</p>
+                    </div>
+                    <a href="laboratorio4.html" class="btn-simulacion">Iniciar Experimento 3D →</a>
+                </article>
+
+                <article class="card">
+                    <div>
+                        <div class="card-header-info">
+                            <div class="icono-flotante">🔬</div>
+                            <span class="badge-experimento">EXP 05</span>
+                        </div>
+                        <h3>Mitosis y División Celular</h3>
+                        <p>Visualiza de manera interactiva las fases del ciclo celular (profase, metafase, anafase y telofase) en 3D.</p>
+                    </div>
+                    <a href="laboratorio5.html" class="btn-simulacion">Iniciar Experimento 3D →</a>
+                </article>
+
+                <article class="card">
+                    <div>
+                        <div class="card-header-info">
+                            <div class="icono-flotante">🌿</div>
+                            <span class="badge-experimento">EXP 06</span>
+                        </div>
+                        <h3>Fotosíntesis y Cloroplastos</h3>
+                        <p>Comprende cómo las plantas transforman la luz solar, agua y CO2 en glucosa y oxígeno a nivel molecular.</p>
+                    </div>
+                    <a href="laboratorio6.html" class="btn-simulacion">Iniciar Experimento 3D →</a>
+                </article>
+
+                <article class="card">
+                    <div>
+                        <div class="card-header-info">
+                            <div class="icono-flotante">🧪</div>
+                            <span class="badge-experimento">EXP 07</span>
+                        </div>
+                        <h3>Estructura del ADN y ARN</h3>
+                        <p>Explora la estructura de doble hélice del ADN, los pares de bases nitrogenadas y la transcripción genómica.</p>
+                    </div>
+                    <a href="laboratorio7.html" class="btn-simulacion">Iniciar Experimento 3D →</a>
+                </article>
+            </div>
+        </section>
+
+        <!-- MÓDULO QUÍMICA -->
+        <section class="seccion-laboratorios mod-quimica">
+            <div class="header-modulo">
+                <span class="badge-modulo">Módulo Didáctico</span>
+                <h2>🧪 Experimentos de Química</h2>
+                <p>Analiza la materia a escala atómica, el comportamiento molecular y las transformaciones energéticas de la materia.</p>
+            </div>
+
+            <div class="grid-laboratorios">
+                <article class="card">
+                    <div>
+                        <div class="card-header-info">
+                            <div class="icono-flotante">⚛️</div>
+                            <span class="badge-experimento">EXP 08</span>
+                        </div>
+                        <h3>Modelo Atómico de Bohr 3D</h3>
+                        <p>Explora la estructura atómica, órbitas cuantizadas de electrones y los niveles de energía de distintos elementos.</p>
+                    </div>
+                    <a href="laboratorio8.html" class="btn-simulacion">Iniciar Experimento 3D →</a>
+                </article>
+
+                <article class="card">
+                    <div>
+                        <div class="card-header-info">
+                            <div class="icono-flotante">💥</div>
+                            <span class="badge-experimento">EXP 09</span>
+                        </div>
+                        <h3>Reacciones y Enlaces</h3>
+                        <p>Explora cómo interactúan los átomos para formar moléculas, observa el intercambio electrónico y la liberación energética.</p>
+                    </div>
+                    <a href="laboratorio9.html" class="btn-simulacion">Iniciar Experimento 3D →</a>
+                </article>
+
+                <article class="card">
+                    <div>
+                        <div class="card-header-info">
+                            <div class="icono-flotante">📊</div>
+                            <span class="badge-experimento">EXP 10</span>
+                        </div>
+                        <h3>Tabla Periódica e Isótopos</h3>
+                        <p>Visualiza la estructura nuclear de distintos elementos, la distribución neutrónica y el comportamiento isotópico.</p>
+                    </div>
+                    <a href="laboratorio10.html" class="btn-simulacion">Iniciar Experimento 3D →</a>
+                </article>
+            </div>
+            
+        </section>
+
+    </main>
+
+    <footer style="position: relative; z-index: 10; text-align: center; padding: 40px 0; border-top: 1px solid var(--card-border); color: var(--text-body); font-size: 13px;">
+        <p>© 2026 EcoLab IA | Laboratorio Virtual Interactivo Pro</p>
+    </footer>
+
+</body>
+</html>

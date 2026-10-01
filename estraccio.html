@@ -1,0 +1,2274 @@
+                                                                                                                                                                                                                                <!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="asistente.css">
+<title>Extracción de ADN de Frutas | EcoLab IA</title>
+
+
+<style>
+
+/* =====================================================
+   ESTILOS GENERALES
+===================================================== */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #071b22;
+    overflow: hidden;
+}
+
+
+/* =====================================================
+   ESCENARIO
+===================================================== */
+
+#laboratory {
+
+    position: relative;
+
+    width: 100vw;
+    height: 100vh;
+
+    overflow: hidden;
+
+    background:
+    linear-gradient(
+        to bottom,
+        #8fd8f0 0%,
+        #d8f1f5 54%,
+        #a7c98c 54%,
+        #6d9d5b 100%
+    );
+}
+
+
+/* =====================================================
+   DECORACIÓN
+===================================================== */
+
+#sun {
+
+    position: absolute;
+
+    width: 90px;
+    height: 90px;
+
+    top: 55px;
+    right: 70px;
+
+    border-radius: 50%;
+
+    background: #ffd84d;
+
+    box-shadow:
+    0 0 40px rgba(255,216,77,.7);
+
+    z-index: 1;
+}
+
+.cloud {
+
+    position: absolute;
+
+    width: 130px;
+    height: 40px;
+
+    border-radius: 50px;
+
+    background: rgba(255,255,255,.75);
+
+    z-index: 1;
+}
+
+.cloud::before {
+
+    content: "";
+
+    position: absolute;
+
+    width: 60px;
+    height: 60px;
+
+    left: 20px;
+    bottom: 10px;
+
+    border-radius: 50%;
+
+    background: inherit;
+}
+
+.cloud::after {
+
+    content: "";
+
+    position: absolute;
+
+    width: 70px;
+    height: 70px;
+
+    right: 15px;
+    bottom: 8px;
+
+    border-radius: 50%;
+
+    background: inherit;
+}
+
+#cloud1 {
+    top: 100px;
+    left: 12%;
+}
+
+#cloud2 {
+    top: 180px;
+    left: 58%;
+    transform: scale(.75);
+}
+
+
+/* =====================================================
+   PANEL DE INFORMACIÓN
+===================================================== */
+
+#info-panel {
+
+    position: absolute;
+
+    top: 18px;
+    left: 18px;
+
+    width: 290px;
+
+    padding: 18px;
+
+    border-radius: 18px;
+
+    background: rgba(4,20,25,.92);
+
+    color: white;
+
+    z-index: 30;
+
+    box-shadow:
+    0 10px 30px rgba(0,0,0,.4);
+}
+
+#info-panel h2 {
+
+    margin: 0 0 10px;
+
+    color: #8cffd0;
+
+    font-size: 20px;
+}
+
+#info-panel p {
+
+    font-size: 13px;
+
+    line-height: 1.5;
+
+    margin: 8px 0;
+}
+
+.highlight {
+
+    color: #ffd84d;
+
+    font-weight: bold;
+}
+
+#step-description {
+
+    margin-top: 14px;
+
+    padding: 12px;
+
+    border-radius: 10px;
+
+    background: rgba(255,255,255,.08);
+
+    line-height: 1.5;
+
+    font-size: 12px;
+}
+
+
+/* =====================================================
+   PROGRESO
+===================================================== */
+
+#progress-container {
+
+    margin-top: 14px;
+
+    padding: 10px;
+
+    border-radius: 10px;
+
+    background: rgba(255,255,255,.06);
+
+    text-align: center;
+
+    font-size: 12px;
+}
+
+#progress-background {
+
+    width: 100%;
+    height: 9px;
+
+    margin-top: 8px;
+
+    border-radius: 10px;
+
+    overflow: hidden;
+
+    background: #29444b;
+}
+
+#progress {
+
+    width: 0%;
+
+    height: 100%;
+
+    background: #8cffd0;
+
+    transition: .5s;
+}
+
+
+/* =====================================================
+   PANEL DE CONTROL
+===================================================== */
+
+#control-panel {
+
+    position: absolute;
+
+    top: 18px;
+    right: 18px;
+
+    width: 280px;
+
+    padding: 18px;
+
+    border-radius: 18px;
+
+    background: rgba(4,20,25,.94);
+
+    color: white;
+
+    z-index: 30;
+
+    box-shadow:
+    0 10px 30px rgba(0,0,0,.45);
+}
+
+#control-panel h2 {
+
+    margin-top: 0;
+
+    text-align: center;
+
+    color: #ffd84d;
+
+    font-size: 18px;
+}
+
+#control-panel p {
+
+    font-size: 12px;
+
+    line-height: 1.5;
+
+    color: #d6e5e6;
+}
+
+
+/* =====================================================
+   BOTONES
+===================================================== */
+
+button {
+
+    width: 100%;
+
+    padding: 11px;
+
+    margin-top: 9px;
+
+    border: none;
+
+    border-radius: 9px;
+
+    cursor: pointer;
+
+    font-weight: bold;
+
+    transition: .25s;
+}
+
+button:hover {
+
+    transform: translateY(-2px);
+}
+
+#next-step {
+
+    background: #8cffd0;
+
+    color: #06251d;
+}
+
+#next-step:disabled {
+
+    opacity: .4;
+
+    cursor: not-allowed;
+}
+
+#reset {
+
+    background: #edf2f2;
+
+    color: #173038;
+}
+
+#evaluate {
+
+    background: #ffd84d;
+
+    color: #2c2200;
+}
+
+#evaluate:disabled {
+
+    opacity: .4;
+
+    cursor: not-allowed;
+}
+
+
+/* =====================================================
+   ÁREA CENTRAL
+===================================================== */
+
+#work-area {
+
+    position: absolute;
+
+    left: 50%;
+    top: 48%;
+
+    transform: translate(-50%, -50%);
+
+    width: 470px;
+    height: 430px;
+
+    border-radius: 25px;
+
+    background: rgba(255,255,255,.55);
+
+    backdrop-filter: blur(5px);
+
+    box-shadow:
+    0 15px 35px rgba(0,0,0,.25);
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    text-align: center;
+
+    z-index: 5;
+}
+
+
+/* =====================================================
+   TÍTULO
+===================================================== */
+
+#work-title {
+
+    margin-top: 0;
+
+    color: #173b3c;
+
+    font-size: 22px;
+}
+
+#work-instruction {
+
+    width: 80%;
+
+    color: #284b4b;
+
+    font-size: 14px;
+
+    line-height: 1.5;
+}
+
+
+/* =====================================================
+   FRUTAS
+===================================================== */
+
+#fruit-selection {
+
+    display: flex;
+
+    gap: 18px;
+
+    justify-content: center;
+
+    margin-top: 15px;
+}
+
+.fruit {
+
+    width: 100px;
+    height: 100px;
+
+    border-radius: 50%;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+
+    align-items: center;
+
+    cursor: pointer;
+
+    border: 4px solid white;
+
+    box-shadow:
+    0 8px 15px rgba(0,0,0,.2);
+
+    transition: .25s;
+}
+
+.fruit:hover {
+
+    transform: scale(1.08);
+}
+
+.fruit.selected {
+
+    transform: scale(1.12);
+
+    border-color: #ffd84d;
+
+    box-shadow:
+    0 0 0 5px rgba(255,216,77,.35);
+}
+
+.fruit-icon {
+
+    font-size: 38px;
+}
+
+.fruit-name {
+
+    font-size: 12px;
+
+    font-weight: bold;
+}
+
+#strawberry {
+    background: #ef6f78;
+}
+
+#banana {
+    background: #f4d96b;
+}
+
+#banana .fruit-name {
+    color: #493d00;
+}
+
+#mango {
+    background: #f5a94d;
+}
+
+
+/* =====================================================
+   VASO
+===================================================== */
+
+#beaker {
+
+    position: relative;
+
+    width: 150px;
+    height: 175px;
+
+    margin-top: 8px;
+
+    border: 5px solid rgba(255,255,255,.85);
+
+    border-top: none;
+
+    border-radius: 0 0 30px 30px;
+
+    background: rgba(255,255,255,.25);
+
+    overflow: hidden;
+}
+
+#mixture {
+
+    position: absolute;
+
+    bottom: 0;
+    left: 0;
+
+    width: 100%;
+    height: 0%;
+
+    background: #b56b46;
+
+    transition: .7s;
+
+    border-radius: 0 0 24px 24px;
+}
+
+#alcohol {
+
+    position: absolute;
+
+    bottom: 0;
+    left: 0;
+
+    width: 100%;
+    height: 0%;
+
+    background: rgba(225,245,255,.72);
+
+    transition: .8s;
+
+    border-radius: 0 0 24px 24px;
+}
+
+
+/* =====================================================
+   ADN
+===================================================== */
+
+#dna {
+
+    position: absolute;
+
+    width: 90px;
+    height: 80px;
+
+    left: 30px;
+    top: 15px;
+
+    opacity: 0;
+
+    transition: 1s;
+
+    color: white;
+
+    font-size: 48px;
+
+    text-shadow:
+    0 0 12px white;
+}
+
+#dna.visible {
+
+    opacity: 1;
+
+    animation:
+    dnaAppear 1.2s infinite alternate;
+}
+
+@keyframes dnaAppear {
+
+    from {
+        transform: translateY(0) rotate(-3deg);
+    }
+
+    to {
+        transform: translateY(-6px) rotate(3deg);
+    }
+}
+
+
+/* =====================================================
+   MATERIALES
+===================================================== */
+
+#materials {
+
+    position: absolute;
+
+    bottom: 8px;
+
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    width: 700px;
+
+    min-height: 70px;
+
+    padding: 8px;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    gap: 7px;
+
+    flex-wrap: wrap;
+
+    z-index: 50;
+
+    pointer-events: auto;
+}
+
+.material {
+
+    padding: 7px 11px;
+
+    border-radius: 20px;
+
+    background: rgba(4,20,25,.94);
+
+    color: white;
+
+    font-size: 11px;
+
+    border: 1px solid rgba(255,255,255,.15);
+
+    transition: .25s;
+
+    cursor: pointer;
+
+    user-select: none;
+}
+
+.material:hover {
+
+    transform: translateY(-2px);
+
+    background: #294f50;
+}
+
+.material.used {
+
+    background: #477c67;
+
+    text-decoration: line-through;
+
+    opacity: .85;
+}
+
+
+/* =====================================================
+   MENSAJE
+===================================================== */
+
+#result-message {
+
+    position: absolute;
+
+    left: 50%;
+
+    bottom: 92px;
+
+    transform: translateX(-50%);
+
+    width: min(560px, 70vw);
+
+    min-height: 45px;
+
+    padding: 10px 15px;
+
+    border-radius: 12px;
+
+    background: rgba(4,20,25,.94);
+
+    color: white;
+
+    text-align: center;
+
+    font-size: 13px;
+
+    line-height: 1.4;
+
+    z-index: 20;
+
+    pointer-events: none;
+
+    box-shadow:
+    0 5px 18px rgba(0,0,0,.25);
+}
+
+
+/* =====================================================
+   EVALUACIÓN
+===================================================== */
+
+#evaluation-screen {
+
+    position: fixed;
+
+    inset: 0;
+
+    display: none;
+
+    justify-content: center;
+
+    align-items: center;
+
+    padding: 20px;
+
+    background: rgba(2,10,14,.93);
+
+    z-index: 100;
+}
+
+#evaluation-card {
+
+    width: min(650px,95vw);
+
+    max-height: 90vh;
+
+    overflow-y: auto;
+
+    padding: 30px;
+
+    border-radius: 25px;
+
+    background:
+    linear-gradient(
+        145deg,
+        #123c36,
+        #071b22
+    );
+
+    color: white;
+
+    box-shadow:
+    0 20px 60px rgba(0,0,0,.7);
+}
+
+.evaluation-header {
+
+    text-align: center;
+}
+
+.evaluation-header h2 {
+
+    color: #8cffd0;
+}
+
+#question-counter {
+
+    margin-top: 20px;
+
+    color: #ffd84d;
+
+    font-weight: bold;
+
+    font-size: 13px;
+}
+
+#question-text {
+
+    line-height: 1.5;
+
+    font-size: 18px;
+}
+
+.answer {
+
+    width: 100%;
+
+    margin-top: 10px;
+
+    padding: 14px;
+
+    border-radius: 10px;
+
+    border: 1px solid #456468;
+
+    background: rgba(255,255,255,.06);
+
+    color: white;
+
+    text-align: left;
+
+    cursor: pointer;
+}
+
+.answer:hover {
+
+    border-color: #8cffd0;
+
+    background: rgba(140,255,208,.08);
+}
+
+.answer.selected {
+
+    background: rgba(140,255,208,.2);
+
+    border-color: #8cffd0;
+}
+
+#next-question {
+
+    background: #8cffd0;
+
+    color: #06251d;
+}
+
+
+/* =====================================================
+   RESULTADO
+===================================================== */
+
+#result-screen {
+
+    display: none;
+
+    text-align: center;
+}
+
+.result-icon {
+
+    font-size: 60px;
+}
+
+#score {
+
+    font-size: 42px;
+
+    color: #ffd84d;
+
+    font-weight: bold;
+
+    margin: 20px 0;
+}
+
+#feedback {
+
+    line-height: 1.6;
+
+    color: #dce8e9;
+}
+
+#restart {
+
+    background: #ffd84d;
+
+    color: #2c2200;
+}
+
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media(max-width: 900px) {
+
+    #info-panel,
+    #control-panel {
+
+        width: 220px;
+    }
+
+    #work-area {
+
+        width: 400px;
+        height: 390px;
+    }
+
+    #materials {
+
+        width: 550px;
+    }
+
+    #result-message {
+
+        width: 480px;
+
+        bottom: 100px;
+    }
+}
+
+
+@media(max-width: 700px) {
+
+    body {
+        overflow: auto;
+    }
+
+    #laboratory {
+
+        min-height: 900px;
+
+        height: 100vh;
+    }
+
+    #info-panel {
+
+        width: 90%;
+
+        left: 5%;
+    }
+
+    #control-panel {
+
+        width: 90%;
+
+        right: 5%;
+
+        top: 180px;
+    }
+
+    #work-area {
+
+        top: 55%;
+
+        width: 90%;
+
+        height: 380px;
+    }
+
+    #materials {
+
+        width: 90%;
+
+        bottom: 5px;
+    }
+
+    #result-message {
+
+        width: 85%;
+
+        bottom: 125px;
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+<div id="laboratory">
+
+
+<!-- =====================================================
+     DECORACIÓN
+===================================================== -->
+
+<div id="sun"></div>
+
+<div class="cloud" id="cloud1"></div>
+
+<div class="cloud" id="cloud2"></div>
+
+
+<!-- =====================================================
+     PANEL DE INFORMACIÓN
+===================================================== -->
+
+<div id="info-panel">
+
+<h2>🧬 Extracción de ADN</h2>
+
+<p>
+🧪 Paso:
+<span id="step-number" class="highlight">1</span>
+de 10
+</p>
+
+<p>
+🍓 Fruta:
+<span id="selected-fruit" class="highlight">
+No seleccionada
+</span>
+</p>
+
+<div id="step-description">
+
+Selecciona una fruta para comenzar el experimento.
+
+</div>
+
+<div id="progress-container">
+
+<span id="progress-text">
+0% completado
+</span>
+
+<div id="progress-background">
+
+<div id="progress"></div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- =====================================================
+     PANEL DE CONTROL
+===================================================== -->
+
+<div id="control-panel">
+
+<h2>🧪 Laboratorio virtual</h2>
+
+<p id="control-instruction">
+
+Primero selecciona una fruta para comenzar.
+
+</p>
+
+<p>
+Sigue cada paso del procedimiento y observa
+cómo se obtiene el ADN.
+</p>
+
+<button id="next-step" disabled>
+
+Comenzar experimento →
+
+</button>
+
+<button id="reset">
+
+↻ Reiniciar simulación
+
+</button>
+
+<button id="evaluate" disabled>
+
+📝 Realizar evaluación
+
+</button>
+
+</div>
+
+
+<!-- =====================================================
+     ÁREA DE TRABAJO
+===================================================== -->
+
+<div id="work-area">
+
+<h2 id="work-title">
+
+Selecciona una fruta
+
+</h2>
+
+<p id="work-instruction">
+
+Elige la fruta que deseas utilizar para realizar
+la extracción de ADN.
+
+</p>
+
+
+<!-- FRUTAS -->
+
+<div id="fruit-selection">
+
+<div class="fruit"
+id="strawberry"
+data-fruit="Fresa">
+
+<div class="fruit-icon">
+🍓
+</div>
+
+<div class="fruit-name">
+Fresa
+</div>
+
+</div>
+
+
+<div class="fruit"
+id="banana"
+data-fruit="Guineo">
+
+<div class="fruit-icon">
+🍌
+</div>
+
+<div class="fruit-name">
+Guineo
+</div>
+
+</div>
+
+
+<div class="fruit"
+id="mango"
+data-fruit="Mango">
+
+<div class="fruit-icon">
+🥭
+</div>
+
+<div class="fruit-name">
+Mango
+</div>
+
+</div>
+
+</div>
+
+
+<!-- VASO -->
+
+<div id="beaker">
+
+<div id="mixture"></div>
+
+<div id="alcohol"></div>
+
+<div id="dna">
+🧬
+</div>
+
+</div>
+
+</div>
+
+
+<!-- =====================================================
+     MATERIALES
+===================================================== -->
+
+<div id="materials">
+
+<div class="material" id="m-alcohol">
+🧴 Alcohol etílico 70 %
+</div>
+
+<div class="material" id="m-ice">
+🧊 Hielo
+</div>
+
+<div class="material" id="m-water">
+💧 Agua
+</div>
+
+<div class="material" id="m-soap">
+🧼 Jabón líquido
+</div>
+
+<div class="material" id="m-salt">
+🧂 Sal de mesa
+</div>
+
+<div class="material" id="m-bags">
+🛍️ Bolsa con cierre
+</div>
+
+<div class="material" id="m-spoon">
+🥄 Cuchara
+</div>
+
+<div class="material" id="m-dropper">
+💧 Gotero
+</div>
+
+<div class="material" id="m-glass">
+🥛 Vaso transparente
+</div>
+
+<div class="material" id="m-strainer">
+🔽 Colador
+</div>
+
+<div class="material" id="m-knife">
+🔪 Cuchillo plástico
+</div>
+
+<div class="material" id="m-blue">
+🔵 Azul de metileno
+</div>
+
+</div>
+
+
+<!-- =====================================================
+     MENSAJE
+===================================================== -->
+
+<div id="result-message">
+
+Selecciona una fruta para comenzar.
+
+</div>
+
+</div>
+
+
+<!-- =====================================================
+     EVALUACIÓN
+===================================================== -->
+
+<div id="evaluation-screen">
+
+<div id="evaluation-card">
+
+
+<div id="quiz-screen">
+
+<div class="evaluation-header">
+
+<div style="font-size:45px;">
+🧬
+</div>
+
+<h2>
+Evaluación de la extracción de ADN
+</h2>
+
+<p>
+Responde según lo observado durante la simulación.
+</p>
+
+</div>
+
+
+<div id="question-counter">
+Pregunta 1 de 5
+</div>
+
+<h3 id="question-text"></h3>
+
+<div id="answers-container"></div>
+
+<button id="next-question" disabled>
+Continuar →
+</button>
+
+</div>
+
+
+<div id="result-screen">
+
+<div class="result-icon">
+🏆
+</div>
+
+<h2>
+¡Evaluación terminada!
+</h2>
+
+<div id="score">
+0 / 5
+</div>
+
+<p id="feedback"></p>
+
+<button id="restart">
+🧬 Volver al experimento
+</button>
+
+</div>
+
+
+</div>
+
+</div>
+
+
+<script>
+
+/* =====================================================
+   VARIABLES
+===================================================== */
+
+let selectedFruit = null;
+
+let currentStep = 0;
+
+const totalSteps = 10;
+
+
+/* =====================================================
+   ELEMENTOS
+===================================================== */
+
+const fruits =
+document.querySelectorAll(".fruit");
+
+const nextButton =
+document.getElementById("next-step");
+
+const evaluateButton =
+document.getElementById("evaluate");
+
+const resetButton =
+document.getElementById("reset");
+
+const workTitle =
+document.getElementById("work-title");
+
+const workInstruction =
+document.getElementById("work-instruction");
+
+const stepDescription =
+document.getElementById("step-description");
+
+const resultMessage =
+document.getElementById("result-message");
+
+
+/* =====================================================
+   SELECCIONAR FRUTA
+===================================================== */
+
+fruits.forEach(fruit => {
+
+    fruit.addEventListener("click", function() {
+
+        fruits.forEach(item => {
+
+            item.classList.remove("selected");
+
+        });
+
+        fruit.classList.add("selected");
+
+        selectedFruit =
+        fruit.dataset.fruit;
+
+        document.getElementById(
+            "selected-fruit"
+        ).innerText =
+        selectedFruit;
+
+        nextButton.disabled = false;
+
+        nextButton.innerText =
+        "Comenzar experimento →";
+
+        resultMessage.innerText =
+        "🍓 Has seleccionado " +
+        selectedFruit +
+        ". Presiona el botón para comenzar.";
+
+    });
+
+});
+
+
+/* =====================================================
+   PASOS
+===================================================== */
+
+const steps = [
+
+{
+
+title:
+"Enfriar el alcohol",
+
+description:
+"Coloca el alcohol etílico al 70 % en hielo durante al menos 20 minutos. El alcohol frío ayuda a favorecer la precipitación del ADN.",
+
+instruction:
+"🧊 El alcohol debe estar bien frío antes de utilizarlo.",
+
+materials:
+["m-alcohol","m-ice"]
+
+},
+
+
+{
+
+title:
+"Elegir la fruta",
+
+description:
+"Has seleccionado " +
+"una muestra de " +
+"fruta para realizar la extracción. Las células de la fruta contienen ADN.",
+
+instruction:
+"🍓 La fruta contiene células que poseen ADN.",
+
+materials:
+[]
+
+},
+
+
+{
+
+title:
+"Cortar la pulpa",
+
+description:
+"Corta la pulpa de la fruta en pequeños trozos utilizando el cuchillo plástico.",
+
+instruction:
+"🔪 Los trozos pequeños facilitan la ruptura de las células.",
+
+materials:
+["m-knife"]
+
+},
+
+
+{
+
+title:
+"Colocar 30 g en la bolsa",
+
+description:
+"Coloca aproximadamente 30 g de pulpa dentro de una bolsa con cierre.",
+
+instruction:
+"🛍️ La bolsa permite macerar la fruta sin derramar la muestra.",
+
+materials:
+["m-bags","m-spoon"]
+
+},
+
+
+{
+
+title:
+"Agregar jabón, sal y agua",
+
+description:
+"Agrega jabón líquido, sal de mesa y agua a la pulpa. El jabón ayuda a romper las membranas celulares y liberar el contenido de las células.",
+
+instruction:
+"🧼 El jabón ayuda a romper las membranas celulares.",
+
+materials:
+["m-soap","m-salt","m-water"]
+
+},
+
+
+{
+
+title:
+"Macerar la mezcla",
+
+description:
+"Macerar significa aplastar la fruta hasta obtener una mezcla pastosa. Esto facilita la ruptura de las células y la liberación del material celular.",
+
+instruction:
+"🥄 Presiona y mezcla la fruta hasta conseguir una consistencia pastosa.",
+
+materials:
+["m-spoon"]
+
+},
+
+
+{
+
+title:
+"Colar la mezcla",
+
+description:
+"Coloca la mezcla en un colador para separar los restos sólidos del líquido que contiene las sustancias celulares.",
+
+instruction:
+"🔽 El líquido filtrado será utilizado en el siguiente paso.",
+
+materials:
+["m-strainer"]
+
+},
+
+
+{
+
+title:
+"Colocar el filtrado en un vaso",
+
+description:
+"Coloca el líquido filtrado en un vaso transparente. Esta será la muestra sobre la que se realizará la precipitación del ADN.",
+
+instruction:
+"🥛 Observa el líquido filtrado antes de agregar el alcohol.",
+
+materials:
+["m-glass"]
+
+},
+
+
+{
+
+title:
+"Agregar alcohol frío",
+
+description:
+"Agrega lentamente alcohol etílico frío por las paredes del vaso. Evita mezclar las capas bruscamente.",
+
+instruction:
+"🧴 El alcohol frío permite que el ADN se precipite y pueda observarse.",
+
+materials:
+["m-alcohol","m-glass"]
+},
+
+
+{
+
+title:
+"Observar el ADN",
+
+description:
+"Espera unos momentos hasta observar un precipitado blanquecino o grumos. Agrega azul de metileno con el gotero para observar mejor los grumos de ADN.",
+
+instruction:
+"🧬 ¡Has logrado observar el ADN extraído de la fruta!",
+
+materials:
+["m-blue","m-dropper"]
+
+}
+];
+
+
+/* =====================================================
+   AVANZAR
+===================================================== */
+
+nextButton.addEventListener("click", function() {
+
+    if (!selectedFruit) {
+
+        return;
+
+    }
+
+    if (currentStep < totalSteps) {
+
+        currentStep++;
+
+        showStep();
+
+    }
+
+});
+
+
+/* =====================================================
+   MOSTRAR PASO
+===================================================== */
+
+function showStep() {
+
+    const step =
+    steps[currentStep - 1];
+
+
+    document.getElementById(
+        "step-number"
+    ).innerText =
+    currentStep;
+
+
+    const percentage =
+    Math.round(
+        (currentStep / totalSteps) * 100
+    );
+
+
+    document.getElementById(
+        "progress"
+    ).style.width =
+    percentage + "%";
+
+
+    document.getElementById(
+        "progress-text"
+    ).innerText =
+    percentage +
+    "% completado";
+
+
+    workTitle.innerText =
+    step.title;
+
+
+    workInstruction.innerText =
+    step.instruction;
+
+
+    stepDescription.innerText =
+    step.description;
+
+
+    resultMessage.innerText =
+    step.description;
+
+
+    /* MARCAR MATERIALES */
+
+    step.materials.forEach(id => {
+
+        document
+        .getElementById(id)
+        .classList.add("used");
+
+    });
+
+
+    /* =================================================
+       ANIMACIÓN DE LA MEZCLA
+    ================================================= */
+
+    const mixture =
+    document.getElementById("mixture");
+
+    const alcohol =
+    document.getElementById("alcohol");
+
+    const dna =
+    document.getElementById("dna");
+
+
+    if (currentStep >= 5) {
+
+        mixture.style.height = "55%";
+
+    }
+
+
+    if (currentStep >= 8) {
+
+        mixture.style.height = "60%";
+
+    }
+
+
+    if (currentStep === 9) {
+
+        alcohol.style.height = "40%";
+
+    }
+
+
+    if (currentStep === 10) {
+
+        alcohol.style.height = "45%";
+
+        dna.classList.add("visible");
+
+        resultMessage.innerText =
+        "🧬 ¡ADN extraído! Observa los grumos blancos en la zona superior de la muestra.";
+
+    }
+
+
+    if (currentStep < totalSteps) {
+
+        nextButton.innerText =
+        "Siguiente paso →";
+
+    }
+
+    else {
+
+        nextButton.innerText =
+        "✓ Experimento terminado";
+
+        nextButton.disabled = true;
+
+        evaluateButton.disabled = false;
+
+        resultMessage.innerText =
+        "🎉 ¡Excelente! Has completado todos los pasos de la extracción de ADN.";
+
+    }
+
+
+    document.getElementById(
+        "control-instruction"
+    ).innerText =
+    "Sigue el procedimiento paso a paso y observa qué ocurre en cada etapa.";
+
+}
+
+
+/* =====================================================
+   REINICIAR
+===================================================== */
+
+resetButton.addEventListener("click", function() {
+
+    selectedFruit = null;
+
+    currentStep = 0;
+
+
+    fruits.forEach(fruit => {
+
+        fruit.classList.remove("selected");
+
+    });
+
+
+    document
+    .querySelectorAll(".material")
+    .forEach(material => {
+
+        material.classList.remove("used");
+
+    });
+
+
+    document.getElementById(
+        "selected-fruit"
+    ).innerText =
+    "No seleccionada";
+
+
+    document.getElementById(
+        "step-number"
+    ).innerText =
+    "1";
+
+
+    document.getElementById(
+        "progress"
+    ).style.width =
+    "0%";
+
+
+    document.getElementById(
+        "progress-text"
+    ).innerText =
+    "0% completado";
+
+
+    workTitle.innerText =
+    "Selecciona una fruta";
+
+
+    workInstruction.innerText =
+    "Elige la fruta que deseas utilizar para realizar la extracción de ADN.";
+
+
+    stepDescription.innerText =
+    "Selecciona una fruta para comenzar el experimento.";
+
+
+    resultMessage.innerText =
+    "Selecciona una fruta para comenzar.";
+
+
+    document.getElementById(
+        "mixture"
+    ).style.height =
+    "0%";
+
+
+    document.getElementById(
+        "alcohol"
+    ).style.height =
+    "0%";
+
+
+    document.getElementById(
+        "dna"
+    ).classList.remove("visible");
+
+
+    nextButton.disabled = true;
+
+    nextButton.innerText =
+    "Comenzar experimento →";
+
+
+    evaluateButton.disabled = true;
+
+
+    document.getElementById(
+        "control-instruction"
+    ).innerText =
+    "Primero selecciona una fruta para comenzar.";
+
+});
+
+
+/* =====================================================
+   EVALUACIÓN
+===================================================== */
+
+const questions = [
+
+{
+
+question:
+"¿Por qué se enfría el alcohol antes de utilizarlo?",
+
+answers: [
+
+"Para que cambie de color",
+
+"Para favorecer la precipitación del ADN",
+
+"Para destruir el ADN",
+
+"Para calentar la muestra"
+
+],
+
+correct: 1
+
+},
+
+
+{
+
+question:
+"¿Qué función cumple principalmente el jabón líquido?",
+
+answers: [
+
+"Colorear el ADN",
+
+"Romper las membranas celulares",
+
+"Enfriar la fruta",
+
+"Evaporar el agua"
+
+],
+
+correct: 1
+
+},
+
+
+{
+
+question:
+"¿Para qué se macera la fruta?",
+
+answers: [
+
+"Para romper las células y liberar su contenido",
+
+"Para congelarla",
+
+"Para cambiar su ADN",
+
+"Para eliminar toda el agua"
+
+],
+
+correct: 0
+
+},
+
+
+{
+
+question:
+"¿Qué se observa cuando el ADN precipita?",
+
+answers: [
+
+"Una llama",
+
+"Grumos o material blanquecino",
+
+"Un gas azul",
+
+"Una capa de aceite"
+
+],
+
+correct: 1
+
+},
+
+
+{
+
+question:
+"¿Qué función cumple el azul de metileno en la simulación?",
+
+answers: [
+
+"Ayuda a observar mejor los grumos de ADN",
+
+"Destruye las células",
+
+"Enfría el alcohol",
+
+"Convierte la fruta en líquido"
+
+],
+
+correct: 0
+
+}
+
+];
+
+
+let currentQuestion = 0;
+
+let score = 0;
+
+let selectedAnswer = null;
+
+
+/* =====================================================
+   ABRIR EVALUACIÓN
+===================================================== */
+
+evaluateButton.addEventListener("click", function() {
+
+    document.getElementById(
+        "evaluation-screen"
+    ).style.display =
+    "flex";
+
+    startQuiz();
+
+});
+
+
+/* =====================================================
+   INICIAR QUIZ
+===================================================== */
+
+function startQuiz() {
+
+    currentQuestion = 0;
+
+    score = 0;
+
+    selectedAnswer = null;
+
+
+    document.getElementById(
+        "quiz-screen"
+    ).style.display =
+    "block";
+
+
+    document.getElementById(
+        "result-screen"
+    ).style.display =
+    "none";
+
+
+    showQuestion();
+
+}
+
+
+/* =====================================================
+   MOSTRAR PREGUNTA
+===================================================== */
+
+function showQuestion() {
+
+    selectedAnswer = null;
+
+
+    const question =
+    questions[currentQuestion];
+
+
+    document.getElementById(
+        "question-counter"
+    ).innerText =
+
+    "Pregunta " +
+    (currentQuestion + 1) +
+    " de " +
+    questions.length;
+
+
+    document.getElementById(
+        "question-text"
+    ).innerText =
+    question.question;
+
+
+    const container =
+    document.getElementById(
+        "answers-container"
+    );
+
+
+    container.innerHTML = "";
+
+
+    question.answers.forEach(
+        function(answer,index) {
+
+
+            const button =
+            document.createElement(
+                "button"
+            );
+
+
+            button.className =
+            "answer";
+
+
+            button.innerText =
+            String.fromCharCode(
+                65 + index
+            ) +
+            ". " +
+            answer;
+
+
+            button.addEventListener(
+                "click",
+                function() {
+
+
+                    document
+                    .querySelectorAll(
+                        ".answer"
+                    )
+                    .forEach(option => {
+
+                        option.classList.remove(
+                            "selected"
+                        );
+
+                    });
+
+
+                    button.classList.add(
+                        "selected"
+                    );
+
+
+                    selectedAnswer =
+                    index;
+
+
+                    document.getElementById(
+                        "next-question"
+                    ).disabled =
+                    false;
+
+                }
+            );
+
+
+            container.appendChild(button);
+
+        }
+    );
+
+
+    const nextQuestion =
+    document.getElementById(
+        "next-question"
+    );
+
+
+    nextQuestion.disabled = true;
+
+
+    if (
+        currentQuestion ===
+        questions.length - 1
+    ) {
+
+        nextQuestion.innerText =
+        "Finalizar evaluación ✓";
+
+    }
+
+    else {
+
+        nextQuestion.innerText =
+        "Continuar →";
+
+    }
+
+}
+
+
+/* =====================================================
+   SIGUIENTE PREGUNTA
+===================================================== */
+
+document.getElementById(
+    "next-question"
+).addEventListener(
+    "click",
+    function() {
+
+
+        if (selectedAnswer === null) {
+
+            return;
+
+        }
+
+
+        if (
+            selectedAnswer ===
+            questions[currentQuestion].correct
+        ) {
+
+            score++;
+
+        }
+
+
+        currentQuestion++;
+
+
+        if (
+            currentQuestion <
+            questions.length
+        ) {
+
+            showQuestion();
+
+        }
+
+        else {
+
+            showResult();
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   RESULTADO
+===================================================== */
+
+function showResult() {
+
+    document.getElementById(
+        "quiz-screen"
+    ).style.display =
+    "none";
+
+
+    document.getElementById(
+        "result-screen"
+    ).style.display =
+    "block";
+
+
+    document.getElementById(
+        "score"
+    ).innerText =
+
+    score +
+    " / " +
+    questions.length;
+
+
+    let message;
+
+
+    if (score === 5) {
+
+        message =
+        "🌟 ¡Excelente! Comprendiste muy bien el proceso de extracción de ADN y la función de los materiales.";
+
+    }
+
+    else if (score >= 4) {
+
+        message =
+        "👏 ¡Muy buen trabajo! Comprendiste casi todo el procedimiento de extracción de ADN.";
+
+    }
+
+    else if (score >= 3) {
+
+        message =
+        "👍 Buen trabajo. Puedes repetir la simulación para reforzar la función de cada material.";
+
+    }
+
+    else {
+
+        message =
+        "📚 Te recomendamos repetir el experimento y observar nuevamente cada paso.";
+
+    }
+
+
+    document.getElementById(
+        "feedback"
+    ).innerText =
+    message;
+
+}
+
+
+/* =====================================================
+   VOLVER AL EXPERIMENTO
+===================================================== */
+
+document.getElementById(
+    "restart"
+).addEventListener(
+    "click",
+    function() {
+
+        document.getElementById(
+            "evaluation-screen"
+        ).style.display =
+        "none";
+
+    }
+);
+
+</script>
+
+</body>
+<script src="asistente.js"></script>
+</html>

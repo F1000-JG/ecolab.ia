@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoLab 3D - Genética y Herencia Mendeliana</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="asistente.css">
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --panel-bg: rgba(18, 26, 41, 0.85);
+            --panel-border: rgba(102, 224, 163, 0.3);
+            --primary: #00ff9d;
+            --primary-glow: rgba(0, 255, 157, 0.4);
+            --accent-blue: #00b8ff;
+            --accent-purple: #a855f7;
+            --text-main: #f0f6fc;
+            --text-muted: #8b949e;
+            --yellow-seed: #ffd15c;
+            --green-seed: #00e676;
+        }
+
+        * {
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 1;
+        }
+
+        .glass-panel {
+            background: var(--panel-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--panel-border);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6);
+            color: var(--text-main);
+            z-index: 10;
+        }
+
+        #top-bar {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            pointer-events: none;
+            z-index: 20;
+        }
+
+        #back-button {
+            pointer-events: auto;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--panel-border);
+            color: var(--text-main);
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            backdrop-filter: blur(8px);
+            transition: all 0.3s ease;
+        }
+
+        #back-button:hover {
+            background: var(--primary);
+            color: #000;
+            box-shadow: 0 0 15px var(--primary-glow);
+            transform: translateY(-2px);
+        }
+
+        /* Panel Izquierdo */
+        #info-card {
+            position: absolute;
+            top: 80px;
+            left: 20px;
+            padding: 20px;
+            width: 380px;
+            max-height: calc(100vh - 100px);
+            overflow-y: auto;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            background: rgba(0, 255, 157, 0.1);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            margin: 0 0 8px;
+            font-size: 22px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        p.description {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.5;
+            margin-bottom: 16px;
+        }
+
+        .allele-info {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 10px;
+            padding: 12px;
+            font-size: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .allele-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .highlight {
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        /* --- BOTÓN LANZADOR DE EXAMEN --- */
+        .quiz-launcher-btn {
+            position: fixed;
+            bottom: 25px;
+            right: 100px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #ffffff;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            padding: 14px 20px;
+            border: 2px solid var(--accent-purple);
+            border-radius: 30px;
+            cursor: pointer;
+            letter-spacing: 1px;
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.4);
+            transition: all 0.3s ease;
+            z-index: 99;
+        }
+
+        .quiz-launcher-btn:hover {
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 0 25px rgba(168, 85, 247, 0.7);
+        }
+
+        /* --- VENTANA MODAL DEL EXAMEN --- */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(11, 15, 25, 0.75);
+            backdrop-filter: blur(12px);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .quiz-modal {
+            width: 90%;
+            max-width: 520px;
+            max-height: 85vh;
+            background: rgba(18, 12, 32, 0.95);
+            border: 2px solid var(--accent-purple);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 0 40px rgba(168, 85, 247, 0.4);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            border-bottom: 1px solid rgba(168, 85, 247, 0.3);
+            padding-bottom: 12px;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            font-size: 18px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .close-modal-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 24px;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .close-modal-btn:hover {
+            color: #ff0055;
+        }
+
+        .modal-body {
+            overflow-y: auto;
+            padding-right: 6px;
+            flex: 1;
+        }
+
+        .modal-body::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .modal-body::-webkit-scrollbar-thumb {
+            background: var(--accent-purple);
+            border-radius: 10px;
+        }
+
+        .pregunta-box {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(168, 85, 247, 0.25);
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 14px;
+        }
+
+        .pregunta-titulo {
+            font-weight: 600;
+            margin: 0 0 10px 0;
+            color: #fff;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .opciones-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .opcion {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--text-main);
+            font-size: 13px;
+        }
+
+        .opcion:hover {
+            background: rgba(168, 85, 247, 0.25);
+            border-color: var(--accent-purple);
+        }
+
+        .opcion input[type="radio"] {
+            accent-color: var(--accent-purple);
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        .btn-evaluar {
+            width: 100%;
+            margin-top: 10px;
+            padding: 12px;
+            background: linear-gradient(135deg, var(--accent-purple), #2563eb);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(168, 85, 247, 0.4);
+            transition: all 0.2s ease;
+        }
+
+        .btn-evaluar:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.7);
+        }
+
+        .resultado-box {
+            margin-top: 14px;
+            padding: 12px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        /* --- ADVERTENCIA DE CAMPOS VACÍOS --- */
+        .warning-box {
+            background: rgba(255, 0, 85, 0.2);
+            border: 1px solid #ff0055;
+            color: #ff4d7d;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 10px;
+            animation: pulse 0.3s ease-in-out;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.98); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+
+        .hidden { display: none; }
+
+        /* Panel Derecha */
+        #result-card {
+            position: absolute;
+            top: 80px;
+            right: 20px;
+            width: 340px;
+            padding: 20px;
+        }
+
+        .section-title {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--accent-blue);
+        }
+
+        #punnett {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+            margin: 15px 0;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 8px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .cell {
+            min-height: 48px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 15px;
+        }
+
+        .cell.header-cell {
+            background: rgba(0, 184, 255, 0.15);
+            border-color: rgba(0, 184, 255, 0.3);
+            color: var(--accent-blue);
+        }
+
+        .cell.result-cell {
+            background: rgba(0, 255, 157, 0.08);
+            border-color: rgba(0, 255, 157, 0.2);
+            color: var(--primary);
+        }
+
+        .phenotype-container {
+            margin-top: 15px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .phenotype-bar-wrapper {
+            margin-bottom: 10px;
+        }
+
+        .phenotype-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            margin-bottom: 4px;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            display: flex;
+        }
+
+        .progress-fill-dom {
+            background: var(--green-seed);
+            height: 100%;
+            transition: width 0.4s ease;
+            box-shadow: 0 0 8px var(--green-seed);
+        }
+
+        .progress-fill-rec {
+            background: var(--yellow-seed);
+            height: 100%;
+            transition: width 0.4s ease;
+            box-shadow: 0 0 8px var(--yellow-seed);
+        }
+
+        /* Chatbot Overlay */
+        .chat-toggle-btn {
+            position: fixed !important;
+            bottom: 25px !important;
+            right: 25px !important;
+            width: 60px !important;
+            height: 60px !important;
+            border-radius: 50% !important;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent-blue) 100%) !important;
+            color: #000 !important;
+            border: none !important;
+            font-size: 26px !important;
+            cursor: pointer !important;
+            box-shadow: 0 0 20px var(--primary-glow) !important;
+            z-index: 99999 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+        }
+
+        .chat-window {
+            display: none;
+            position: fixed !important;
+            bottom: 95px !important;
+            right: 25px !important;
+            width: 350px !important;
+            height: 480px !important;
+            background: var(--panel-bg) !important;
+            backdrop-filter: blur(20px) !important;
+            border-radius: 20px !important;
+            border: 1px solid var(--panel-border) !important;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8) !important;
+            z-index: 99999 !important;
+            flex-direction: column !important;
+            overflow: hidden !important;
+        }
+
+        .chat-window.open {
+            display: flex !important;
+        }
+
+        .chat-header {
+            background: rgba(255, 255, 255, 0.03) !important;
+            padding: 16px 20px !important;
+            font-weight: 700 !important;
+            display: flex !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+            color: var(--primary) !important;
+        }
+
+        .close-btn {
+            background: transparent !important;
+            border: none !important;
+            color: var(--text-muted) !important;
+            font-size: 22px !important;
+            cursor: pointer !important;
+        }
+
+        .chat-messages {
+            flex: 1 !important;
+            padding: 16px !important;
+            overflow-y: auto !important;
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 12px !important;
+        }
+
+        .message {
+            max-width: 85% !important;
+            padding: 12px 16px !important;
+            border-radius: 14px !important;
+            font-size: 13px !important;
+            line-height: 1.5 !important;
+        }
+
+        .message.tutor {
+            background: rgba(255, 255, 255, 0.05) !important;
+            color: var(--text-main) !important;
+            align-self: flex-start !important;
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        }
+
+        .message.user {
+            background: linear-gradient(135deg, var(--primary) 0%, #00c875 100%) !important;
+            color: #000 !important;
+            font-weight: 600 !important;
+            align-self: flex-end !important;
+        }
+
+        .chat-footer {
+            display: flex !important;
+            padding: 12px !important;
+            background: rgba(0, 0, 0, 0.2) !important;
+            border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+            gap: 8px !important;
+        }
+
+        .chat-input {
+            flex: 1 !important;
+            padding: 10px 14px !important;
+            border-radius: 10px !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            background: rgba(0, 0, 0, 0.4) !important;
+            color: white !important;
+            outline: none !important;
+        }
+
+        .send-btn {
+            background: var(--primary) !important;
+            color: #000 !important;
+            font-weight: 700 !important;
+            border: none !important;
+            padding: 0 16px !important;
+            border-radius: 10px !important;
+            cursor: pointer !important;
+        }
+
+        .lil-gui {
+            --background-color: var(--panel-bg) !important;
+            --text-color: var(--text-main) !important;
+            --title-background-color: rgba(0, 255, 157, 0.15) !important;
+            --widget-color: rgba(255, 255, 255, 0.08) !important;
+            --focus-color: var(--primary) !important;
+            font-family: 'Outfit', sans-serif !important;
+            border-radius: 14px !important;
+            border: 1px solid var(--panel-border) !important;
+            position: absolute !important;
+            bottom: 25px !important;
+            left: 20px !important;
+            top: auto !important;
+            z-index: 15 !important;
+        }
+    </style>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lil-gui@0.18"></script>
+</head>
+
+<body>
+
+    <div id="top-bar">
+        <button id="back-button" onclick="window.location.href='noveno.html'">
+            ← Volver al Menú
+        </button>
+    </div>
+
+    <div id="info-card" class="glass-panel">
+        <span class="badge">Laboratorio Interactivo</span>
+        <h2>Genética y Herencia</h2>
+        <p class="description">
+            Simulación de las leyes de Mendel mediante el cruce de alelos en guisantes.
+        </p>
+
+        <div class="allele-info">
+            <div class="allele-row">
+                <span>Progenitor 1 (Óvulo):</span>
+                <span id="parent1-val" class="highlight">Aa</span>
+            </div>
+            <div class="allele-row">
+                <span>Progenitor 2 (Polen):</span>
+                <span id="parent2-val" class="highlight">Aa</span>
+            </div>
+            <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 6px 0;">
+            <div class="allele-row">
+                <span><b>A</b> (Dominante):</span>
+                <span style="color: var(--green-seed); font-weight: bold;">🟢 Semilla Verde</span>
+            </div>
+            <div class="allele-row">
+                <span><b>a</b> (Recesivo):</span>
+                <span style="color: var(--yellow-seed); font-weight: bold;">🟡 Semilla Amarilla</span>
+            </div>
+        </div>
+    </div>
+
+    <button class="quiz-launcher-btn" onclick="openQuizModal()">
+        📝 EXAMEN DE EVALUACIÓN
+    </button>
+
+    <div id="quizModal" class="modal-overlay">
+        <div class="quiz-modal">
+            <div class="modal-header">
+                <h3>📝 Examen de Evaluación</h3>
+                <button class="close-modal-btn" onclick="closeQuizModal()">&times;</button>
+            </div>
+
+            <div class="modal-body">
+                <form id="quizForm">
+                    <div id="questionsContainer"></div>
+
+                    <div id="warningMessage" class="warning-box hidden">
+                        ⚠️ Debes responder todas las preguntas antes de evaluar.
+                    </div>
+
+                    <button type="button" class="btn-evaluar" onclick="evaluarExamen()">EVALUAR MIS RESPUESTAS</button>
+                </form>
+
+                <div id="resultadoExamen" class="resultado-box hidden"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="result-card" class="glass-panel">
+        <div class="section-title">
+            <span>🔬 Cuadro de Punnett</span>
+        </div>
+
+        <div id="punnett"></div>
+
+        <div class="phenotype-container">
+            <div class="section-title" style="color: var(--primary); margin-bottom: 8px;">
+                <span>📊 Proporción Fenotípica (Físico)</span>
+            </div>
+
+            <div class="phenotype-bar-wrapper">
+                <div class="phenotype-label">
+                    <span>🟢 Semilla Verde (A_)</span>
+                    <span id="dominant-result">75%</span>
+                </div>
+                <div class="progress-bar">
+                    <div id="bar-dominant" class="progress-fill-dom" style="width: 75%;"></div>
+                </div>
+            </div>
+
+            <div class="phenotype-bar-wrapper">
+                <div class="phenotype-label">
+                    <span>🟡 Semilla Amarilla (aa)</span>
+                    <span id="recessive-result">25%</span>
+                </div>
+                <div class="progress-bar">
+                    <div id="bar-recessive" class="progress-fill-rec" style="width: 25%;"></div>
+                </div>
+            </div>
+
+            <p style="font-size: 11px; color: var(--text-muted); margin-top: 12px; line-height: 1.4;">
+                <b>Genotipos posibles:</b> <span id="offspring-result" style="color: #fff;">AA, Aa, aa</span>
+            </p>
+        </div>
+    </div>
+
+    <button class="chat-toggle-btn" id="chatToggleBtn" title="Tutor IA">💬</button>
+
+    <div class="chat-window" id="chatWindow">
+        <div class="chat-header">
+            <span>🌿 Tutor Didáctico EcoLab</span>
+            <button class="close-btn" id="closeChatBtn">&times;</button>
+        </div>
+
+        <div class="chat-messages" id="chatMessages">
+            <div class="message tutor">
+                ¡Hola! Soy tu asistente de Genética. 👋<br><br>
+                Pregúntame sobre la <b>Dominancia</b>, el <b>Cuadro de Punnett</b> o la diferencia entre <b>Genotipo y Fenotipo</b>.
+            </div>
+        </div>
+
+        <form class="chat-footer" id="chatForm">
+            <input type="text" class="chat-input" id="chatInput" placeholder="Haz una pregunta..." autocomplete="off">
+            <button type="submit" class="send-btn">Enviar</button>
+        </form>
+    </div>
+
+    <script>
+        // BANCO AMPLIO DE PREGUNTAS SOBRE GENÉTICA
+        const bancoPreguntas = [
+            {
+                pregunta: "¿Qué representa un genotipo homocigoto dominante?",
+                opciones: [
+                    { texto: "Dos alelos dominantes iguales (AA)", correcta: true },
+                    { texto: "Dos alelos recesivos iguales (aa)", correcta: false },
+                    { texto: "Un alelo dominante y uno recesivo (Aa)", correcta: false }
+                ]
+            },
+            {
+                pregunta: "Si cruzamos dos heterocigotos (Aa x Aa), ¿cuál es la probabilidad de obtener fenotipo recesivo?",
+                opciones: [
+                    { texto: "25%", correcta: true },
+                    { texto: "50%", correcta: false },
+                    { texto: "75%", correcta: false }
+                ]
+            },
+            {
+                pregunta: "¿Qué es el fenotipo de un organismo?",
+                opciones: [
+                    { texto: "Las características físicas observables", correcta: true },
+                    { texto: "El conjunto exacto de genes", correcta: false },
+                    { texto: "La cantidad total de ADN cromosómico", correcta: false }
+                ]
+            },
+            {
+                pregunta: "¿Cómo se conoce también a la Primera Ley de Mendel?",
+                opciones: [
+                    { texto: "Principio de la Uniformidad", correcta: true },
+                    { texto: "Ley de Segregación Independiente", correcta: false },
+                    { texto: "Herencia Ligada al Sexo", correcta: false }
+                ]
+            },
+            {
+                pregunta: "¿Qué genotipo se requiere para expresar visualmente un rasgo recesivo?",
+                opciones: [
+                    { texto: "Homocigoto recesivo (aa)", correcta: true },
+                    { texto: "Heterocigoto (Aa)", correcta: false },
+                    { texto: "Homocigoto dominante (AA)", correcta: false }
+                ]
+            },
+            {
+                pregunta: "¿Cuál es la proporción genotípica esperada del cruce Aa x Aa?",
+                opciones: [
+                    { texto: "1 AA : 2 Aa : 1 aa", correcta: true },
+                    { texto: "3 AA : 1 aa", correcta: false },
+                    { texto: "2 Aa : 2 aa", correcta: false }
+                ]
+            },
+            {
+                pregunta: "¿Qué es un alelo?",
+                opciones: [
+                    { texto: "Una variante alternativa de un mismo gen", correcta: true },
+                    { texto: "Una proteína celular", correcta: false },
+                    { texto: "Un tipo de célula reproductora", correcta: false }
+                ]
+            },
+            {
+                pregunta: "Si cruzamos AA x aa, ¿qué porcentaje de descendientes será heterocigoto (Aa)?",
+                opciones: [
+                    { texto: "100%", correcta: true },
+                    { texto: "50%", correcta: false },
+                    { texto: "25%", correcta: false }
+                ]
+            }
+        ];
+
+        let preguntasActuales = [];
+
+        function shuffle(array) {
+            let arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        function cargarPreguntasAleatorias() {
+            const container = document.getElementById("questionsContainer");
+            if (!container) return;
+            container.innerHTML = "";
+            
+            document.getElementById("warningMessage").classList.add("hidden");
+            document.getElementById("resultadoExamen").classList.add("hidden");
+
+            preguntasActuales = shuffle(bancoPreguntas).slice(0, 5);
+
+            preguntasActuales.forEach((p, idx) => {
+                const pIndex = idx + 1;
+                const opcionesMezcladas = shuffle(p.opciones);
+
+                let opcionesHTML = "";
+                opcionesMezcladas.forEach((op) => {
+                    opcionesHTML += `
+                        <label class="opcion">
+                            <input type="radio" name="p${pIndex}" value="${op.correcta}">
+                            <span>${op.texto}</span>
+                        </label>
+                    `;
+                });
+
+                const preguntaHTML = `
+                    <div class="pregunta-box">
+                        <p class="pregunta-titulo">${pIndex}. ${p.pregunta}</p>
+                        <div class="opciones-group">
+                            ${opcionesHTML}
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += preguntaHTML;
+            });
+        }
+
+        function openQuizModal() {
+            cargarPreguntasAleatorias();
+            document.getElementById("quizModal").classList.add("active");
+        }
+
+        function closeQuizModal() {
+            document.getElementById("quizModal").classList.remove("active");
+        }
+
+        function evaluarExamen() {
+            const form = document.getElementById('quizForm');
+            const warning = document.getElementById('warningMessage');
+            const resultado = document.getElementById('resultadoExamen');
+            
+            let respondidas = 0;
+            let aciertos = 0;
+            const totalPreguntas = preguntasActuales.length;
+
+            for (let i = 1; i <= totalPreguntas; i++) {
+                const seleccion = form.querySelector(`input[name="p${i}"]:checked`);
+                if (seleccion) {
+                    respondidas++;
+                    if (seleccion.value === "true") {
+                        aciertos++;
+                    }
+                }
+            }
+
+            if (respondidas < totalPreguntas) {
+                warning.classList.remove('hidden');
+                resultado.classList.add('hidden');
+                return;
+            }
+
+            warning.classList.add('hidden');
+            resultado.classList.remove('hidden');
+
+            if (aciertos === totalPreguntas) {
+                resultado.style.background = 'rgba(0, 255, 157, 0.2)';
+                resultado.style.border = '1px solid #00ff9d';
+                resultado.style.color = '#00ff9d';
+                resultado.innerHTML = `¡Excelente! ${aciertos}/${totalPreguntas} respuestas correctas (100%). 🧬🎉`;
+            } else if (aciertos >= Math.ceil(totalPreguntas / 2)) {
+                resultado.style.background = 'rgba(255, 209, 92, 0.2)';
+                resultado.style.border = '1px solid #ffd15c';
+                resultado.style.color = '#ffd15c';
+                resultado.innerHTML = `Aprobado: ${aciertos}/${totalPreguntas} respuestas correctas.`;
+            } else {
+                resultado.style.background = 'rgba(255, 0, 85, 0.2)';
+                resultado.style.border = '1px solid #ff0055';
+                resultado.style.color = '#ff0055';
+                resultado.innerHTML = `Obtuviste ${aciertos}/${totalPreguntas}. ¡Vuelve a intentarlo!`;
+            }
+        }
+
+        // INICIALIZACIÓN DE ESCENA 3D TRAS CARGA DEL DOM
+        window.addEventListener('DOMContentLoaded', () => {
+            const scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x0b0f19);
+
+            const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(0, 0, 14);
+
+            const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            document.body.appendChild(renderer.domElement);
+
+            const controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+
+            const ambientLight = new THREE.AmbientLight(0xffffff, 1.2);
+            scene.add(ambientLight);
+
+            const pointLight1 = new THREE.PointLight(0x00ff9d, 2, 30);
+            pointLight1.position.set(6, 6, 6);
+            scene.add(pointLight1);
+
+            const pointLight2 = new THREE.PointLight(0x00b8ff, 2, 30);
+            pointLight2.position.set(-6, -6, 6);
+            scene.add(pointLight2);
+
+            // ADN 3D
+            const dnaGroup = new THREE.Group();
+            scene.add(dnaGroup);
+
+            const dnaHeight = 10;
+            const turns = 2.5;
+            const steps = 50;
+            const radius = 2.2;
+
+            const sphereGeo = new THREE.SphereGeometry(0.2, 16, 16);
+            const matStrand1 = new THREE.MeshStandardMaterial({ color: 0x00ff9d, roughness: 0.2 });
+            const matStrand2 = new THREE.MeshStandardMaterial({ color: 0x00b8ff, roughness: 0.2 });
+            const matBaseA = new THREE.MeshStandardMaterial({ color: 0xff0055, roughness: 0.3 });
+            const matBaseT = new THREE.MeshStandardMaterial({ color: 0xffdd00, roughness: 0.3 });
+
+            for (let i = 0; i < steps; i++) {
+                const t = i / (steps - 1);
+                const y = (t - 0.5) * dnaHeight;
+                const angle = t * Math.PI * 2 * turns;
+
+                const x1 = Math.cos(angle) * radius;
+                const z1 = Math.sin(angle) * radius;
+                const x2 = Math.cos(angle + Math.PI) * radius;
+                const z2 = Math.sin(angle + Math.PI) * radius;
+
+                const s1 = new THREE.Mesh(sphereGeo, matStrand1);
+                s1.position.set(x1, y, z1);
+                dnaGroup.add(s1);
+
+                const s2 = new THREE.Mesh(sphereGeo, matStrand2);
+                s2.position.set(x2, y, z2);
+                dnaGroup.add(s2);
+
+                if (i % 2 === 0) {
+                    const connGeo = new THREE.CylinderGeometry(0.06, 0.06, radius * 2, 8);
+                    const baseMesh = new THREE.Mesh(connGeo, (i % 4 === 0) ? matBaseA : matBaseT);
+                    baseMesh.position.set(0, y, 0);
+                    baseMesh.lookAt(new THREE.Vector3(x1, y, z1));
+                    baseMesh.rotateX(Math.PI / 2);
+                    dnaGroup.add(baseMesh);
+                }
+            }
+
+            // CONTROLES LIL-GUI
+            const params = { progenitor1: "Aa", progenitor2: "Aa" };
+            const gui = new lil.GUI({ title: "⚙️ Configurar Genotipos" });
+            gui.add(params, "progenitor1", ["AA", "Aa", "aa"]).name("Óvulo (Madre)").onChange(updateSimulation);
+            gui.add(params, "progenitor2", ["AA", "Aa", "aa"]).name("Polen (Padre)").onChange(updateSimulation);
+
+            function getGametes(genotype) { return genotype.split(""); }
+            function combine(a, b) {
+                const genes = [a, b];
+                if (genes.includes("A")) return genes.sort().reverse().join("");
+                return "aa";
+            }
+
+            function updateSimulation() {
+                const g1 = getGametes(params.progenitor1);
+                const g2 = getGametes(params.progenitor2);
+
+                const results = [
+                    combine(g1[0], g2[0]), combine(g1[0], g2[1]),
+                    combine(g1[1], g2[0]), combine(g1[1], g2[1])
+                ];
+
+                const dominantCount = results.filter(g => g.includes("A")).length;
+                const recessiveCount = results.filter(g => g === "aa").length;
+
+                const dominantPercent = (dominantCount / 4) * 100;
+                const recessivePercent = (recessiveCount / 4) * 100;
+
+                document.getElementById("parent1-val").textContent = params.progenitor1;
+                document.getElementById("parent2-val").textContent = params.progenitor2;
+                document.getElementById("dominant-result").textContent = dominantPercent + "%";
+                document.getElementById("recessive-result").textContent = recessivePercent + "%";
+                document.getElementById("bar-dominant").style.width = dominantPercent + "%";
+                document.getElementById("bar-recessive").style.width = recessivePercent + "%";
+                document.getElementById("offspring-result").textContent = [...new Set(results)].join(", ");
+
+                document.getElementById("punnett").innerHTML = `
+                    <div class="cell header-cell">♀ \\ ♂</div>
+                    <div class="cell header-cell">${g2[0]}</div>
+                    <div class="cell header-cell">${g2[1]}</div>
+                    <div class="cell header-cell">${g1[0]}</div>
+                    <div class="cell result-cell">${results[0]}</div>
+                    <div class="cell result-cell">${results[1]}</div>
+                    <div class="cell header-cell">${g1[1]}</div>
+                    <div class="cell result-cell">${results[2]}</div>
+                    <div class="cell result-cell">${results[3]}</div>
+                `;
+            }
+            updateSimulation();
+
+            // CHATBOT TUTOR
+            const chatToggleBtn = document.getElementById("chatToggleBtn");
+            const chatWindow = document.getElementById("chatWindow");
+            const closeChatBtn = document.getElementById("closeChatBtn");
+            const chatForm = document.getElementById("chatForm");
+            const chatInput = document.getElementById("chatInput");
+            const chatMessages = document.getElementById("chatMessages");
+
+            chatToggleBtn.addEventListener("click", () => chatWindow.classList.toggle("open"));
+            closeChatBtn.addEventListener("click", () => chatWindow.classList.remove("open"));
+
+            chatForm.addEventListener("submit", (e) => {
+                e.preventDefault();
+                const question = chatInput.value.trim();
+                if (!question) return;
+
+                addMessage(question, "user");
+                chatInput.value = "";
+
+                setTimeout(() => {
+                    const q = question.toLowerCase();
+                    let answer = "Los genes determinan las características hereditarias organizadas en alelos.";
+
+                    if (q.includes("dominante")) {
+                        answer = "Un alelo dominante (A) se manifiesta siempre que esté presente en el genotipo.";
+                    } else if (q.includes("recesivo")) {
+                        answer = "Un alelo recesivo (a) únicamente se expresa físicamente si no hay alelos dominantes presentes (aa).";
+                    } else if (q.includes("punnett")) {
+                        answer = "El cuadro de Punnett calcula la probabilidad combinatoria de los alelos paternos y maternos.";
+                    }
+
+                    addMessage(answer, "tutor");
+                }, 300);
+            });
+
+            function addMessage(text, type) {
+                const div = document.createElement("div");
+                div.className = "message " + type;
+                div.innerHTML = text;
+                chatMessages.appendChild(div);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+
+            // BUCLE DE ANIMACIÓN
+            let clock = new THREE.Clock();
+            function animate() {
+                requestAnimationFrame(animate);
+                const elapsedTime = clock.getElapsedTime();
+                dnaGroup.rotation.y = elapsedTime * 0.4;
+                dnaGroup.position.y = Math.sin(elapsedTime * 1.5) * 0.4;
+                controls.update();
+                renderer.render(scene, camera);
+            }
+            animate();
+
+            window.addEventListener("resize", () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+        });
+    </script>
+</body>
+<script src="asistente.js"></script>
+</html>

@@ -1,0 +1,812 @@
+                                                                                                                                                                                                <!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulación 3D - Replicación del ADN</title>
+
+<!-- THREE.JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<!-- CONTROLES -->
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<link href="asistente.css" rel="stylesheet" type="text/css">
+<style>
+
+/* =====================================================
+   CUERPO GENERAL
+===================================================== */
+
+body {
+    margin: 0;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+    background: #06111b;
+    color: white;
+}
+
+/* =====================================================
+   PANEL DE INFORMACIÓN (IZQUIERDA)
+===================================================== */
+
+#info-card {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    width: 300px;
+    background: rgba(0,0,0,0.85);
+    color: white;
+    padding: 18px;
+    border-radius: 14px;
+    z-index: 20;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+    border: 1px solid rgba(25, 211, 255, 0.2);
+}
+
+#info-card h2 {
+    margin: 0 0 15px 0;
+    color: #19d3ff;
+    font-size: 20px;
+}
+
+#info-card p {
+    margin: 9px 0;
+    font-size: 14px;
+    line-height: 1.45;
+}
+
+.valor {
+    color: #00ffcc;
+    font-weight: bold;
+}
+
+#explicacion {
+    color: #dddddd;
+}
+
+.separador {
+    border: 0;
+    border-top: 1px solid #444;
+    margin: 13px 0;
+}
+
+.regla {
+    color: #aaa;
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+/* =====================================================
+   CONTROL DE REPLICACIÓN (DERECHA SUPERIOR)
+===================================================== */
+
+#control-box {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 220px;
+    background: rgba(0,0,0,0.88);
+    color: white;
+    padding: 16px;
+    border-radius: 12px;
+    z-index: 30;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+#control-box h3 {
+    margin: 0 0 10px 0;
+    color: #ffffff;
+    font-size: 14px;
+    border-bottom: 1px solid #333;
+    padding-bottom: 5px;
+}
+
+.stage-tracker {
+    font-size: 13px;
+    margin-bottom: 8px;
+}
+
+.control-button {
+    width: 100%;
+    padding: 8px 10px;
+    margin-top: 6px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 13px;
+    color: white;
+    background: #333;
+    transition: background 0.2s;
+}
+
+.control-button:hover {
+    background: #444;
+}
+
+#next { background: #16465c; }
+#next:hover { background: #19a9d0; }
+#reset { background: #4a2121; }
+#reset:hover { background: #b93636; }
+
+#eval-btn {
+    background: #2b3d4f;
+    color: #19d3ff;
+    border: 1px solid #19d3ff;
+    margin-top: 10px;
+}
+
+#eval-btn:hover {
+    background: #19d3ff;
+    color: #06111b;
+}
+
+/* =====================================================
+   LEYENDA
+===================================================== */
+
+#legend {
+    position: absolute;
+    top: 290px;
+    right: 20px;
+    width: 220px;
+    background: rgba(0,0,0,0.88);
+    color: white;
+    padding: 14px;
+    border-radius: 12px;
+    z-index: 25;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+#legend h3 {
+    margin: 0 0 10px 0;
+    color: #ffd166;
+    font-size: 14px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    margin: 6px 0;
+    font-size: 12px;
+}
+
+.dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    margin-right: 9px;
+}
+
+/* =====================================================
+   INSTRUCCIÓN INFERIOR
+===================================================== */
+
+#instruction {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.85);
+    color: white;
+    padding: 12px 25px;
+    border-radius: 10px;
+    z-index: 20;
+    text-align: center;
+    min-width: 350px;
+    border: 1px solid rgba(25, 211, 255, 0.3);
+}
+
+#instruction strong {
+    color: #19d3ff;
+}
+
+/* =====================================================
+   VENTANA MODAL DE EVALUACIÓN (ESTILO CAPTURA DE PANTALLA)
+===================================================== */
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+}
+
+.modal-container {
+    position: relative;
+    width: 600px;
+    max-width: 90%;
+    max-height: 85vh;
+    background: #091a28;
+    border: 2px solid #19d3ff;
+    border-radius: 16px;
+    box-shadow: 0 0 25px rgba(25, 211, 255, 0.4);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.modal-header {
+    padding: 20px;
+    text-align: center;
+    background: #0d2235;
+    border-bottom: 1px solid rgba(25, 211, 255, 0.2);
+}
+
+.modal-header h2 {
+    margin: 0;
+    color: #19d3ff;
+    font-size: 22px;
+}
+
+.modal-header p {
+    margin: 8px 0 0 0;
+    color: #cccccc;
+    font-size: 13px;
+}
+
+.modal-header .value-tag {
+    margin-top: 10px;
+    font-weight: bold;
+    color: #00ffcc;
+    font-size: 14px;
+}
+
+.modal-body {
+    padding: 20px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+/* ESTILO DE PREGUNTAS */
+.question-block {
+    background: #0d2235;
+    border: 1px solid #16364d;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.question-title {
+    font-size: 14px;
+    font-weight: bold;
+    color: #ffffff;
+    margin-bottom: 12px;
+}
+
+.option-item {
+    display: flex;
+    align-items: center;
+    background: #122c42;
+    border: 1px solid #1a4161;
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 13px;
+}
+
+.option-item:hover {
+    background: #1a4161;
+    border-color: #19d3ff;
+}
+
+.option-item input[type="radio"] {
+    margin-right: 12px;
+    accent-color: #19d3ff;
+}
+
+.modal-footer {
+    padding: 15px 20px;
+    background: #0d2235;
+    border-top: 1px solid rgba(25, 211, 255, 0.2);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.close-btn {
+    background: #b93636;
+    color: white;
+    border: none;
+    padding: 9px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.submit-btn {
+    background: #008f70;
+    color: white;
+    border: none;
+    padding: 9px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.submit-btn:hover { background: #00b38c; }
+
+#quiz-results {
+    display: none;
+    text-align: center;
+    padding: 20px;
+}
+
+#quiz-results h3 {
+    font-size: 24px;
+    color: #00ffcc;
+}
+
+/* RESPONSIVE */
+@media(max-width:900px) {
+    #info-card { width: 240px; }
+    #control-box, #legend { width: 180px; }
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- =====================================================
+     PANEL DE INFORMACIÓN
+===================================================== -->
+<div id="info-card">
+    <h2>🧬 Replicación del ADN</h2>
+    <p>Paso: <span id="step" class="valor">1 / 8</span></p>
+    <p>Proceso: <span id="process" class="valor">ADN original</span></p>
+    <p>Estado: <span id="status" class="valor">Preparación</span></p>
+    <hr class="separador">
+    <p><strong>¿Qué ocurre?</strong></p>
+    <p id="explicacion">Se observa la molécula de ADN antes de comenzar la replicación.</p>
+    <hr class="separador">
+    <div class="regla">
+        <strong>Regla de complementariedad</strong><br><br>
+        🔴 Adenina (A) ↔ 🔵 Timina (T)<br>
+        🟢 Citosina (C) ↔ 🟡 Guanina (G)
+    </div>
+</div>
+
+<!-- =====================================================
+     PANEL DE CONTROL
+===================================================== -->
+<div id="control-box">
+    <h3>⚙️ Control del experimento</h3>
+    <div class="stage-tracker">
+        Etapa: <strong id="stage-number">1</strong> / 8
+    </div>
+    <button class="control-button" id="next" onclick="siguientePaso()">▶ Siguiente paso</button>
+    <button class="control-button" onclick="anteriorPaso()">◀ Paso anterior</button>
+    <button class="control-button" id="reset" onclick="reiniciar()">↻ Reiniciar</button>
+    <button class="control-button" id="eval-btn" onclick="abrirEvaluacion()">📝 Evaluación</button>
+</div>
+
+<!-- =====================================================
+     LEYENDA
+===================================================== -->
+<div id="legend">
+    <h3>🔬 Elementos</h3>
+    <div class="legend-item"><span class="dot" style="background:#ff3b3b"></span> Adenina (A)</div>
+    <div class="legend-item"><span class="dot" style="background:#258cff"></span> Timina (T)</div>
+    <div class="legend-item"><span class="dot" style="background:#35c759"></span> Citosina (C)</div>
+    <div class="legend-item"><span class="dot" style="background:#ffd21f"></span> Guanina (G)</div>
+    <div class="legend-item"><span class="dot" style="background:#ff9f43"></span> Cebador</div>
+    <div class="legend-item"><span class="dot" style="background:#9b5de5"></span> ADN Polimerasa</div>
+    <div class="legend-item"><span class="dot" style="background:#f72585"></span> Ligasa</div>
+</div>
+
+<!-- =====================================================
+     INSTRUCCIÓN
+===================================================== -->
+<div id="instruction">
+    <strong>Observa la cadena de ADN</strong> y utiliza los controles para avanzar por cada etapa.
+</div>
+
+<!-- =====================================================
+     MODAL DE EVALUACIÓN (5 PREGUNTAS)
+===================================================== -->
+<div id="quiz-modal" class="modal-overlay">
+    <div class="modal-container">
+        
+        <div class="modal-header">
+            <h2>🧪 Evaluación del experimento</h2>
+            <p>Has interactuado con la simulación. Ahora responde las siguientes preguntas sobre la replicación del ADN.</p>
+            <div class="value-tag">Valor: 10 puntos</div>
+        </div>
+
+        <div class="modal-body" id="quiz-body">
+            <form id="quiz-form">
+
+                <!-- PREGUNTA 1 -->
+                <div class="question-block">
+                    <div class="question-title">1. ¿Qué base nitrogenada se une de forma complementaria con la Adenina (A)?</div>
+                    <label class="option-item"><input type="radio" name="q1" value="0"> Citosina (C)</label>
+                    <label class="option-item"><input type="radio" name="q1" value="1"> Timina (T)</label>
+                    <label class="option-item"><input type="radio" name="q1" value="0"> Guanina (G)</label>
+                    <label class="option-item"><input type="radio" name="q1" value="0"> Uracilo (U)</label>
+                </div>
+
+                <!-- PREGUNTA 2 -->
+                <div class="question-block">
+                    <div class="question-title">2. ¿Qué enzima se encarga de sintetizar las nuevas cadenas de ADN incorporando los nucleótidos?</div>
+                    <label class="option-item"><input type="radio" name="q2" value="0"> Ligasa</label>
+                    <label class="option-item"><input type="radio" name="q2" value="0"> Helicasa</label>
+                    <label class="option-item"><input type="radio" name="q2" value="1"> ADN Polimerasa</label>
+                    <label class="option-item"><input type="radio" name="q2" value="0"> ARN Primasa</label>
+                </div>
+
+                <!-- PREGUNTA 3 -->
+                <div class="question-block">
+                    <div class="question-title">3. ¿Cuál es la función principal de la enzima Ligasa en el proceso?</div>
+                    <label class="option-item"><input type="radio" name="q3" value="0"> Separar las dos cadenas de ADN</label>
+                    <label class="option-item"><input type="radio" name="q3" value="1"> Unir los fragmentos de la nueva cadena de ADN</label>
+                    <label class="option-item"><input type="radio" name="q3" value="0"> Marcar el sitio de inicio con un cebador</label>
+                    <label class="option-item"><input type="radio" name="q3" value="0"> Leer la secuencia original</label>
+                </div>
+
+                <!-- PREGUNTA 4 -->
+                <div class="question-block">
+                    <div class="question-title">4. ¿Qué función cumple el cebador en la replicación?</div>
+                    <label class="option-item"><input type="radio" name="q4" value="1"> Indicar el punto de inicio para la construcción de la nueva cadena</label>
+                    <label class="option-item"><input type="radio" name="q4" value="0"> Unir las bases nitrogenadas mediante puentes de hidrógeno</label>
+                    <label class="option-item"><input type="radio" name="q4" value="0"> Destruir las hebras defectuosas</label>
+                    <label class="option-item"><input type="radio" name="q4" value="0"> Cerrar la horquilla de replicación</label>
+                </div>
+
+                <!-- PREGUNTA 5 -->
+                <div class="question-block">
+                    <div class="question-title">5. Al finalizar la replicación, ¿cómo se componen las dos nuevas moléculas resultantes?</div>
+                    <label class="option-item"><input type="radio" name="q5" value="0"> Dos hebras totalmente nuevas cada una</label>
+                    <label class="option-item"><input type="radio" name="q5" value="1"> Una hebra original y una hebra nueva en cada molécula</label>
+                    <label class="option-item"><input type="radio" name="q5" value="0"> Una molécula con hebras viejas y otra con hebras nuevas</label>
+                    <label class="option-item"><input type="radio" name="q5" value="0"> Cuatro hebras individuales separadas</label>
+                </div>
+
+            </form>
+
+            <div id="quiz-results">
+                <h3 id="score-text">Puntaje: 0 / 10</h3>
+                <p id="feedback-text"></p>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button class="close-btn" onclick="cerrarEvaluacion()">Cerrar</button>
+            <button class="submit-btn" id="send-quiz-btn" onclick="evaluarQuiz()">Enviar Evaluación</button>
+        </div>
+
+    </div>
+</div>
+
+<script>
+
+// =====================================================
+// THREE.JS - ESCENA
+// =====================================================
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x06111b);
+
+const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 1000);
+camera.position.set(9, 3, 16);
+
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+document.body.appendChild(renderer.domElement);
+
+const controls = new THREE.OrbitControls(camera, renderer.domElement);
+controls.target.set(0, 0, 0);
+controls.enableDamping = true;
+
+// LUCES
+scene.add(new THREE.AmbientLight(0xffffff, 0.7));
+
+const light = new THREE.DirectionalLight(0xffffff, 1);
+light.position.set(8, 10, 10);
+scene.add(light);
+
+const blueLight = new THREE.PointLight(0x00cfff, 1.5, 25);
+blueLight.position.set(0, 3, 5);
+scene.add(blueLight);
+
+// PLATAFORMA BASE
+const platform = new THREE.Mesh(
+    new THREE.CylinderGeometry(3.8, 3.8, 0.45, 64),
+    new THREE.MeshStandardMaterial({ color: 0x172631, metalness: 0.5, roughness: 0.35 })
+);
+platform.position.y = -4;
+scene.add(platform);
+
+// GRUPOS
+const dna = new THREE.Group();
+const primers = new THREE.Group();
+const polymerases = new THREE.Group();
+const ligases = new THREE.Group();
+const newBases = new THREE.Group();
+
+scene.add(dna, primers, polymerases, ligases, newBases);
+
+const sequence = ["A", "T", "C", "G", "A", "C", "T", "G", "A", "T", "C", "G"];
+const colors = { A: 0xff3b3b, T: 0x258cff, C: 0x35c759, G: 0xffd21f };
+
+function crearBase(letra, x, y, z) {
+    const group = new THREE.Group();
+
+    const esfera = new THREE.Mesh(
+        new THREE.SphereGeometry(0.32, 24, 24),
+        new THREE.MeshStandardMaterial({ color: colors[letra], metalness: 0.25, roughness: 0.3 })
+    );
+    esfera.position.set(x, y, z);
+    group.add(esfera);
+
+    const canvas = document.createElement("canvas");
+    canvas.width = 128;
+    canvas.height = 128;
+    const ctx = canvas.getContext("2d");
+    ctx.fillStyle = "white";
+    ctx.font = "bold 70px Arial";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(letra, 64, 64);
+
+    const texture = new THREE.CanvasTexture(canvas);
+    const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: texture, transparent: true }));
+    sprite.scale.set(0.65, 0.65, 0.65);
+    sprite.position.set(x, y, z + 0.35);
+
+    group.add(sprite);
+    return group;
+}
+
+function crearADN() {
+    dna.clear();
+    const puntosIzq = [], puntosDer = [];
+    const altura = 0.58, radio = 2.1, vueltas = Math.PI * 2.2;
+
+    for (let i = 0; i < sequence.length; i++) {
+        const y = 3.3 - i * altura;
+        const angulo = i * vueltas / (sequence.length - 1);
+
+        const x1 = Math.cos(angulo) * radio;
+        const z1 = Math.sin(angulo) * radio;
+        const x2 = Math.cos(angulo + Math.PI) * radio;
+        const z2 = Math.sin(angulo + Math.PI) * radio;
+
+        puntosIzq.push(new THREE.Vector3(x1, y, z1));
+        puntosDer.push(new THREE.Vector3(x2, y, z2));
+
+        const base1 = crearBase(sequence[i], x1, y, z1);
+        let comp = sequence[i] === "A" ? "T" : sequence[i] === "T" ? "A" : sequence[i] === "C" ? "G" : "C";
+        const base2 = crearBase(comp, x2, y, z2);
+
+        dna.add(base1, base2);
+
+        const direccion = new THREE.Vector3(x2 - x1, 0, z2 - z1);
+        const distancia = direccion.length();
+
+        const bridge = new THREE.Mesh(
+            new THREE.CylinderGeometry(0.045, 0.045, distancia, 8),
+            new THREE.MeshStandardMaterial({ color: 0xdddddd })
+        );
+        bridge.position.set((x1+x2)/2, y, (z1+z2)/2);
+        bridge.rotation.z = Math.PI / 2;
+        bridge.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0), direccion.normalize());
+
+        dna.add(bridge);
+    }
+
+    const geo1 = new THREE.TubeGeometry(new THREE.CatmullRomCurve3(puntosIzq), 120, 0.14, 16, false);
+    const geo2 = new THREE.TubeGeometry(new THREE.CatmullRomCurve3(puntosDer), 120, 0.14, 16, false);
+
+    const strand1 = new THREE.Mesh(geo1, new THREE.MeshStandardMaterial({ color: 0xff7180, roughness: 0.3 }));
+    const strand2 = new THREE.Mesh(geo2, new THREE.MeshStandardMaterial({ color: 0x6ed6ff, roughness: 0.3 }));
+
+    dna.add(strand1, strand2);
+}
+
+crearADN();
+
+function crearCebador(x, y, z) {
+    const mesh = new THREE.Mesh(
+        new THREE.SphereGeometry(0.42, 20, 20),
+        new THREE.MeshStandardMaterial({ color: 0xff9f43, emissive: 0x442000 })
+    );
+    mesh.position.set(x, y, z);
+    primers.add(mesh);
+}
+
+function crearPolimerasa(x, y, z) {
+    const mesh = new THREE.Mesh(
+        new THREE.SphereGeometry(0.5, 24, 24),
+        new THREE.MeshStandardMaterial({ color: 0x9b5de5, emissive: 0x32104f, metalness: 0.3 })
+    );
+    mesh.position.set(x, y, z);
+    polymerases.add(mesh);
+}
+
+function crearLigasa(x, y, z) {
+    const mesh = new THREE.Mesh(
+        new THREE.SphereGeometry(0.45, 24, 24),
+        new THREE.MeshStandardMaterial({ color: 0xf72585, emissive: 0x420020 })
+    );
+    mesh.position.set(x, y, z);
+    ligases.add(mesh);
+}
+
+// =====================================================
+// ETAPAS Y SECUENCIA
+// =====================================================
+
+let etapa = 1;
+
+const pasos = [
+    { proceso: "ADN original", estado: "Preparación", texto: "La molécula está formada por dos hebras en forma de doble hélice. Las bases permanecen unidas mediante parejas complementarias.", instruccion: "Observa la doble hélice y las bases A, T, C y G." },
+    { proceso: "Separación de hebras", estado: "ADN abierto", texto: "Las dos hebras comienzan a separarse para que cada una pueda servir como molde.", instruccion: "Observa cómo las dos hebras comienzan a abrirse." },
+    { proceso: "Horquilla de replicación", estado: "Horquilla activa", texto: "Se forma una zona abierta llamada horquilla de replicación. En ella se copiará la información genética.", instruccion: "Identifica la zona donde las dos hebras están separadas." },
+    { proceso: "Colocación de cebadores", estado: "Inicio", texto: "Los cebadores indican el lugar donde comenzará la construcción de las nuevas cadenas de ADN.", instruccion: "Observa los elementos naranjas: son los cebadores." },
+    { proceso: "Nucleótidos complementarios", estado: "Construcción", texto: "Se incorporan nuevos nucleótidos siguiendo la regla A-T y C-G.", instruccion: "Observa cómo aparecen las bases complementarias." },
+    { proceso: "ADN polimerasa", estado: "Síntesis", texto: "La ADN polimerasa participa en la incorporación de los nucleótidos para formar las nuevas cadenas.", instruccion: "Observa las enzimas moradas sobre las cadenas." },
+    { proceso: "Ligasa", estado: "Unión", texto: "La ligasa participa en la unión de los fragmentos de ADN de la nueva cadena.", instruccion: "Observa la enzima rosada en la zona de unión." },
+    { proceso: "Resultado final", estado: "Replicación terminada", texto: "Al terminar se obtienen dos moléculas de ADN. Cada molécula contiene una hebra original y una hebra nueva.", instruccion: "¡Has completado el proceso! Presiona 'Evaluación' para poner a prueba tus conocimientos." }
+];
+
+function actualizar() {
+    const info = pasos[etapa - 1];
+
+    document.getElementById("step").innerText = etapa + " / 8";
+    document.getElementById("stage-number").innerText = etapa;
+    document.getElementById("process").innerText = info.proceso;
+    document.getElementById("status").innerText = info.estado;
+    document.getElementById("explicacion").innerText = info.texto;
+    document.getElementById("instruction").innerHTML = "<strong>" + info.instruccion + "</strong>";
+
+    primers.visible = false;
+    polymerases.visible = false;
+    ligases.visible = false;
+
+    if(etapa === 1) dna.scale.x = 1;
+    if(etapa === 2) dna.scale.x = 1.12;
+    if(etapa === 3) dna.scale.x = 1.28;
+
+    if(etapa >= 4) {
+        primers.visible = true;
+        primers.clear();
+        crearCebador(-2.1, 1.2, 0);
+        crearCebador(2.1, -1.2, 0);
+    }
+
+    if(etapa >= 5) {
+        newBases.visible = true;
+        newBases.clear();
+        for(let i = 0; i < 6; i++) {
+            let y = 2.8 - i * 0.7;
+            let comp = sequence[i] === "A" ? "T" : sequence[i] === "T" ? "A" : sequence[i] === "C" ? "G" : "C";
+            newBases.add(crearBase(comp, -3, y, 0));
+        }
+    }
+
+    if(etapa >= 6) {
+        polymerases.visible = true;
+        polymerases.clear();
+        crearPolimerasa(-2.8, 1.2, 0.5);
+        crearPolimerasa(2.8, -1.2, 0.5);
+    }
+
+    if(etapa >= 7) {
+        ligases.visible = true;
+        ligases.clear();
+        crearLigasa(2.2, -0.8, 0.6);
+    }
+
+    if(etapa === 8) {
+        dna.scale.x = 1;
+    }
+}
+
+function siguientePaso() {
+    if(etapa < 8) {
+        etapa++;
+        actualizar();
+    }
+}
+
+function anteriorPaso() {
+    if(etapa > 1) {
+        etapa--;
+        actualizar();
+    }
+}
+
+function reiniciar() {
+    etapa = 1;
+    dna.scale.x = 1;
+    primers.clear();
+    polymerases.clear();
+    ligases.clear();
+    newBases.clear();
+    actualizar();
+}
+
+actualizar();
+
+// =====================================================
+// FUNCIONES DE LA EVALUACIÓN
+// =====================================================
+
+function abrirEvaluacion() {
+    document.getElementById("quiz-modal").style.display = "flex";
+}
+
+function cerrarEvaluacion() {
+    document.getElementById("quiz-modal").style.display = "none";
+}
+
+function evaluarQuiz() {
+    const form = document.getElementById("quiz-form");
+    let aciertos = 0;
+
+    // Respuestas correctas en valor binario (1 = correcta)
+    for (let i = 1; i <= 5; i++) {
+        const seleccion = form.querySelector(`input[name="q${i}"]:checked`);
+        if (seleccion && seleccion.value === "1") {
+            aciertos++;
+        }
+    }
+
+    const puntaje = aciertos * 2; // Cada pregunta vale 2 puntos para totalizar 10
+
+    form.style.display = "none";
+    document.getElementById("send-quiz-btn").style.display = "none";
+
+    const resultsDiv = document.getElementById("quiz-results");
+    resultsDiv.style.display = "block";
+
+    document.getElementById("score-text").innerText = `Puntaje obtenido: ${puntaje} / 10 puntos`;
+    
+    if (puntaje >= 8) {
+        document.getElementById("feedback-text").innerText = "¡Excelente trabajo! Has comprendido perfectamente el proceso de replicación del ADN.";
+        document.getElementById("feedback-text").style.color = "#00ffcc";
+    } else {
+        document.getElementById("feedback-text").innerText = "Buen intento. Puedes volver a repasar la simulación en 3D para mejorar tu puntuación.";
+        document.getElementById("feedback-text").style.color = "#ffd166";
+    }
+}
+
+// =====================================================
+// BUCLE DE ANIMACIÓN
+// =====================================================
+
+function animar() {
+    requestAnimationFrame(animar);
+    controls.update();
+
+    if(polymerases.visible) polymerases.rotation.y += 0.015;
+    if(ligases.visible) ligases.rotation.y += 0.015;
+
+    renderer.render(scene, camera);
+}
+
+animar();
+
+window.addEventListener("resize", function() {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+</script>
+</body>
+<script src="asistente.js"></script>
+</html>

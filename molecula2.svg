@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300">
+
+<circle cx="150" cy="150" r="35" fill="#ff4081"/>
+
+<circle cx="80" cy="150" r="25" fill="#00e5ff"/>
+<circle cx="220" cy="150" r="25" fill="#00e5ff"/>
+
+<circle cx="150" cy="70" r="25" fill="#00ff99"/>
+<circle cx="150" cy="230" r="25" fill="#00ff99"/>
+
+<line x1="115" y1="150" x2="105" y2="150" stroke="white" stroke-width="5"/>
+<line x1="185" y1="150" x2="195" y2="150" stroke="white" stroke-width="5"/>
+<line x1="150" y1="115" x2="150" y2="95" stroke="white" stroke-width="5"/>
+<line x1="150" y1="185" x2="150" y2="205" stroke="white" stroke-width="5"/>
+
+</svg>

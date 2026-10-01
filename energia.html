@@ -1,0 +1,2400 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Energía Potencial y Cinética | EcoLab IA</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lil-gui@0.18"></script>
+
+<link rel="stylesheet" href="asistente.css">
+
+<style>
+
+/* =====================================================
+   GENERAL
+===================================================== */
+
+body{
+
+    margin:0;
+
+    overflow:hidden;
+
+    font-family:Arial,sans-serif;
+
+    background:#07121c;
+
+}
+
+
+/* =====================================================
+   TARJETA DE INFORMACIÓN
+===================================================== */
+
+#info-card{
+
+    position:absolute;
+
+    top:20px;
+
+    left:20px;
+
+    z-index:10;
+
+    width:300px;
+
+    padding:18px 20px;
+
+    background:rgba(0,0,0,.78);
+
+    color:white;
+
+    border-radius:14px;
+
+    box-shadow:0 5px 20px rgba(0,0,0,.5);
+
+}
+
+
+#info-card h2{
+
+    margin:0 0 12px;
+
+    color:#19cfff;
+
+    font-size:20px;
+
+}
+
+
+#info-card p{
+
+    margin:7px 0;
+
+    font-size:14px;
+
+}
+
+
+.dato{
+
+    color:#00ffcc;
+
+    font-weight:bold;
+
+}
+
+
+/* =====================================================
+   BARRAS DE ENERGÍA
+===================================================== */
+
+.energy-title{
+
+    margin-top:13px;
+
+    font-size:12px;
+
+    color:#aaa;
+
+}
+
+
+.energy-bar{
+
+    width:100%;
+
+    height:10px;
+
+    background:#1d2b35;
+
+    border-radius:6px;
+
+    overflow:hidden;
+
+    margin-top:5px;
+
+    margin-bottom:8px;
+
+}
+
+
+#potential-bar{
+
+    height:100%;
+
+    width:100%;
+
+    background:#19cfff;
+
+}
+
+
+#kinetic-bar{
+
+    height:100%;
+
+    width:0%;
+
+    background:#00ffcc;
+
+}
+
+
+/* =====================================================
+   FÓRMULAS
+===================================================== */
+
+.formula{
+
+    color:#aaa;
+
+    font-size:11px;
+
+    line-height:1.5;
+
+    margin-top:12px;
+
+    border-top:1px solid #444;
+
+    padding-top:10px;
+
+}
+
+
+/* =====================================================
+   INSTRUCCIÓN
+===================================================== */
+
+#instruction{
+
+    position:absolute;
+
+    bottom:20px;
+
+    left:50%;
+
+    transform:translateX(-50%);
+
+    z-index:10;
+
+    padding:12px 20px;
+
+    background:rgba(0,0,0,.7);
+
+    color:white;
+
+    border-radius:10px;
+
+    font-size:14px;
+
+    text-align:center;
+
+}
+
+
+#instruction span{
+
+    color:#19cfff;
+
+    font-weight:bold;
+
+}
+
+
+/* =====================================================
+   MODAL DE EVALUACIÓN
+===================================================== */
+
+#evaluation{
+
+    position:fixed;
+
+    inset:0;
+
+    z-index:100;
+
+    display:none;
+
+    justify-content:center;
+
+    align-items:center;
+
+    background:rgba(0,0,0,.82);
+
+    backdrop-filter:blur(5px);
+
+}
+
+
+#evaluation-box{
+
+    width:600px;
+
+    max-width:90%;
+
+    max-height:90vh;
+
+    overflow-y:auto;
+
+    padding:28px;
+
+    background:#101d26;
+
+    border:2px solid #19cfff;
+
+    border-radius:18px;
+
+    box-shadow:0 0 40px rgba(25,207,255,.25);
+
+    color:white;
+
+}
+
+
+#evaluation-box h2{
+
+    margin-top:0;
+
+    color:#19cfff;
+
+    text-align:center;
+
+}
+
+
+#evaluation-intro{
+
+    text-align:center;
+
+    color:#bbb;
+
+    margin-bottom:25px;
+
+}
+
+
+/* =====================================================
+   PREGUNTAS
+===================================================== */
+
+.question{
+
+    margin-bottom:22px;
+
+    padding:18px;
+
+    background:#162833;
+
+    border-radius:12px;
+
+    border-left:4px solid #19cfff;
+
+}
+
+
+.question h3{
+
+    font-size:15px;
+
+    margin-top:0;
+
+}
+
+
+.option{
+
+    display:block;
+
+    margin:8px 0;
+
+    padding:10px;
+
+    background:#213641;
+
+    border-radius:7px;
+
+    cursor:pointer;
+
+    transition:.2s;
+
+}
+
+
+.option:hover{
+
+    background:#2d4856;
+
+}
+
+
+.option input{
+
+    margin-right:8px;
+
+}
+
+
+/* =====================================================
+   BOTÓN CALIFICAR
+===================================================== */
+
+#finishQuiz{
+
+    width:100%;
+
+    padding:13px;
+
+    border:0;
+
+    border-radius:8px;
+
+    background:#19cfff;
+
+    color:#02111d;
+
+    font-size:15px;
+
+    font-weight:bold;
+
+    cursor:pointer;
+
+}
+
+
+#finishQuiz:hover{
+
+    background:#fff;
+
+}
+
+
+/* =====================================================
+   RESULTADO
+===================================================== */
+
+#result{
+
+    display:none;
+
+    text-align:center;
+
+    padding:20px;
+
+}
+
+
+#result h2{
+
+    color:#00ffcc;
+
+}
+
+
+#score{
+
+    font-size:55px;
+
+    font-weight:bold;
+
+    color:#19cfff;
+
+    margin:15px;
+
+}
+
+
+#message{
+
+    color:#ddd;
+
+    font-size:15px;
+
+    margin-bottom:20px;
+
+}
+
+
+.result-buttons{
+
+    display:flex;
+
+    gap:10px;
+
+}
+
+
+.result-buttons button{
+
+    flex:1;
+
+    padding:12px;
+
+    border:0;
+
+    border-radius:8px;
+
+    cursor:pointer;
+
+    font-weight:bold;
+
+}
+
+
+#retry{
+
+    background:#19cfff;
+
+    color:#02111d;
+
+}
+
+
+#closeEvaluation{
+
+    background:#263d49;
+
+    color:white;
+
+}
+
+
+/* =====================================================
+   FEEDBACK
+===================================================== */
+
+.correct{
+
+    border:2px solid #00ff88 !important;
+
+    background:rgba(0,255,136,.12) !important;
+
+}
+
+
+.incorrect{
+
+    border:2px solid #ff5555 !important;
+
+    background:rgba(255,50,50,.12) !important;
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     INFORMACIÓN
+===================================================== -->
+
+<div id="info-card">
+
+<h2>⚡ Energía potencial y cinética</h2>
+
+
+<p>
+
+Masa de la pelota:
+
+<span id="mass" class="dato">
+
+1.00 kg
+
+</span>
+
+</p>
+
+
+<p>
+
+Altura inicial:
+
+<span id="height" class="dato">
+
+5.00 m
+
+</span>
+
+</p>
+
+
+<p>
+
+Altura actual:
+
+<span id="currentHeight" class="dato">
+
+5.00 m
+
+</span>
+
+</p>
+
+
+<p>
+
+Energía potencial:
+
+<span id="potential" class="dato">
+
+49.05 J
+
+</span>
+
+</p>
+
+
+<p>
+
+Energía cinética:
+
+<span id="kinetic" class="dato">
+
+0.00 J
+
+</span>
+
+</p>
+
+
+<p>
+
+Velocidad:
+
+<span id="velocity" class="dato">
+
+0.00 m/s
+
+</span>
+
+</p>
+
+
+<p>
+
+Estado:
+
+<span id="status" class="dato">
+
+Pelota en reposo
+
+</span>
+
+</p>
+
+
+<div class="energy-title">
+
+Energía potencial
+
+</div>
+
+
+<div class="energy-bar">
+
+<div id="potential-bar"></div>
+
+</div>
+
+
+<div class="energy-title">
+
+Energía cinética
+
+</div>
+
+
+<div class="energy-bar">
+
+<div id="kinetic-bar"></div>
+
+</div>
+
+
+<div class="formula">
+
+<b>Energía potencial:</b><br>
+
+Ep = m × g × h
+
+<br><br>
+
+<b>Energía cinética:</b><br>
+
+Ec = ½ × m × v²
+
+<br><br>
+
+La energía potencial disminuye mientras
+la energía cinética aumenta durante
+el descenso.
+
+</div>
+
+</div>
+
+
+<!-- =====================================================
+     INSTRUCCIÓN
+===================================================== -->
+
+<div id="instruction">
+
+Ajusta la <span>altura</span> y la
+<span>masa</span>, después presiona
+<span>Soltar pelota</span>.
+
+Puedes <span>pausar</span> para observar
+los cambios.
+
+</div>
+
+
+<!-- =====================================================
+     EVALUACIÓN
+===================================================== -->
+
+<div id="evaluation">
+
+<div id="evaluation-box">
+
+
+<div id="quizContent">
+
+<h2>🧪 Evaluación del experimento</h2>
+
+<p id="evaluation-intro">
+
+Has completado la simulación.
+
+Ahora responde las siguientes preguntas
+sobre energía potencial y cinética.
+
+<br><br>
+
+<b>Valor: 10 puntos</b>
+
+</p>
+
+
+<!-- PREGUNTA 1 -->
+
+<div class="question">
+
+<h3>
+1. ¿Qué ocurre con la energía potencial cuando
+la pelota desciende por la rampa?
+</h3>
+
+
+<label class="option">
+
+<input
+type="radio"
+name="q1"
+value="0"
+>
+
+Aumenta.
+
+</label>
+
+
+<label class="option">
+
+<input
+type="radio"
+name="q1"
+value="1"
+>
+
+Disminuye.
+
+</label>
+
+
+<label class="option">
+
+<input
+type="radio"
+name="q1"
+value="2"
+>
+
+Permanece siempre igual.
+
+</label>
+
+
+<label class="option">
+
+<input
+type="radio"
+name="q1"
+value="3"
+>
+
+Desaparece completamente.
+
+</label>
+
+</div>
+
+
+<!-- PREGUNTA 2 -->
+
+<div class="question">
+
+<h3>
+2. ¿Qué sucede con la energía cinética
+mientras la pelota aumenta su velocidad?
+</h3>
+
+
+<label class="option">
+
+<input
+type="radio"
+name="q2"
+value="0"
+>
+
+Disminuye.
+
+</label>
+
+
+<label class="option">
+
+<input
+type="radio"
+name="q2"
+value="1"
+>
+
+Aumenta.
+
+</label>
+
+
+<label class="option">
+
+<input
+type="radio"
+name="q2"
+value="2"
+>
+
+Se vuelve cero.
+
+</label>
+
+
+<label class="option">
+
+<input
+type="radio"
+name="q2"
+value="3"
+>
+
+No cambia.
+
+</label>
+
+</div>
+
+
+<!-- PREGUNTA 3 -->
+
+<div class="question">
+
+<h3>
+3. ¿De qué depende la energía potencial
+gravitatoria?
+</h3>
+
+
+<label class="option">
+
+<input
+type="radio"
+name="q3"
+value="0"
+>
+
+De la masa, la gravedad y la altura.
+
+</label>
+
+
+<label class="option">
+
+<input
+type="radio"
+name="q3"
+value="1"
+>
+
+Solamente de la velocidad.
+
+</label>
+
+
+<label class="option">
+
+<input
+type="radio"
+name="q3"
+value="2"
+>
+
+Solamente del tiempo.
+
+</label>
+
+
+<label class="option">
+
+<input
+type="radio"
+name="q3"
+value="3"
+>
+
+Solamente del tamaño de la rampa.
+
+</label>
+
+</div>
+
+
+<!-- PREGUNTA 4 -->
+
+<div class="question">
+
+<h3>
+4. ¿Qué ocurre si aumentamos la masa
+de la pelota manteniendo la misma altura?
+</h3>
+
+
+<label class="option">
+
+<input
+type="radio"
+name="q4"
+value="0"
+>
+
+La energía potencial disminuye.
+
+</label>
+
+
+<label class="option">
+
+<input
+type="radio"
+name="q4"
+value="1"
+>
+
+La energía potencial aumenta.
+
+</label>
+
+
+<label class="option">
+
+<input
+type="radio"
+name="q4"
+value="2"
+>
+
+La masa deja de influir.
+
+</label>
+
+
+<label class="option">
+
+<input
+type="radio"
+name="q4"
+value="3"
+>
+
+La altura se vuelve cero.
+
+</label>
+
+</div>
+
+
+<!-- PREGUNTA 5 -->
+
+<div class="question">
+
+<h3>
+5. ¿Qué transformación de energía se observa
+principalmente durante el descenso?
+</h3>
+
+
+<label class="option">
+
+<input
+type="radio"
+name="q5"
+value="0"
+>
+
+Energía cinética a energía potencial.
+
+</label>
+
+
+<label class="option">
+
+<input
+type="radio"
+name="q5"
+value="1"
+>
+
+Energía potencial a energía cinética.
+
+</label>
+
+
+<label class="option">
+
+<input
+type="radio"
+name="q5"
+value="2"
+>
+
+Energía térmica a energía química.
+
+</label>
+
+
+<label class="option">
+
+<input
+type="radio"
+name="q5"
+value="3"
+>
+
+No existe transformación de energía.
+
+</label>
+
+</div>
+
+
+<button id="finishQuiz">
+
+📊 Calcular calificación
+
+</button>
+
+</div>
+
+
+<!-- =====================================================
+     RESULTADO
+===================================================== -->
+
+<div id="result">
+
+<h2>🎉 Resultado de la evaluación</h2>
+
+
+<div id="score">
+
+0/10
+
+</div>
+
+
+<p id="correctAnswers">
+
+Aciertos: 0 de 5
+
+</p>
+
+
+<p id="message">
+
+Aquí aparecerá el resultado.
+
+</p>
+
+
+<div class="result-buttons">
+
+<button id="retry">
+
+🔄 Intentar nuevamente
+
+</button>
+
+
+<button id="closeEvaluation">
+
+✖ Cerrar
+
+</button>
+
+</div>
+
+</div>
+
+
+</div>
+
+</div>
+
+
+<!-- =====================================================
+     THREE.JS
+===================================================== -->
+
+<script>
+
+const scene =
+new THREE.Scene();
+
+scene.background =
+new THREE.Color(0x07121c);
+
+
+/* =====================================================
+   CÁMARA
+===================================================== */
+
+const camera =
+new THREE.PerspectiveCamera(
+
+45,
+
+window.innerWidth /
+window.innerHeight,
+
+0.1,
+
+1000
+
+);
+
+
+camera.position.set(
+
+9,
+
+7,
+
+11
+
+);
+
+
+/* =====================================================
+   RENDERER
+===================================================== */
+
+const renderer =
+new THREE.WebGLRenderer({
+
+antialias:true
+
+});
+
+
+renderer.setSize(
+
+window.innerWidth,
+
+window.innerHeight
+
+);
+
+
+renderer.setPixelRatio(
+
+window.devicePixelRatio
+
+);
+
+
+document.body.appendChild(
+
+renderer.domElement
+
+);
+
+
+/* =====================================================
+   CONTROLES
+===================================================== */
+
+const controls =
+new THREE.OrbitControls(
+
+camera,
+
+renderer.domElement
+
+);
+
+
+controls.enableDamping=true;
+
+controls.dampingFactor=.05;
+
+controls.target.set(
+
+0,
+
+2,
+
+0
+
+);
+
+
+/* =====================================================
+   LUCES
+===================================================== */
+
+const ambientLight =
+new THREE.AmbientLight(
+
+0xffffff,
+
+0.6
+
+);
+
+
+scene.add(
+ambientLight
+);
+
+
+const directionalLight =
+new THREE.DirectionalLight(
+
+0xffffff,
+
+1
+
+);
+
+
+directionalLight.position.set(
+
+5,
+
+10,
+
+5
+
+);
+
+
+scene.add(
+directionalLight
+);
+
+
+/* =====================================================
+   SUELO
+===================================================== */
+
+const floorGeometry =
+new THREE.PlaneGeometry(
+
+30,
+
+30
+
+);
+
+
+const floorMaterial =
+new THREE.MeshStandardMaterial({
+
+color:0x10252e
+
+});
+
+
+const floor =
+new THREE.Mesh(
+
+floorGeometry,
+
+floorMaterial
+
+);
+
+
+floor.rotation.x=
+-Math.PI/2;
+
+
+floor.position.y=
+-0.05;
+
+
+scene.add(
+floor
+);
+
+
+/* =====================================================
+   PARÁMETROS
+===================================================== */
+
+const maxHeight=8;
+
+const params={
+
+altura:5,
+
+masa:1,
+
+soltar:function(){
+
+    if(!running){
+
+        running=true;
+
+        document.getElementById(
+            "status"
+        ).innerText=
+            "Pelota descendiendo";
+
+    }
+
+},
+
+pausar:function(){
+
+    running=false;
+
+    document.getElementById(
+        "status"
+    ).innerText=
+        "Simulación pausada";
+
+},
+
+reiniciar:function(){
+
+    running=false;
+
+    progress=0;
+
+    experimentCompleted=false;
+
+    evaluationController.disable();
+
+    params.altura=
+        startHeight;
+
+    setBallPosition(0);
+
+    updateSimulation();
+
+    document.getElementById(
+        "status"
+    ).innerText=
+        "Pelota en reposo";
+
+},
+
+evaluacion:function(){
+
+    openEvaluation();
+
+}
+
+};
+
+
+/* =====================================================
+   VARIABLES
+===================================================== */
+
+let running=false;
+
+let progress=0;
+
+let startHeight=
+params.altura;
+
+let experimentCompleted=false;
+
+
+/* =====================================================
+   RAMPA
+===================================================== */
+
+const rampGroup =
+new THREE.Group();
+
+
+scene.add(
+rampGroup
+);
+
+
+const rampMaterial =
+new THREE.MeshStandardMaterial({
+
+color:0x19cfff,
+
+roughness:.6,
+
+metalness:.2
+
+});
+
+
+const rampGeometry =
+new THREE.BoxGeometry(
+
+8,
+
+.35,
+
+2.4
+
+);
+
+
+const ramp =
+new THREE.Mesh(
+
+rampGeometry,
+
+rampMaterial
+
+);
+
+
+rampGroup.add(
+ramp
+);
+
+
+/* =====================================================
+   BASE
+===================================================== */
+
+const baseGeometry =
+new THREE.BoxGeometry(
+
+8.8,
+
+.5,
+
+3
+
+);
+
+
+const baseMaterial =
+new THREE.MeshStandardMaterial({
+
+color:0x1d3a45
+
+});
+
+
+const base =
+new THREE.Mesh(
+
+baseGeometry,
+
+baseMaterial
+
+);
+
+
+base.position.y=
+-.4;
+
+
+rampGroup.add(
+base
+);
+
+
+/* =====================================================
+   PELOTA
+===================================================== */
+
+const ballGeometry =
+new THREE.SphereGeometry(
+
+.35,
+
+32,
+
+32
+
+);
+
+
+const ballMaterial =
+new THREE.MeshStandardMaterial({
+
+color:0xff4444,
+
+roughness:.3,
+
+metalness:.2
+
+});
+
+
+const ball =
+new THREE.Mesh(
+
+ballGeometry,
+
+ballMaterial
+
+);
+
+
+scene.add(
+ball
+);
+
+
+/* =====================================================
+   ACTUALIZAR TAMAÑO PELOTA
+===================================================== */
+
+function updateBallSize(){
+
+    const escala=
+        .7+
+        params.masa*.3;
+
+    ball.scale.set(
+
+        escala,
+        escala,
+        escala
+
+    );
+
+}
+
+
+/* =====================================================
+   ACTUALIZAR RAMPA
+===================================================== */
+
+function updateRamp(){
+
+    startHeight=
+        params.altura;
+
+    const angle=
+        Math.atan(
+            startHeight/8
+        );
+
+    rampGroup.rotation.z=
+        -angle;
+
+    rampGroup.position.y=
+        0;
+
+}
+
+
+/* =====================================================
+   POSICIÓN DE PELOTA
+===================================================== */
+
+function setBallPosition(p){
+
+    const angle=
+        Math.atan(
+            startHeight/8
+        );
+
+    const x=
+        -3.8+
+        p*7.6;
+
+    const y=
+        startHeight-
+        p*startHeight;
+
+    const z=
+        0;
+
+    ball.position.set(
+
+        x,
+
+        y+.5,
+
+        z
+
+    );
+
+}
+
+
+/* =====================================================
+   ACTUALIZAR SIMULACIÓN
+===================================================== */
+
+function updateSimulation(){
+
+    const currentHeight=
+        Math.max(
+
+            0,
+
+            startHeight*
+            (1-progress)
+
+        );
+
+
+    const g=9.81;
+
+    const mass=
+        params.masa;
+
+
+    const potential=
+        mass*
+        g*
+        currentHeight;
+
+
+    const totalEnergy=
+        mass*
+        g*
+        startHeight;
+
+
+    const kinetic=
+        Math.max(
+
+            0,
+
+            totalEnergy-
+            potential
+
+        );
+
+
+    const velocity=
+        mass>0?
+
+        Math.sqrt(
+            2*kinetic/mass
+        ):
+
+        0;
+
+
+    document.getElementById(
+        "mass"
+    ).innerText=
+
+        params.masa.toFixed(2)
+        +" kg";
+
+
+    document.getElementById(
+        "height"
+    ).innerText=
+
+        startHeight.toFixed(2)
+        +" m";
+
+
+    document.getElementById(
+        "currentHeight"
+    ).innerText=
+
+        currentHeight.toFixed(2)
+        +" m";
+
+
+    document.getElementById(
+        "potential"
+    ).innerText=
+
+        potential.toFixed(2)
+        +" J";
+
+
+    document.getElementById(
+        "kinetic"
+    ).innerText=
+
+        kinetic.toFixed(2)
+        +" J";
+
+
+    document.getElementById(
+        "velocity"
+    ).innerText=
+
+        velocity.toFixed(2)
+        +" m/s";
+
+
+    const potentialPercent=
+
+        totalEnergy>0?
+
+        (potential/
+        totalEnergy)*100:
+
+        0;
+
+
+    const kineticPercent=
+
+        totalEnergy>0?
+
+        (kinetic/
+        totalEnergy)*100:
+
+        0;
+
+
+    document.getElementById(
+        "potential-bar"
+    ).style.width=
+
+        potentialPercent+"%";
+
+
+    document.getElementById(
+        "kinetic-bar"
+    ).style.width=
+
+        kineticPercent+"%";
+
+}
+
+
+/* =====================================================
+   EXPERIMENTO COMPLETADO
+===================================================== */
+
+function completeExperiment(){
+
+    experimentCompleted=true;
+
+    running=false;
+
+    progress=1;
+
+
+    setBallPosition(1);
+
+    updateSimulation();
+
+
+    document.getElementById(
+        "status"
+    ).innerText=
+
+        "Experimento completado";
+
+
+    enableVariables();
+
+
+    evaluationController.enable();
+
+
+    document.getElementById(
+        "instruction"
+    ).innerHTML=
+
+        "🎉 Experimento terminado. Ahora puedes abrir la <span>Evaluación</span>.";
+
+}
+
+
+/* =====================================================
+   HABILITAR VARIABLES
+===================================================== */
+
+function enableVariables(){
+
+}
+
+
+/* =====================================================
+   ABRIR EVALUACIÓN
+===================================================== */
+
+function openEvaluation(){
+
+    if(!experimentCompleted){
+
+        alert(
+            "Primero debes completar el experimento."
+        );
+
+        return;
+
+    }
+
+
+    document.getElementById(
+        "evaluation"
+    ).style.display="flex";
+
+
+    document.getElementById(
+        "quizContent"
+    ).style.display="block";
+
+
+    document.getElementById(
+        "result"
+    ).style.display="none";
+
+}
+
+
+/* =====================================================
+   CALIFICAR EVALUACIÓN
+===================================================== */
+
+document.getElementById(
+    "finishQuiz"
+).addEventListener(
+    "click",
+    async function(){
+
+        const boton =
+            document.getElementById("finishQuiz");
+
+
+        const respuestasCorrectas={
+
+            q1:"1",
+
+            q2:"1",
+
+            q3:"0",
+
+            q4:"1",
+
+            q5:"1"
+
+        };
+
+
+        let aciertos=0;
+
+        let respondidas=0;
+
+        const respuestas={};
+
+
+        for(let i=1;i<=5;i++){
+
+            const respuesta=
+                document.querySelector(
+                    'input[name="q'+i+'"]:checked'
+                );
+
+
+            if(respuesta){
+
+                respondidas++;
+
+                respuestas["q"+i]=
+                    respuesta.value;
+
+
+                if(
+
+                    respuesta.value ===
+                    respuestasCorrectas["q"+i]
+
+                ){
+
+                    aciertos++;
+
+                }
+
+            }
+
+        }
+
+
+        if(respondidas<5){
+
+            alert(
+                "Debes responder las 5 preguntas antes de calcular la calificación."
+            );
+
+            return;
+
+        }
+
+
+        boton.disabled=true;
+
+        boton.innerText=
+            "Guardando evaluación...";
+
+
+        try{
+
+            const respuestaServidor =
+                await fetch(
+
+                    "php/guardar_evaluacion.php",
+
+                    {
+
+                        method:"POST",
+
+                        headers:{
+
+                            "Content-Type":
+                                "application/json"
+
+                        },
+
+                        credentials:
+                            "same-origin",
+
+                        body:
+                            JSON.stringify({
+
+                                id_evaluacion:1,
+
+                                respuestas:
+                                    respuestas
+
+                            })
+
+                    }
+
+                );
+
+
+            const datos =
+                await respuestaServidor.json();
+
+
+            if(!datos.exito){
+
+                alert(
+
+                    datos.mensaje ||
+                    "No se pudo guardar la evaluación."
+
+                );
+
+
+                boton.disabled=false;
+
+                boton.innerText=
+                    "📊 Calcular calificación";
+
+
+                return;
+
+            }
+
+
+            const calificacion=
+                Number(datos.nota);
+
+
+            document.getElementById(
+                "quizContent"
+            ).style.display="none";
+
+
+            document.getElementById(
+                "result"
+            ).style.display="block";
+
+
+            document.getElementById(
+                "score"
+            ).innerText=
+
+                calificacion+"/10";
+
+
+            document.getElementById(
+                "correctAnswers"
+            ).innerText=
+
+                "✅ Aciertos: "+
+                datos.aciertos+
+                " de 5";
+
+
+            let mensaje;
+
+
+            if(calificacion===10){
+
+                mensaje=
+                    "🏆 ¡Excelente! Dominaste el concepto de energía potencial y cinética.";
+
+            }
+
+            else if(calificacion>=8){
+
+                mensaje=
+                    "🌟 ¡Muy buen trabajo! Comprendiste la mayor parte del experimento.";
+
+            }
+
+            else if(calificacion>=6){
+
+                mensaje=
+                    "👍 Buen trabajo. Puedes repasar algunos conceptos para mejorar.";
+
+            }
+
+            else{
+
+                mensaje=
+                    "📚 Te recomendamos revisar nuevamente el experimento y volver a intentarlo.";
+
+            }
+
+
+            document.getElementById(
+                "message"
+            ).innerText=
+                mensaje;
+
+
+            console.log(
+
+                "Evaluación guardada correctamente:",
+
+                datos
+
+            );
+
+
+            boton.innerText=
+                "Evaluación guardada";
+
+
+        }
+
+        catch(error){
+
+            console.error(
+
+                "Error al guardar la evaluación:",
+
+                error
+
+            );
+
+
+            alert(
+
+                "No se pudo conectar con el servidor. Verifica que XAMPP y PostgreSQL estén funcionando."
+
+            );
+
+
+            boton.disabled=false;
+
+            boton.innerText=
+                "📊 Calcular calificación";
+
+        }
+
+    }
+
+);
+
+
+/* =====================================================
+   INTENTAR EVALUACIÓN NUEVAMENTE
+===================================================== */
+
+document.getElementById(
+    "retry"
+).addEventListener(
+    "click",
+    function(){
+
+        document.querySelectorAll(
+            'input[type="radio"]'
+        ).forEach(
+            input=>{
+
+                input.checked=false;
+
+            }
+        );
+
+
+        document.getElementById(
+            "quizContent"
+        ).style.display="block";
+
+
+        document.getElementById(
+            "result"
+        ).style.display="none";
+
+
+        const boton =
+            document.getElementById("finishQuiz");
+
+
+        boton.disabled=false;
+
+        boton.innerText=
+            "📊 Calcular calificación";
+
+    }
+);
+
+
+/* =====================================================
+   CERRAR EVALUACIÓN
+===================================================== */
+
+document.getElementById(
+    "closeEvaluation"
+).addEventListener(
+    "click",
+    function(){
+
+        document.getElementById(
+            "evaluation"
+        ).style.display="none";
+
+    }
+);
+
+
+/* =====================================================
+   INTERFAZ DE CONTROL
+===================================================== */
+
+const gui=
+new lil.GUI({
+
+    title:
+        "Control del experimento"
+
+});
+
+
+gui.add(
+
+    params,
+
+    "altura",
+
+    1,
+
+    maxHeight,
+
+    .5
+
+)
+
+.name(
+
+    "Altura de la rampa"
+
+)
+
+.onChange(
+
+    function(){
+
+        if(!running){
+
+            startHeight=
+                params.altura;
+
+            progress=0;
+
+            experimentCompleted=false;
+
+            evaluationController.disable();
+
+            updateRamp();
+
+            updateSimulation();
+
+            setBallPosition(0);
+
+        }
+
+    }
+
+);
+
+
+gui.add(
+
+    params,
+
+    "masa",
+
+    .5,
+
+    2,
+
+    .1
+
+)
+
+.name(
+
+    "Masa de la pelota"
+
+)
+
+.onChange(
+
+    function(){
+
+        if(!running){
+
+            experimentCompleted=false;
+
+            evaluationController.disable();
+
+            updateBallSize();
+
+            updateSimulation();
+
+            setBallPosition(0);
+
+        }
+
+    }
+
+);
+
+
+/* =====================================================
+   BOTONES
+===================================================== */
+
+gui.add(
+
+    params,
+
+    "soltar"
+
+)
+
+.name(
+
+    "▶ Soltar pelota"
+
+);
+
+
+gui.add(
+
+    params,
+
+    "pausar"
+
+)
+
+.name(
+
+    "⏸ Pausar"
+
+);
+
+
+gui.add(
+
+    params,
+
+    "reiniciar"
+
+)
+
+.name(
+
+    "↻ Reiniciar"
+
+);
+
+
+/* =====================================================
+   BOTÓN DE EVALUACIÓN
+===================================================== */
+
+const evaluationController =
+gui.add(
+
+    params,
+
+    "evaluacion"
+
+)
+
+.name(
+
+    "📝 Evaluación"
+
+);
+
+
+/* =====================================================
+   INICIALMENTE BLOQUEADO
+===================================================== */
+
+evaluationController.disable();
+
+
+/* =====================================================
+   INICIALIZAR
+===================================================== */
+
+updateBallSize();
+
+updateRamp();
+
+setBallPosition(0);
+
+updateSimulation();
+
+
+/* =====================================================
+   ANIMACIÓN
+===================================================== */
+
+function animate(){
+
+    requestAnimationFrame(
+        animate
+    );
+
+
+    if(running){
+
+        progress+=.004;
+
+
+        if(progress>=1){
+
+            progress=1;
+
+            completeExperiment();
+
+        }
+
+
+        setBallPosition(progress);
+
+        updateSimulation();
+
+        ball.rotation.z-=.08;
+
+    }
+
+
+    controls.update();
+
+
+    renderer.render(
+
+        scene,
+
+        camera
+
+    );
+
+}
+
+
+animate();
+
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+window.addEventListener(
+
+    "resize",
+
+    ()=>{
+
+        camera.aspect=
+
+            window.innerWidth/
+            window.innerHeight;
+
+
+        camera.updateProjectionMatrix();
+
+
+        renderer.setSize(
+
+            window.innerWidth,
+
+            window.innerHeight
+
+        );
+
+    }
+
+);
+
+</script>
+
+<script src="asistente.js"></script>
+
+</body>
+
+</html>

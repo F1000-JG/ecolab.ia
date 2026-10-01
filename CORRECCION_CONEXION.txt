@@ -1,0 +1,53 @@
+ECOLAB IA - CORRECCIÓN DE CONEXIÓN PHP / POSTGRESQL
+====================================================
+
+IMPORTANTE
+---------
+Los archivos HTML originales NO fueron modificados.
+
+Qué se corrigió
+---------------
+1. php/conexion.php ahora comprueba la conexión con PostgreSQL.
+2. Si la base ya existe pero faltan 7.º/9.º, aplica automáticamente database/MIGRAR_7_Y_9.sql.
+3. Si la base está completamente vacía (sin tablas usuario/experimento), intenta ejecutar database/INSTALACION_COMPLETA.sql.
+4. asistente.js guarda las evaluaciones de 7.º y 9.º sin modificar los HTML.
+5. Al finalizar una evaluación aparece un aviso:
+   - Verde: evaluación guardada en PostgreSQL.
+   - Rojo: error real devuelto por PHP/PostgreSQL.
+6. php/diagnostico.php permite comprobar conexión, tablas, estudiantes, experimentos e intentos guardados.
+
+Diagnóstico rápido
+------------------
+Con el proyecto dentro del servidor web, abre:
+
+http://localhost/ECOLAB/php/diagnostico.php
+
+Si tu carpeta tiene otro nombre, reemplaza ECOLAB en la URL.
+
+Debe indicar:
+- "exito": true
+- "mensaje": "PHP está conectado con PostgreSQL."
+- 9 experimentos para grado 7
+- 9 experimentos para grado 8 (si ya instalaste los originales)
+- 10 experimentos para grado 9
+- 43 preguntas para grado 7
+- 45 preguntas para grado 8
+- 109 preguntas para grado 9
+
+Requisito del servidor
+----------------------
+PHP NO se ejecuta abriendo los HTML con doble clic ni usando únicamente Live Server.
+El proyecto debe abrirse desde Apache/PHP (por ejemplo http://localhost/ECOLAB/login.html)
+y PHP debe tener habilitada la extensión pgsql.
+
+Credenciales actuales de PostgreSQL
+-----------------------------------
+Host: localhost
+Puerto: 5432
+Base: ecolab_ia
+Usuario: postgres
+Contraseña: 20072008
+
+Son las mismas credenciales que ya traía el proyecto original.
+También pueden sobreescribirse con variables de entorno:
+ECOLAB_DB_HOST, ECOLAB_DB_PORT, ECOLAB_DB_NAME, ECOLAB_DB_USER, ECOLAB_DB_PASSWORD.

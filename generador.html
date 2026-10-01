@@ -1,0 +1,711 @@
+                                                                                                                                                                                                              <!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulación 3D - Generador Hidroeléctrico con Evaluación</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <link rel="stylesheet" href="asistente.css">
+    <style>
+        /* =========================
+           GENERAL
+        ========================= */
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #081722;
+        }
+
+        /* =========================
+           INFORMACIÓN
+        ========================= */
+        #info {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 310px;
+            background: rgba(10, 20, 30, 0.92);
+            color: white;
+            padding: 18px;
+            border-radius: 14px;
+            z-index: 10;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+            border: 1px solid #1e3a4e;
+        }
+
+        #info h2 {
+            margin: 0 0 12px;
+            color: #49c8ff;
+        }
+
+        #info p {
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .valor {
+            color: #55efac;
+            font-weight: bold;
+        }
+
+        /* =========================
+           CONTROLES
+        ========================= */
+        #controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 250px;
+            background: #0d1b2a;
+            color: white;
+            padding: 16px;
+            border-radius: 14px;
+            z-index: 20;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.6);
+            border: 1px solid #1b2a3a;
+        }
+
+        #controls h3 {
+            margin: 0 0 12px;
+            color: #ffd166;
+            text-align: center;
+        }
+
+        button {
+            width: 100%;
+            padding: 11px;
+            margin-top: 8px;
+            border: none;
+            border-radius: 8px;
+            color: #0d1b2a;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        #next {
+            background: #ffd166;
+        }
+
+        #next:hover {
+            background: #ffe08a;
+        }
+
+        #prev {
+            background: #ff9f1c;
+            color: white;
+        }
+
+        #prev:hover {
+            background: #ffb03a;
+        }
+
+        #reset {
+            background: #e0e1dd;
+            color: #0d1b2a;
+        }
+
+        #reset:hover {
+            background: #ffffff;
+        }
+
+        #btn-eval-main {
+            background: #c77dff;
+            color: #0d1b2a;
+            margin-top: 15px;
+        }
+
+        #btn-eval-main:hover {
+            background: #d896ff;
+        }
+
+        /* =========================
+           LEYENDA
+        ========================= */
+        #legend {
+            position: absolute;
+            top: 360px;
+            right: 20px;
+            width: 250px;
+            background: rgba(13, 27, 42, 0.92);
+            color: white;
+            padding: 16px;
+            border-radius: 14px;
+            z-index: 15;
+            border: 1px solid #1b2a3a;
+        }
+
+        #legend h3 {
+            margin: 0 0 12px;
+            color: #ffd166;
+        }
+
+        .item {
+            display: flex;
+            align-items: center;
+            margin: 8px 0;
+            font-size: 14px;
+        }
+
+        .dot {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        /* =========================
+           INSTRUCCIÓN
+        ========================= */
+        #instruction {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(10, 20, 30, 0.92);
+            color: white;
+            padding: 13px 25px;
+            border-radius: 10px;
+            z-index: 10;
+            text-align: center;
+            border: 1px solid #1e3a4e;
+        }
+
+        /* =========================
+           MODAL EVALUACIÓN (NUEVO ESTILO CAPTURA)
+        ========================= */
+        #quiz-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            z-index: 99;
+            display: none;
+        }
+
+        #quiz-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 620px;
+            max-height: 85vh;
+            background: #0b1924;
+            color: white;
+            padding: 25px 30px;
+            border-radius: 16px;
+            border: 2px solid #00d2ff;
+            box-shadow: 0 0 25px rgba(0, 210, 255, 0.3);
+            z-index: 100;
+            display: none;
+            overflow-y: auto;
+            box-sizing: border-box;
+        }
+
+        /* Scrollbar personalizado */
+        #quiz-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        #quiz-container::-webkit-scrollbar-track {
+            background: #061018;
+            border-radius: 4px;
+        }
+        #quiz-container::-webkit-scrollbar-thumb {
+            background: #00d2ff;
+            border-radius: 4px;
+        }
+
+        .quiz-header-title {
+            text-align: center;
+            color: #00d2ff;
+            font-size: 24px;
+            font-weight: bold;
+            margin: 0 0 10px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .quiz-subtitle {
+            text-align: center;
+            color: #b0c4de;
+            font-size: 14px;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        .quiz-score-val {
+            text-align: center;
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 25px;
+        }
+
+        .question-card {
+            background: #0f2434;
+            border: 1px solid #183850;
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 20px;
+        }
+
+        .question-title {
+            font-size: 15px;
+            font-weight: bold;
+            color: #ffffff;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+
+        .option-label {
+            display: flex;
+            align-items: center;
+            background: #142d42;
+            border: 1px solid #1d4260;
+            border-radius: 8px;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+            color: #e0e0e0;
+        }
+
+        .option-label:hover {
+            background: #1a3a55;
+            border-color: #00d2ff;
+        }
+
+        .option-label input[type="radio"] {
+            margin-right: 12px;
+            accent-color: #00d2ff;
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        .option-label.correct {
+            background: #1b4332 !important;
+            border-color: #55efac !important;
+            color: #55efac !important;
+        }
+
+        .option-label.incorrect {
+            background: #4a1e1e !important;
+            border-color: #ff6b6b !important;
+            color: #ff6b6b !important;
+        }
+
+        #btn-submit-quiz {
+            background: #00d2ff;
+            color: #081722;
+            font-size: 16px;
+            font-weight: bold;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 10px;
+            border: none;
+            width: 100%;
+        }
+
+        #btn-submit-quiz:hover {
+            background: #55e2ff;
+        }
+
+        #quiz-actions {
+            display: none;
+            margin-top: 15px;
+            gap: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- INFORMACIÓN -->
+    <div id="info">
+        <h2>⚡ Generador hidroeléctrico</h2>
+        <p>Paso: <span id="step" class="valor">1 / 9</span></p>
+        <p>Estado: <span id="status" class="valor">Preparación</span></p>
+        <p>Energía: <span id="energy" class="valor">0 V</span></p>
+        <hr style="border-color: #1e3a4e;">
+        <p id="explanation">Se prepara la base del generador hidroeléctrico.</p>
+    </div>
+
+    <!-- CONTROLES -->
+    <div id="controls">
+        <h3>🔬 Laboratorio</h3>
+        <p style="font-size: 13px; text-align: center;">Etapa: <strong id="stage">1 / 9</strong></p>
+        <button id="next" onclick="siguiente()">▶️ Siguiente paso</button>
+        <button id="prev" onclick="anterior()">◀️ Paso anterior</button>
+        <button id="reset" onclick="reiniciar()">↻ Reiniciar</button>
+        <button id="btn-eval-main" onclick="iniciarQuiz()">📝 Evaluación</button>
+    </div>
+
+    <!-- LEYENDA -->
+    <div id="legend">
+        <h3>🔬 Elementos</h3>
+        <div class="item"><span class="dot" style="background:#a56b3f"></span> Base de cartón</div>
+        <div class="item"><span class="dot" style="background:#72c9e8"></span> Botella / agua</div>
+        <div class="item"><span class="dot" style="background:#f0a23a"></span> Hélice</div>
+        <div class="item"><span class="dot" style="background:#777777"></span> Motor 12 V</div>
+        <div class="item"><span class="dot" style="background:#55e8ff"></span> Agua en movimiento</div>
+        <div class="item"><span class="dot" style="background:#ffff66"></span> LED encendido</div>
+    </div>
+
+    <!-- INSTRUCCIÓN -->
+    <div id="instruction">⚡ Presiona "Siguiente paso" para comenzar.</div>
+
+    <!-- FONDO OSCURO DEL MODAL -->
+    <div id="quiz-overlay"></div>
+
+    <!-- MODAL DE EVALUACIÓN ESTILO CAPTURA -->
+    <div id="quiz-container">
+        <h2 class="quiz-header-title">🧪 Evaluación del experimento</h2>
+        <div class="quiz-subtitle">Has completado la simulación. Ahora responde las siguientes preguntas sobre la generación de energía hidroeléctrica.</div>
+        <div class="quiz-score-val">Valor: 10 puntos</div>
+
+        <form id="quiz-form">
+            <div id="questions-list"></div>
+            <button type="button" id="btn-submit-quiz" onclick="evaluarRespuestas()">Enviar Respuestas</button>
+        </form>
+
+        <div id="quiz-final-result" style="display: none; text-align: center; margin-top: 15px;">
+            <h4 style="font-size: 18px; color: #00d2ff; margin-bottom: 8px;">¡Evaluación Finalizada!</h4>
+            <p id="final-score-text" style="font-size: 15px; margin-bottom: 15px;"></p>
+            <div id="quiz-actions">
+                <button id="reset" onclick="iniciarQuiz()">↻ Reintentar</button>
+                <button id="next" onclick="ocultarQuiz()">Finalizar y Explorar 3D</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // =====================================================
+        // ESCENA 3D (THREE.JS)
+        // =====================================================
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x081722);
+
+        const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(10, 7, 14);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        document.body.appendChild(renderer.domElement);
+
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.target.set(0, 1, 0);
+        controls.enableDamping = true;
+
+        scene.add(new THREE.AmbientLight(0xffffff, 0.8));
+        const luz = new THREE.DirectionalLight(0xffffff, 1);
+        luz.position.set(8, 12, 10);
+        scene.add(luz);
+
+        const sistema = new THREE.Group();
+        scene.add(sistema);
+
+        // Mesa
+        const mesa = new THREE.Mesh(
+            new THREE.BoxGeometry(14, .5, 8),
+            new THREE.MeshStandardMaterial({ color: 0x26343b })
+        );
+        mesa.position.y = -3;
+        scene.add(mesa);
+
+        // Base de cartón
+        const base = new THREE.Mesh(
+            new THREE.BoxGeometry(7, .5, 4),
+            new THREE.MeshStandardMaterial({ color: 0xa56b3f })
+        );
+        base.position.set(0, -2.7, 0);
+        base.visible = false;
+        sistema.add(base);
+
+        // Botella
+        const botella = new THREE.Mesh(
+            new THREE.CylinderGeometry(1.5, 1.5, 4, 32, 1, true),
+            new THREE.MeshPhongMaterial({ color: 0x72c9e8, transparent: true, opacity: .25, side: THREE.DoubleSide })
+        );
+        botella.position.set(-2.8, 0, 0);
+        botella.visible = false;
+        sistema.add(botella);
+
+        // Agua Botella
+        const aguaBotella = new THREE.Mesh(
+            new THREE.CylinderGeometry(1.35, 1.35, 2.7, 32),
+            new THREE.MeshStandardMaterial({ color: 0x249bd0, transparent: true, opacity: .65 })
+        );
+        aguaBotella.position.set(-2.8, -0.65, 0);
+        aguaBotella.visible = false;
+        sistema.add(aguaBotella);
+
+        // Conducto
+        const conducto = new THREE.Mesh(
+            new THREE.CylinderGeometry(.35, .35, 5, 20),
+            new THREE.MeshStandardMaterial({ color: 0x9ccde0 })
+        );
+        conducto.position.set(-1, -0.2, 0);
+        conducto.rotation.z = -Math.PI / 2;
+        conducto.visible = false;
+        sistema.add(conducto);
+
+        // Motor
+        const motor = new THREE.Mesh(
+            new THREE.CylinderGeometry(.7, .7, 1.8, 24),
+            new THREE.MeshStandardMaterial({ color: 0x777777, metalness: .7, roughness: .3 })
+        );
+        motor.rotation.z = Math.PI / 2;
+        motor.position.set(2.2, -1, 0);
+        motor.visible = false;
+        sistema.add(motor);
+
+        // Eje
+        const eje = new THREE.Mesh(
+            new THREE.CylinderGeometry(.12, .12, 1.5, 16),
+            new THREE.MeshStandardMaterial({ color: 0xaaaaaa })
+        );
+        eje.rotation.z = Math.PI / 2;
+        eje.position.set(1.3, -1, 0);
+        eje.visible = false;
+        sistema.add(eje);
+
+        // Hélice
+        const helice = new THREE.Group();
+        helice.position.set(.7, -1, 0);
+        helice.visible = false;
+        sistema.add(helice);
+
+        const centro = new THREE.Mesh(
+            new THREE.CylinderGeometry(.35, .35, .3, 20),
+            new THREE.MeshStandardMaterial({ color: 0xf0a23a })
+        );
+        centro.rotation.z = Math.PI / 2;
+        helice.add(centro);
+
+        for (let i = 0; i < 5; i++) {
+            const tapa = new THREE.Mesh(
+                new THREE.CylinderGeometry(.35, .35, .18, 20),
+                new THREE.MeshStandardMaterial({ color: 0xf0a23a })
+            );
+            tapa.rotation.z = Math.PI / 2;
+            const angulo = (i / 5) * Math.PI * 2;
+            tapa.position.set(0, Math.cos(angulo) * .8, Math.sin(angulo) * .8);
+            helice.add(tapa);
+        }
+
+        // Gotas
+        const gotas = new THREE.Group();
+        for (let i = 0; i < 25; i++) {
+            const gota = new THREE.Mesh(
+                new THREE.SphereGeometry(.09, 10, 10),
+                new THREE.MeshStandardMaterial({ color: 0x55e8ff })
+            );
+            gota.position.set(-1.1 + Math.random() * 2.2, 1.8 - Math.random() * 3, (Math.random() - .5) * .7);
+            gotas.add(gota);
+        }
+        gotas.visible = false;
+        sistema.add(gotas);
+
+        // LED
+        const led = new THREE.Mesh(
+            new THREE.SphereGeometry(.3, 20, 20),
+            new THREE.MeshStandardMaterial({ color: 0x555555, emissive: 0x000000 })
+        );
+        led.position.set(3.7, 0, 0);
+        led.visible = false;
+        sistema.add(led);
+
+        // Cables
+        function crearCable(y) {
+            const cable = new THREE.Mesh(
+                new THREE.CylinderGeometry(.035, .035, 2, 10),
+                new THREE.MeshStandardMaterial({ color: 0x333333 })
+            );
+            cable.position.set(3, y, 0);
+            cable.rotation.z = Math.PI / 2;
+            cable.visible = false;
+            sistema.add(cable);
+            return cable;
+        }
+        const cable1 = crearCable(.15);
+        const cable2 = crearCable(-.15);
+
+        // =====================================================
+        // PASOS
+        // =====================================================
+        let etapa = 1;
+        const pasos = [
+            { estado: "Construir la base", texto: "Se construye una base de cartón que servirá como soporte.", instruccion: "📦 Construimos la base de cartón." },
+            { estado: "Preparar la botella", texto: "Se prepara la botella plástica que almacenará y dirigirá el agua.", instruccion: "💧 Preparamos la botella." },
+            { estado: "Construir la hélice", texto: "Se construye una hélice utilizando cinco tapas plásticas.", instruccion: "⚙️ Construimos la hélice con 5 tapas." },
+            { estado: "Colocar la hélice", texto: "La hélice se coloca en el eje del motor de 12 V.", instruccion: "⚙️ Colocamos la hélice en el eje." },
+            { estado: "Fijar el motor", texto: "El motor se fija a la base para mantenerlo estable.", instruccion: "🔧 Fijamos el motor." },
+            { estado: "Construir el conducto", texto: "Se coloca un conducto utilizando la pajilla para dirigir el agua.", instruccion: "🚰 Dirigimos el agua hacia la hélice." },
+            { estado: "Conectar el LED", texto: "Se conectan los dos cables entre el motor y el foco LED.", instruccion: "🔌 Conectamos el motor al LED." },
+            { estado: "Agregar agua", texto: "Se agrega agua a la botella. El agua se desplaza hacia la hélice.", instruccion: "💧 Agregamos agua y observamos su movimiento." },
+            { estado: "Generación de electricidad", texto: "El agua mueve la hélice, el motor gira y enciende el LED.", instruccion: "⚡ ¡El agua mueve la hélice y el LED se enciende! Haz clic en 'Evaluación' para poner a prueba lo aprendido." }
+        ];
+
+        function actualizar() {
+            const paso = pasos[etapa - 1];
+            document.getElementById("step").innerText = etapa + " / 9";
+            document.getElementById("stage").innerText = etapa + " / 9";
+            document.getElementById("status").innerText = paso.estado;
+            document.getElementById("explanation").innerText = paso.texto;
+            document.getElementById("instruction").innerHTML = "<strong>" + paso.instruccion + "</strong>";
+
+            base.visible = etapa >= 1;
+            botella.visible = etapa >= 2;
+            helice.visible = etapa >= 3;
+            motor.visible = eje.visible = etapa >= 4;
+            conducto.visible = etapa >= 6;
+            led.visible = cable1.visible = cable2.visible = etapa >= 7;
+            aguaBotella.visible = gotas.visible = etapa >= 8;
+
+            if (etapa >= 9) {
+                led.material.emissive.setHex(0xffff00);
+                led.material.emissiveIntensity = 2;
+                document.getElementById("energy").innerText = "12 V";
+            } else {
+                led.material.emissive.setHex(0x000000);
+                document.getElementById("energy").innerText = "0 V";
+            }
+        }
+
+        function siguiente() { if (etapa < 9) { etapa++; actualizar(); } }
+        function anterior() { if (etapa > 1) { etapa--; actualizar(); } }
+        function reiniciar() { etapa = 1; helice.rotation.x = 0; actualizar(); }
+
+        // =====================================================
+        // EVALUACIÓN (ESTILO CAPTURA PANTALLA)
+        // =====================================================
+        const preguntas = [
+            {
+                pregunta: "1. ¿Cuál es la principal fuente de energía utilizada por el generador hidroeléctrico?",
+                opciones: ["Electricidad", "Energía hidráulica (Agua)", "Gas", "Carbón"],
+                correcta: 1
+            },
+            {
+                pregunta: "2. ¿Qué función cumple la hélice en el sistema?",
+                opciones: ["Transformar el flujo de agua en movimiento rotatorio", "Filtrar el agua", "Almacenar la energía eléctrica", "Encender el LED directamente"],
+                correcta: 0
+            },
+            {
+                pregunta: "3. ¿Qué dispositivo convierte la energía mecánica en energía eléctrica?",
+                opciones: ["El conducto", "La botella", "El motor de 12 V", "La base de cartón"],
+                correcta: 2
+            }
+        ];
+
+        function iniciarQuiz() {
+            const listContainer = document.getElementById("questions-list");
+            listContainer.innerHTML = "";
+            document.getElementById("btn-submit-quiz").style.display = "block";
+            document.getElementById("quiz-final-result").style.display = "none";
+            document.getElementById("quiz-actions").style.display = "none";
+
+            preguntas.forEach((q, qIndex) => {
+                const qCard = document.createElement("div");
+                qCard.className = "question-card";
+
+                let optionsHtml = "";
+                q.opciones.forEach((op, oIndex) => {
+                    optionsHtml += `
+                        <label class="option-label" id="label-q${qIndex}-o${oIndex}">
+                            <input type="radio" name="p${qIndex}" value="${oIndex}">
+                            ${op}
+                        </label>
+                    `;
+                });
+
+                qCard.innerHTML = `
+                    <div class="question-title">${q.pregunta}</div>
+                    ${optionsHtml}
+                `;
+                listContainer.appendChild(qCard);
+            });
+
+            document.getElementById("quiz-overlay").style.display = "block";
+            document.getElementById("quiz-container").style.display = "block";
+            document.getElementById("quiz-container").scrollTop = 0;
+        }
+
+        function evaluarRespuestas() {
+            let puntaje = 0;
+
+            preguntas.forEach((q, qIndex) => {
+                const selected = document.querySelector(`input[name="p${qIndex}"]:checked`);
+                const selectedVal = selected ? parseInt(selected.value) : -1;
+
+                q.opciones.forEach((_, oIndex) => {
+                    const label = document.getElementById(`label-q${qIndex}-o${oIndex}`);
+                    if (oIndex === q.correcta) {
+                        label.classList.add("correct");
+                    } else if (selectedVal === oIndex) {
+                        label.classList.add("incorrect");
+                    }
+                });
+
+                if (selectedVal === q.correcta) {
+                    puntaje++;
+                }
+            });
+
+            document.getElementById("btn-submit-quiz").style.display = "none";
+            document.getElementById("quiz-final-result").style.display = "block";
+            document.getElementById("quiz-actions").style.display = "flex";
+            document.getElementById("final-score-text").innerHTML = `Obtuviste <strong>${puntaje}</strong> de <strong>${preguntas.length}</strong> respuestas correctas.`;
+        }
+
+        function ocultarQuiz() {
+            document.getElementById("quiz-overlay").style.display = "none";
+            document.getElementById("quiz-container").style.display = "none";
+        }
+
+        // =====================================================
+        // INICIO Y ANIMACIÓN 3D
+        // =====================================================
+        actualizar();
+
+        function animar() {
+            requestAnimationFrame(animar);
+            controls.update();
+
+            if (etapa >= 8) {
+                helice.rotation.x += .06;
+                gotas.children.forEach(gota => {
+                    gota.position.x += .035;
+                    gota.position.y -= .01;
+                    if (gota.position.x > 1) {
+                        gota.position.x = -1;
+                        gota.position.y = 1.5 - Math.random() * 2;
+                    }
+                });
+            }
+
+            renderer.render(scene, camera);
+        }
+        animar();
+
+        window.addEventListener("resize", function () {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+<script src="asistente.js"></script>
+</html>

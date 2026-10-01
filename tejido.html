@@ -1,0 +1,2231 @@
+
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="asistente.css">
+
+<title>Observación de tejidos animales</title>
+
+<style>
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    overflow:hidden;
+    font-family:Arial,sans-serif;
+    background:#07110d;
+    color:white;
+}
+
+/* ================= INFORMACIÓN ================= */
+
+#info{
+    position:absolute;
+    left:16px;
+    top:16px;
+    width:350px;
+    padding:18px;
+    z-index:20;
+    background:rgba(0,0,0,.91);
+    border-radius:15px;
+    box-shadow:0 5px 25px rgba(0,0,0,.55);
+}
+
+#info h2{
+    margin:0 0 15px;
+    color:#62e878;
+    font-size:20px;
+}
+
+.info-box{
+    padding:11px;
+    margin-top:10px;
+    background:rgba(255,255,255,.055);
+    border-left:3px solid #62e878;
+    border-radius:6px;
+    font-size:13px;
+    line-height:1.5;
+}
+
+.dato{
+    color:#62e878;
+    font-weight:bold;
+}
+
+#tipoTejido{
+    color:#75ed8b;
+    font-size:15px;
+    font-weight:bold;
+}
+
+#descripcion{
+    color:#ddd;
+}
+
+#funcion{
+    color:#9be8a7;
+}
+
+/* ================= CONTROLES ================= */
+
+#controles{
+    position:absolute;
+    right:16px;
+    top:16px;
+    width:285px;
+    padding:15px;
+    z-index:20;
+    background:rgba(20,20,20,.96);
+    border-radius:10px;
+}
+
+#controles h3{
+    margin:0 0 15px;
+    color:#62e878;
+    font-size:16px;
+}
+
+.control{
+    margin-bottom:14px;
+}
+
+.control label{
+    display:block;
+    font-size:12px;
+    margin-bottom:7px;
+}
+
+select{
+    width:100%;
+    padding:9px;
+    border:none;
+    border-radius:6px;
+    background:#292929;
+    color:white;
+    cursor:pointer;
+}
+
+input[type="range"]{
+    width:100%;
+    cursor:pointer;
+}
+
+.valor{
+    float:right;
+    color:#62e878;
+    font-weight:bold;
+}
+
+.botones{
+    display:flex;
+    gap:6px;
+}
+
+button{
+    flex:1;
+    border:none;
+    padding:10px 5px;
+    border-radius:6px;
+    background:#333;
+    color:white;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+button:hover{
+    background:#444;
+}
+
+#estadoVisual{
+    margin-top:12px;
+    padding:10px;
+    text-align:center;
+    border:1px solid #444;
+    border-radius:7px;
+    color:#62e878;
+    font-weight:bold;
+}
+
+/* ================= BOTÓN EVALUACIÓN ================= */
+
+#btnEvaluacion{
+    width:100%;
+    margin-top:10px;
+    padding:10px;
+    border:none;
+    border-radius:6px;
+    background:#333;
+    color:#777;
+    cursor:not-allowed;
+    font-weight:bold;
+}
+
+#btnEvaluacion:not(:disabled){
+    background:#62e878;
+    color:#07110d;
+    cursor:pointer;
+}
+
+#btnEvaluacion:not(:disabled):hover{
+    background:#75ed8b;
+}
+
+/* ================= MICROSCOPIO ================= */
+
+#microscopio{
+    position:absolute;
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%);
+
+    width:670px;
+    height:520px;
+
+    background:#171717;
+
+    border:18px solid #242424;
+
+    border-radius:32px;
+
+    box-shadow:
+        0 0 0 5px #383838,
+        0 15px 45px rgba(0,0,0,.8);
+
+    overflow:hidden;
+}
+
+/* ocular */
+
+#ocular{
+    position:absolute;
+    top:10px;
+    left:50%;
+    transform:translateX(-50%);
+
+    width:140px;
+    height:38px;
+
+    background:#080808;
+
+    border-radius:50%;
+
+    border:5px solid #383838;
+
+    z-index:10;
+}
+
+/* campo */
+
+#campo{
+    position:absolute;
+
+    left:50%;
+    top:50%;
+
+    transform:translate(-50%,-50%);
+
+    width:525px;
+    height:405px;
+
+    border-radius:50%;
+
+    overflow:hidden;
+
+    background:#d9c8d2;
+
+    box-shadow:
+        inset 0 0 55px rgba(40,15,35,.65),
+        inset 0 0 15px rgba(255,255,255,.35);
+
+    cursor:grab;
+}
+
+#campo:active{
+    cursor:grabbing;
+}
+
+#muestra{
+    position:absolute;
+
+    width:900px;
+    height:700px;
+
+    left:-185px;
+    top:-145px;
+
+    transform-origin:center;
+
+    transition:transform .15s;
+}
+
+/* ================= TEXTURA GENERAL ================= */
+
+.textura{
+    position:absolute;
+    border-radius:50%;
+    pointer-events:none;
+}
+
+/* ================= EPITELIAL ================= */
+
+.epitelial{
+    background:
+        radial-gradient(
+            ellipse at center,
+            rgba(255,220,232,.8) 0%,
+            rgba(226,159,185,.75) 45%,
+            rgba(170,96,133,.8) 100%
+        );
+}
+
+.epitelial .celula{
+    position:absolute;
+
+    width:88px;
+    height:62px;
+
+    background:
+        radial-gradient(
+            ellipse at 50% 45%,
+            #9d426d 0%,
+            #9d426d 12%,
+            rgba(180,90,125,.25) 14%,
+            transparent 23%
+        ),
+        linear-gradient(
+            145deg,
+            #f0b3c6,
+            #d884a7
+        );
+
+    border:2px solid rgba(116,54,88,.72);
+
+    border-radius:42% 58% 47% 53%;
+
+    box-shadow:
+        inset 5px 5px 12px rgba(255,255,255,.25),
+        inset -7px -7px 15px rgba(116,42,76,.18);
+}
+
+.epitelial .celula::after{
+    content:"";
+
+    position:absolute;
+
+    width:75%;
+    height:2px;
+
+    left:12%;
+    top:70%;
+
+    background:rgba(115,54,87,.25);
+
+    transform:rotate(-7deg);
+}
+
+/* ================= MUSCULAR ================= */
+
+.muscular{
+    background:
+        repeating-linear-gradient(
+            0deg,
+            #bd6577 0px,
+            #bd6577 12px,
+            #e79aa4 13px,
+            #c86d7e 20px
+        );
+}
+
+.muscular .fibra{
+    position:absolute;
+
+    width:430px;
+    height:58px;
+
+    border-radius:30px;
+
+    background:
+        repeating-linear-gradient(
+            90deg,
+            #a94f62 0px,
+            #a94f62 9px,
+            #e99aa5 10px,
+            #e99aa5 17px,
+            #a94f62 18px,
+            #a94f62 27px
+        );
+
+    border:2px solid #873e52;
+
+    box-shadow:
+        inset 0 5px 12px rgba(255,255,255,.15),
+        inset 0 -7px 12px rgba(80,20,35,.2);
+}
+
+.muscular .nucleo{
+    position:absolute;
+
+    width:22px;
+    height:10px;
+
+    border-radius:50%;
+
+    background:#6c2941;
+
+    top:24px;
+
+    box-shadow:0 0 5px rgba(60,10,30,.7);
+}
+
+/* ================= NERVIOSO ================= */
+
+.neuronal{
+    background:
+        radial-gradient(
+            circle,
+            #d9bf7c 0%,
+            #b79b5e 50%,
+            #8f7848 100%
+        );
+}
+
+.neuronal .neurona{
+    position:absolute;
+
+    width:58px;
+    height:58px;
+
+    border-radius:50%;
+
+    background:
+        radial-gradient(
+            circle at 35% 30%,
+            #f5df9b,
+            #b78d3d 65%,
+            #735625
+        );
+
+    border:3px solid #735625;
+
+    box-shadow:
+        0 0 10px rgba(110,80,30,.5);
+}
+
+.neuronal .nucleo{
+    position:absolute;
+
+    width:22px;
+    height:22px;
+
+    left:16px;
+    top:16px;
+
+    border-radius:50%;
+
+    background:#59451f;
+
+    border:3px solid #a47e36;
+}
+
+.neuronal .dendrita{
+    position:absolute;
+
+    height:5px;
+
+    background:#83662e;
+
+    border-radius:8px;
+
+    transform-origin:left center;
+
+    box-shadow:0 1px 2px rgba(0,0,0,.3);
+}
+
+.neuronal .ramificacion{
+    position:absolute;
+
+    height:3px;
+
+    background:#a18343;
+
+    border-radius:5px;
+
+    transform-origin:left center;
+}
+
+.neuronal .axon{
+    position:absolute;
+
+    height:7px;
+
+    background:#765b29;
+
+    border-radius:10px;
+
+    transform-origin:left center;
+}
+
+/* ================= CONECTIVO ================= */
+
+.conectivo{
+    background:
+        radial-gradient(
+            ellipse,
+            #e2d3bd 0%,
+            #c6b195 75%,
+            #9e8a70 100%
+        );
+}
+
+.conectivo .colageno{
+    position:absolute;
+
+    height:9px;
+
+    border-radius:20px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #f0e0c4,
+            #b99c76,
+            #ead8bc
+        );
+
+    box-shadow:
+        0 2px 4px rgba(70,45,20,.3);
+}
+
+.conectivo .elastica{
+    position:absolute;
+
+    height:5px;
+
+    border-radius:20px;
+
+    background:#9fbd9f;
+}
+
+.conectivo .celula{
+    position:absolute;
+
+    width:38px;
+    height:38px;
+
+    border-radius:50%;
+
+    background:
+        radial-gradient(
+            circle at 50% 50%,
+            #764d62 0%,
+            #764d62 20%,
+            #d29db1 23%,
+            #b87896 70%,
+            #915a76 100%
+        );
+
+    border:2px solid #75465f;
+
+    box-shadow:
+        0 2px 7px rgba(70,40,50,.35);
+}
+
+/* ================= ZOOM ================= */
+
+#zoomControl{
+    position:absolute;
+
+    bottom:14px;
+    left:50%;
+
+    transform:translateX(-50%);
+
+    width:220px;
+
+    z-index:20;
+
+    background:rgba(0,0,0,.72);
+
+    padding:8px;
+
+    border-radius:8px;
+}
+
+#zoomControl label{
+    font-size:11px;
+}
+
+/* ================= COMPARACIÓN ================= */
+
+#comparacion{
+    position:absolute;
+
+    bottom:15px;
+    right:16px;
+
+    width:285px;
+
+    padding:12px;
+
+    background:rgba(0,0,0,.88);
+
+    border-radius:10px;
+
+    z-index:20;
+}
+
+#comparacion h4{
+    margin:0 0 8px;
+
+    color:#62e878;
+}
+
+#compararTexto{
+    font-size:11px;
+
+    line-height:1.45;
+
+    color:#ddd;
+}
+
+/* ================= INSTRUCCIÓN ================= */
+
+#instruction{
+    position:absolute;
+
+    bottom:18px;
+    left:50%;
+
+    transform:translateX(-50%);
+
+    z-index:30;
+
+    padding:11px 18px;
+
+    background:rgba(0,0,0,.87);
+
+    border-radius:10px;
+
+    font-size:13px;
+}
+
+#instruction span{
+    color:#62e878;
+    font-weight:bold;
+}
+
+
+/* =====================================================
+   EVALUACIÓN
+===================================================== */
+
+#modalEvaluacion{
+
+    position:fixed;
+
+    inset:0;
+
+    background:rgba(0,0,0,.85);
+
+    display:none;
+
+    align-items:center;
+
+    justify-content:center;
+
+    z-index:1000;
+
+    padding:20px;
+
+}
+
+#contenidoEvaluacion{
+
+    width:100%;
+
+    max-width:700px;
+
+    max-height:90vh;
+
+    overflow-y:auto;
+
+    background:#121c16;
+
+    border:2px solid #62e878;
+
+    border-radius:12px;
+
+    padding:25px;
+
+    box-shadow:0 0 30px rgba(0,0,0,.8);
+
+}
+
+#contenidoEvaluacion h2{
+
+    margin-top:0;
+
+    color:#62e878;
+
+    text-align:center;
+
+}
+
+.pregunta{
+
+    margin-bottom:18px;
+
+    padding:15px;
+
+    background:rgba(255,255,255,.05);
+
+    border-radius:8px;
+
+}
+
+.pregunta p{
+
+    margin-top:0;
+
+    font-weight:bold;
+
+}
+
+.opcion{
+
+    display:block;
+
+    padding:8px;
+
+    margin:5px 0;
+
+    background:#222d26;
+
+    border-radius:6px;
+
+    cursor:pointer;
+
+}
+
+.opcion:hover{
+
+    background:#304035;
+
+}
+
+.opcion input{
+
+    margin-right:8px;
+
+}
+
+#enviarEvaluacion{
+
+    width:100%;
+
+    background:#62e878;
+
+    color:#07110d;
+
+    font-weight:bold;
+
+    padding:12px;
+
+}
+
+#resultadoEvaluacion{
+
+    display:none;
+
+    text-align:center;
+
+    margin-top:20px;
+
+    padding:18px;
+
+    background:#1b2b20;
+
+    border-radius:8px;
+
+}
+
+#resultadoEvaluacion h3{
+
+    color:#62e878;
+
+    font-size:26px;
+
+    margin:5px;
+
+}
+
+#resultadoEvaluacion p{
+
+    margin:8px;
+
+}
+
+.botonesEvaluacion{
+
+    display:flex;
+
+    gap:10px;
+
+    margin-top:15px;
+
+}
+
+.botonesEvaluacion button{
+
+    flex:1;
+
+}
+
+#repetirEvaluacion{
+
+    background:#62e878;
+
+    color:#07110d;
+
+}
+
+#cerrarEvaluacion{
+
+    background:#333;
+
+    color:white;
+
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- =====================================================
+     INFORMACIÓN
+===================================================== -->
+
+<div id="info">
+
+    <h2>🔬 Observación de tejidos animales</h2>
+
+    <div class="info-box">
+
+        <b>Materiales:</b>
+
+        <br><br>
+
+        🔬 Microscopio
+
+        <br>
+
+        🧫 Muestras de tejidos animales
+
+    </div>
+
+    <div class="info-box">
+
+        <b>Tejido observado:</b>
+
+        <div id="tipoTejido">
+            Tejido epitelial
+        </div>
+
+    </div>
+
+    <div class="info-box">
+
+        <b>Características:</b>
+
+        <p id="descripcion">
+
+            Células muy juntas que forman
+            capas protectoras.
+
+        </p>
+
+    </div>
+
+    <div class="info-box">
+
+        <b>Función:</b>
+
+        <p id="funcion">
+
+            Protección y revestimiento
+            de superficies.
+
+        </p>
+
+    </div>
+
+    <div class="info-box">
+
+        <b>Estado:</b>
+
+        <span
+            id="estado"
+            class="dato"
+        >
+            Muestra lista
+        </span>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     CONTROLES
+===================================================== -->
+
+<div id="controles">
+
+    <h3>🔬 Microscopio virtual</h3>
+
+    <div class="control">
+
+        <label>
+            Tipo de tejido
+        </label>
+
+        <select id="tejido">
+
+            <option value="epitelial">
+                Tejido epitelial
+            </option>
+
+            <option value="muscular">
+                Tejido muscular
+            </option>
+
+            <option value="neuronal">
+                Tejido nervioso
+            </option>
+
+            <option value="conectivo">
+                Tejido conectivo
+            </option>
+
+        </select>
+
+    </div>
+
+    <div class="control">
+
+        <label>
+
+            🔎 Zoom
+
+            <span
+                class="valor"
+                id="zoomValor"
+            >
+                1.0x
+            </span>
+
+        </label>
+
+        <input
+            type="range"
+            id="zoom"
+            min="0.7"
+            max="2.5"
+            step="0.1"
+            value="1"
+        >
+
+    </div>
+
+    <div class="botones">
+
+        <button id="iniciar">
+            ▶ Iniciar
+        </button>
+
+        <button id="pausar">
+            ⏸ Pausar
+        </button>
+
+        <button id="reiniciar">
+            ↻ Reiniciar
+        </button>
+
+    </div>
+
+    <div id="estadoVisual">
+        MUESTRA LISTA
+    </div>
+
+    <!-- ÚNICO ELEMENTO AGREGADO -->
+    <button
+        id="btnEvaluacion"
+        type="button"
+        disabled
+    >
+        📝 Evaluación
+    </button>
+
+</div>
+
+
+<!-- =====================================================
+     MICROSCOPIO
+===================================================== -->
+
+<div id="microscopio">
+
+    <div id="ocular"></div>
+
+    <div id="campo">
+
+        <div id="muestra"></div>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     COMPARACIÓN
+===================================================== -->
+
+<div id="comparacion">
+
+    <h4>🧬 Comparación</h4>
+
+    <div id="compararTexto">
+
+        Selecciona un tejido para
+        observar sus características.
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     INSTRUCCIÓN
+===================================================== -->
+
+<div id="instruction">
+
+    Selecciona un
+    <span>tejido</span>
+    y observa sus estructuras.
+
+</div>
+
+
+<!-- =====================================================
+     MODAL EVALUACIÓN
+===================================================== -->
+
+<div id="modalEvaluacion">
+
+    <div id="contenidoEvaluacion">
+
+        <h2>📝 Evaluación</h2>
+
+        <p style="text-align:center;">
+            Responde las 5 preguntas.
+            Cada pregunta vale <b>2 puntos</b>.
+        </p>
+
+
+        <form id="formEvaluacion">
+
+            <!-- PREGUNTA 1 -->
+
+            <div class="pregunta">
+
+                <p>
+                    1. ¿Qué se estudia principalmente en esta actividad?
+                </p>
+
+                <label class="opcion">
+                    <input type="radio" name="p1" value="a">
+                    El movimiento de los huesos.
+                </label>
+
+                <label class="opcion">
+                    <input type="radio" name="p1" value="b">
+                    Las características y estructuras de los tejidos animales.
+                </label>
+
+                <label class="opcion">
+                    <input type="radio" name="p1" value="c">
+                    La circulación del agua en las plantas.
+                </label>
+
+                <label class="opcion">
+                    <input type="radio" name="p1" value="d">
+                    La reproducción de las plantas.
+                </label>
+
+            </div>
+
+
+            <!-- PREGUNTA 2 -->
+
+            <div class="pregunta">
+
+                <p>
+                    2. ¿Cómo se caracteriza principalmente el tejido epitelial?
+                </p>
+
+                <label class="opcion">
+                    <input type="radio" name="p2" value="a">
+                    Sus células están muy juntas formando capas.
+                </label>
+
+                <label class="opcion">
+                    <input type="radio" name="p2" value="b">
+                    Está formado únicamente por huesos.
+                </label>
+
+                <label class="opcion">
+                    <input type="radio" name="p2" value="c">
+                    Está compuesto solamente por neuronas.
+                </label>
+
+                <label class="opcion">
+                    <input type="radio" name="p2" value="d">
+                    No posee células.
+                </label>
+
+            </div>
+
+
+            <!-- PREGUNTA 3 -->
+
+            <div class="pregunta">
+
+                <p>
+                    3. ¿Cuál es una característica del tejido muscular?
+                </p>
+
+                <label class="opcion">
+                    <input type="radio" name="p3" value="a">
+                    Sus fibras están especializadas en la contracción.
+                </label>
+
+                <label class="opcion">
+                    <input type="radio" name="p3" value="b">
+                    Solo sirve para transportar agua.
+                </label>
+
+                <label class="opcion">
+                    <input type="radio" name="p3" value="c">
+                    Está formado únicamente por células nerviosas.
+                </label>
+
+                <label class="opcion">
+                    <input type="radio" name="p3" value="d">
+                    No puede realizar ningún movimiento.
+                </label>
+
+            </div>
+
+
+            <!-- PREGUNTA 4 -->
+
+            <div class="pregunta">
+
+                <p>
+                    4. ¿Qué estructuras encontramos en el tejido nervioso?
+                </p>
+
+                <label class="opcion">
+                    <input type="radio" name="p4" value="a">
+                    Neuronas, dendritas y axones.
+                </label>
+
+                <label class="opcion">
+                    <input type="radio" name="p4" value="b">
+                    Raíces, tallos y hojas.
+                </label>
+
+                <label class="opcion">
+                    <input type="radio" name="p4" value="c">
+                    Huesos y cartílagos únicamente.
+                </label>
+
+                <label class="opcion">
+                    <input type="radio" name="p4" value="d">
+                    Solo células musculares.
+                </label>
+
+            </div>
+
+
+            <!-- PREGUNTA 5 -->
+
+            <div class="pregunta">
+
+                <p>
+                    5. ¿Cuál es una función importante del tejido conectivo?
+                </p>
+
+                <label class="opcion">
+                    <input type="radio" name="p5" value="a">
+                    Producir únicamente impulsos nerviosos.
+                </label>
+
+                <label class="opcion">
+                    <input type="radio" name="p5" value="b">
+                    Realizar la fotosíntesis.
+                </label>
+
+                <label class="opcion">
+                    <input type="radio" name="p5" value="c">
+                    Unir, sostener y proteger diferentes partes del cuerpo.
+                </label>
+
+                <label class="opcion">
+                    <input type="radio" name="p5" value="d">
+                    Transportar agua desde las raíces.
+                </label>
+
+            </div>
+
+
+            <button
+                id="enviarEvaluacion"
+                type="submit"
+            >
+                ✅ Finalizar evaluación
+            </button>
+
+        </form>
+
+
+        <!-- RESULTADO -->
+
+        <div id="resultadoEvaluacion">
+
+            <h3 id="puntaje">
+                0/10
+            </h3>
+
+            <p id="porcentaje">
+                0%
+            </p>
+
+            <p id="mensaje">
+            </p>
+
+            <div class="botonesEvaluacion">
+
+                <button
+                    id="repetirEvaluacion"
+                    type="button"
+                >
+                    ↻ Repetir evaluación
+                </button>
+
+                <button
+                    id="cerrarEvaluacion"
+                    type="button"
+                >
+                    Cerrar evaluación
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* =====================================================
+   VARIABLES ORIGINALES
+===================================================== */
+
+const muestra =
+    document.getElementById("muestra");
+
+const campo =
+    document.getElementById("campo");
+
+let tejidoActual = "epitelial";
+
+let zoom = 1;
+
+let ejecutando = false;
+
+let tiempo = 0;
+
+let moviendo = false;
+
+let inicioX = 0;
+
+let inicioY = 0;
+
+let posicionX = -185;
+
+let posicionY = -145;
+
+
+/* =====================================================
+   VARIABLES DE EVALUACIÓN
+===================================================== */
+
+let evaluacionDisponible = false;
+
+const btnEvaluacion =
+    document.getElementById("btnEvaluacion");
+
+const modalEvaluacion =
+    document.getElementById("modalEvaluacion");
+
+const formEvaluacion =
+    document.getElementById("formEvaluacion");
+
+const resultadoEvaluacion =
+    document.getElementById("resultadoEvaluacion");
+
+const puntaje =
+    document.getElementById("puntaje");
+
+const porcentaje =
+    document.getElementById("porcentaje");
+
+const mensaje =
+    document.getElementById("mensaje");
+
+
+/* =====================================================
+   INFORMACIÓN
+===================================================== */
+
+const datos = {
+
+    epitelial:{
+
+        nombre:"Tejido epitelial",
+
+        descripcion:
+        "Está formado por células muy juntas que forman capas. Se observan membranas celulares y núcleos.",
+
+        funcion:
+        "Protege y recubre superficies externas e internas del organismo.",
+
+        comparacion:
+        "Las células están muy juntas y forman una capa continua de protección."
+
+    },
+
+    muscular:{
+
+        nombre:"Tejido muscular",
+
+        descripcion:
+        "Presenta fibras musculares largas, paralelas y con estriaciones. Sus células están especializadas en la contracción.",
+
+        funcion:
+        "Permite el movimiento del cuerpo y participa en el movimiento de diferentes órganos.",
+
+        comparacion:
+        "Se diferencia por sus fibras largas y organizadas, especializadas en la contracción."
+
+    },
+
+    neuronal:{
+
+        nombre:"Tejido nervioso",
+
+        descripcion:
+        "Se observan neuronas con un cuerpo celular y prolongaciones llamadas dendritas y axón.",
+
+        funcion:
+        "Recibe, procesa y transmite información mediante señales nerviosas.",
+
+        comparacion:
+        "Sus células presentan prolongaciones especializadas para transmitir información."
+
+    },
+
+    conectivo:{
+
+        nombre:"Tejido conectivo",
+
+        descripcion:
+        "Presenta células separadas por una matriz extracelular donde se encuentran diferentes tipos de fibras.",
+
+        funcion:
+        "Une, sostiene, protege y proporciona estructura a diferentes partes del organismo.",
+
+        comparacion:
+        "Tiene más espacio entre las células y presenta fibras que forman parte de la matriz extracelular."
+
+    }
+
+};
+
+
+/* =====================================================
+   CREAR EPITELIAL
+===================================================== */
+
+function crearEpitelial(){
+
+    muestra.innerHTML = "";
+
+    muestra.className = "epitelial";
+
+    for(let fila=0; fila<8; fila++){
+
+        for(let columna=0; columna<10; columna++){
+
+            const celula =
+                document.createElement("div");
+
+            celula.className = "celula";
+
+            celula.style.left =
+                (20 + columna*86 +
+                (fila%2)*18) + "px";
+
+            celula.style.top =
+                (15 + fila*70) + "px";
+
+            celula.style.transform =
+                "rotate(" +
+                ((Math.random()*8)-4) +
+                "deg)";
+
+            muestra.appendChild(celula);
+
+        }
+
+    }
+
+}
+
+
+/* =====================================================
+   CREAR MUSCULAR
+===================================================== */
+
+function crearMuscular(){
+
+    muestra.innerHTML = "";
+
+    muestra.className = "muscular";
+
+    for(let fila=0; fila<10; fila++){
+
+        const fibra =
+            document.createElement("div");
+
+        fibra.className = "fibra";
+
+        fibra.style.left =
+            (30 + (fila%2)*35) + "px";
+
+        fibra.style.top =
+            (10 + fila*68) + "px";
+
+        fibra.style.transform =
+            "rotate(" +
+            ((Math.random()*4)-2) +
+            "deg)";
+
+        const nucleo =
+            document.createElement("div");
+
+        nucleo.className = "nucleo";
+
+        nucleo.style.left =
+            (100 + Math.random()*250) + "px";
+
+        fibra.appendChild(nucleo);
+
+        muestra.appendChild(fibra);
+
+    }
+
+}
+
+
+/* =====================================================
+   CREAR NERVIOSO
+===================================================== */
+
+function crearNeuronal(){
+
+    muestra.innerHTML = "";
+
+    muestra.className = "neuronal";
+
+    const posiciones = [
+
+        [120,90],
+        [430,80],
+        [270,280],
+        [650,230],
+        [70,430],
+        [480,450]
+
+    ];
+
+    posiciones.forEach((pos,index)=>{
+
+        const neurona =
+            document.createElement("div");
+
+        neurona.className = "neurona";
+
+        neurona.style.left =
+            pos[0] + "px";
+
+        neurona.style.top =
+            pos[1] + "px";
+
+        const nucleo =
+            document.createElement("div");
+
+        nucleo.className = "nucleo";
+
+        neurona.appendChild(nucleo);
+
+        /* Dendritas */
+
+        for(let i=0;i<6;i++){
+
+            const dendrita =
+                document.createElement("div");
+
+            dendrita.className =
+                "dendrita";
+
+            dendrita.style.width =
+                (50 + Math.random()*70) + "px";
+
+            dendrita.style.left =
+                "28px";
+
+            dendrita.style.top =
+                "28px";
+
+            dendrita.style.transform =
+                "rotate(" +
+                (i*60 + Math.random()*20) +
+                "deg)";
+
+            neurona.appendChild(dendrita);
+
+            for(let j=0;j<2;j++){
+
+                const rama =
+                    document.createElement("div");
+
+                rama.className =
+                    "ramificacion";
+
+                rama.style.width =
+                    "35px";
+
+                rama.style.left =
+                    "40px";
+
+                rama.style.top =
+                    (j*8) + "px";
+
+                rama.style.transform =
+                    "rotate(" +
+                    (j===0 ? 35 : -35) +
+                    "deg)";
+
+                dendrita.appendChild(rama);
+
+            }
+
+        }
+
+        /* Axón */
+
+        const axon =
+            document.createElement("div");
+
+        axon.className = "axon";
+
+        axon.style.width =
+            (150 + index*10) + "px";
+
+        axon.style.left = "45px";
+
+        axon.style.top = "27px";
+
+        axon.style.transform =
+            "rotate(" +
+            (index%2===0 ? 10 : -10) +
+            "deg)";
+
+        neurona.appendChild(axon);
+
+        muestra.appendChild(neurona);
+
+    });
+
+}
+
+
+/* =====================================================
+   CREAR CONECTIVO
+===================================================== */
+
+function crearConectivo(){
+
+    muestra.innerHTML = "";
+
+    muestra.className = "conectivo";
+
+    /* Colágeno */
+
+    for(let i=0;i<25;i++){
+
+        const fibra =
+            document.createElement("div");
+
+        fibra.className = "colageno";
+
+        fibra.style.width =
+            (130 + Math.random()*230) + "px";
+
+        fibra.style.left =
+            Math.random()*700 + "px";
+
+        fibra.style.top =
+            Math.random()*600 + "px";
+
+        fibra.style.transform =
+            "rotate(" +
+            (Math.random()*180) +
+            "deg)";
+
+        muestra.appendChild(fibra);
+
+    }
+
+    /* Fibras elásticas */
+
+    for(let i=0;i<18;i++){
+
+        const fibra =
+            document.createElement("div");
+
+        fibra.className = "elastica";
+
+        fibra.style.width =
+            (100 + Math.random()*180) + "px";
+
+        fibra.style.left =
+            Math.random()*700 + "px";
+
+        fibra.style.top =
+            Math.random()*600 + "px";
+
+        fibra.style.transform =
+            "rotate(" +
+            (Math.random()*180) +
+            "deg)";
+
+        muestra.appendChild(fibra);
+
+    }
+
+    /* Células */
+
+    for(let i=0;i<18;i++){
+
+        const celula =
+            document.createElement("div");
+
+        celula.className = "celula";
+
+        celula.style.left =
+            (30+Math.random()*760)+"px";
+
+        celula.style.top =
+            (20+Math.random()*600)+"px";
+
+        celula.style.transform =
+            "scale(" +
+            (.7+Math.random()*.7) +
+            ")";
+
+        muestra.appendChild(celula);
+
+    }
+
+}
+
+
+/* =====================================================
+   MOSTRAR TEJIDO
+===================================================== */
+
+function mostrarTejido(){
+
+    if(tejidoActual==="epitelial")
+        crearEpitelial();
+
+    if(tejidoActual==="muscular")
+        crearMuscular();
+
+    if(tejidoActual==="neuronal")
+        crearNeuronal();
+
+    if(tejidoActual==="conectivo")
+        crearConectivo();
+
+    actualizarInformacion();
+
+}
+
+
+/* =====================================================
+   INFORMACIÓN
+===================================================== */
+
+function actualizarInformacion(){
+
+    const d = datos[tejidoActual];
+
+    document.getElementById(
+        "tipoTejido"
+    ).textContent = d.nombre;
+
+    document.getElementById(
+        "descripcion"
+    ).textContent = d.descripcion;
+
+    document.getElementById(
+        "funcion"
+    ).textContent = d.funcion;
+
+    document.getElementById(
+        "compararTexto"
+    ).textContent = d.comparacion;
+
+}
+
+
+/* =====================================================
+   CAMBIAR TEJIDO
+===================================================== */
+
+document.getElementById("tejido")
+.addEventListener("change",function(){
+
+    tejidoActual = this.value;
+
+    ejecutando = false;
+
+    posicionX = -185;
+
+    posicionY = -145;
+
+    muestra.style.left =
+        posicionX+"px";
+
+    muestra.style.top =
+        posicionY+"px";
+
+    mostrarTejido();
+
+    document.getElementById(
+        "estado"
+    ).textContent =
+        "Nueva muestra seleccionada";
+
+    document.getElementById(
+        "estadoVisual"
+    ).textContent =
+        "MUESTRA LISTA";
+
+});
+
+
+/* =====================================================
+   ZOOM
+===================================================== */
+
+document.getElementById("zoom")
+.addEventListener("input",function(){
+
+    zoom = Number(this.value);
+
+    muestra.style.transform =
+        "scale("+zoom+")";
+
+    document.getElementById(
+        "zoomValor"
+    ).textContent =
+        zoom.toFixed(1)+"x";
+
+});
+
+
+/* =====================================================
+   ARRASTRAR MUESTRA
+===================================================== */
+
+campo.addEventListener(
+    "mousedown",
+    function(e){
+
+        moviendo = true;
+
+        inicioX = e.clientX;
+
+        inicioY = e.clientY;
+
+    }
+);
+
+window.addEventListener(
+    "mouseup",
+    function(){
+
+        moviendo = false;
+
+    }
+);
+
+window.addEventListener(
+    "mousemove",
+    function(e){
+
+        if(!moviendo)
+            return;
+
+        posicionX +=
+            e.clientX-inicioX;
+
+        posicionY +=
+            e.clientY-inicioY;
+
+        inicioX = e.clientX;
+        inicioY = e.clientY;
+
+        posicionX =
+            Math.max(
+                -450,
+                Math.min(
+                    50,
+                    posicionX
+                )
+            );
+
+        posicionY =
+            Math.max(
+                -350,
+                Math.min(
+                    50,
+                    posicionY
+                )
+            );
+
+        muestra.style.left =
+            posicionX+"px";
+
+        muestra.style.top =
+            posicionY+"px";
+
+    }
+);
+
+
+/* =====================================================
+   INICIAR
+===================================================== */
+
+document.getElementById("iniciar")
+.addEventListener("click",function(){
+
+    ejecutando = true;
+
+    /* AGREGADO: habilita evaluación */
+
+    evaluacionDisponible = true;
+
+    btnEvaluacion.disabled = false;
+
+    document.getElementById(
+        "estado"
+    ).textContent =
+        "Observación en proceso";
+
+    document.getElementById(
+        "estadoVisual"
+    ).textContent =
+        "🔬 OBSERVANDO";
+
+    document.getElementById(
+        "instruction"
+    ).innerHTML =
+        "Explora la muestra y utiliza el <span>zoom</span> para observar sus estructuras.";
+
+});
+
+
+/* =====================================================
+   PAUSAR
+===================================================== */
+
+document.getElementById("pausar")
+.addEventListener("click",function(){
+
+    ejecutando = false;
+
+    document.getElementById(
+        "estado"
+    ).textContent =
+        "Observación pausada";
+
+    document.getElementById(
+        "estadoVisual"
+    ).textContent =
+        "⏸ PAUSADO";
+
+});
+
+
+/* =====================================================
+   REINICIAR
+===================================================== */
+
+document.getElementById("reiniciar")
+.addEventListener("click",function(){
+
+    ejecutando = false;
+
+    /* AGREGADO: vuelve a bloquear evaluación */
+
+    evaluacionDisponible = false;
+
+    btnEvaluacion.disabled = true;
+
+    tejidoActual = "epitelial";
+
+    document.getElementById(
+        "tejido"
+    ).value = "epitelial";
+
+    zoom = 1;
+
+    document.getElementById(
+        "zoom"
+    ).value = 1;
+
+    document.getElementById(
+        "zoomValor"
+    ).textContent = "1.0x";
+
+    posicionX = -185;
+    posicionY = -145;
+
+    muestra.style.left =
+        posicionX+"px";
+
+    muestra.style.top =
+        posicionY+"px";
+
+    muestra.style.transform =
+        "scale(1)";
+
+    mostrarTejido();
+
+    document.getElementById(
+        "estado"
+    ).textContent =
+        "Muestra lista";
+
+    document.getElementById(
+        "estadoVisual"
+    ).textContent =
+        "MUESTRA LISTA";
+
+});
+
+
+/* =====================================================
+   ANIMACIÓN
+===================================================== */
+
+function animar(){
+
+    requestAnimationFrame(animar);
+
+    if(ejecutando){
+
+        tiempo += .02;
+
+        const elementos =
+            muestra.querySelectorAll(
+                ".celula,.neurona"
+            );
+
+        elementos.forEach(
+            (elemento,index)=>{
+
+                const movimiento =
+                    Math.sin(
+                        tiempo*1.5+index
+                    )*.7;
+
+                elemento.style.marginTop =
+                    movimiento+"px";
+
+            }
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   ================= EVALUACIÓN =========================
+===================================================== */
+
+
+/* ABRIR EVALUACIÓN */
+
+btnEvaluacion.addEventListener(
+    "click",
+    function(){
+
+        if(!evaluacionDisponible)
+            return;
+
+        modalEvaluacion.style.display =
+            "flex";
+
+    }
+);
+
+
+/* ENVIAR EVALUACIÓN */
+
+formEvaluacion.addEventListener(
+    "submit",
+    function(e){
+
+        e.preventDefault();
+
+        const respuestas = {
+
+            p1:"b",
+            p2:"a",
+            p3:"a",
+            p4:"a",
+            p5:"c"
+
+        };
+
+        let puntos = 0;
+
+        let todasRespondidas = true;
+
+
+        for(let pregunta in respuestas){
+
+            const respuesta =
+                document.querySelector(
+                    'input[name="'+pregunta+'"]:checked'
+                );
+
+            if(!respuesta){
+
+                todasRespondidas = false;
+
+                break;
+
+            }
+
+            if(
+                respuesta.value ===
+                respuestas[pregunta]
+            ){
+
+                puntos += 2;
+
+            }
+
+        }
+
+
+        if(!todasRespondidas){
+
+            alert(
+                "⚠️ Debes responder las 5 preguntas antes de finalizar."
+            );
+
+            return;
+
+        }
+
+
+        const porcentajeFinal =
+            puntos * 10;
+
+
+        puntaje.textContent =
+            puntos + "/10";
+
+        porcentaje.textContent =
+            porcentajeFinal + "%";
+
+
+        if(puntos === 10){
+
+            mensaje.textContent =
+                "🎉 ¡Excelente! Comprendes muy bien los tejidos animales.";
+
+        }
+        else if(puntos >= 8){
+
+            mensaje.textContent =
+                "👏 ¡Muy bien! Tienes un buen dominio del tema.";
+
+        }
+        else if(puntos >= 6){
+
+            mensaje.textContent =
+                "👍 Buen trabajo. Puedes repasar algunos conceptos.";
+
+        }
+        else if(puntos >= 4){
+
+            mensaje.textContent =
+                "📚 Necesitas repasar un poco más el tema.";
+
+        }
+        else{
+
+            mensaje.textContent =
+                "💡 Te recomendamos repetir el experimento y revisar los conceptos.";
+
+        }
+
+
+        resultadoEvaluacion.style.display =
+            "block";
+
+
+        /* Deshabilitar respuestas */
+
+        const inputs =
+            formEvaluacion.querySelectorAll(
+                "input"
+            );
+
+        inputs.forEach(function(input){
+
+            input.disabled = true;
+
+        });
+
+
+        document.getElementById(
+            "enviarEvaluacion"
+        ).disabled = true;
+
+    }
+);
+
+
+/* REPETIR EVALUACIÓN */
+
+document.getElementById(
+    "repetirEvaluacion"
+)
+.addEventListener(
+    "click",
+    function(){
+
+        formEvaluacion.reset();
+
+        const inputs =
+            formEvaluacion.querySelectorAll(
+                "input"
+            );
+
+        inputs.forEach(function(input){
+
+            input.disabled = false;
+
+        });
+
+
+        document.getElementById(
+            "enviarEvaluacion"
+        ).disabled = false;
+
+
+        resultadoEvaluacion.style.display =
+            "none";
+
+    }
+);
+
+
+/* CERRAR EVALUACIÓN */
+
+document.getElementById(
+    "cerrarEvaluacion"
+)
+.addEventListener(
+    "click",
+    function(){
+
+        modalEvaluacion.style.display =
+            "none";
+
+    }
+);
+
+
+/* CERRAR HACIENDO CLICK FUERA */
+
+modalEvaluacion.addEventListener(
+    "click",
+    function(e){
+
+        if(e.target === modalEvaluacion){
+
+            modalEvaluacion.style.display =
+                "none";
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   INICIO
+===================================================== */
+
+mostrarTejido();
+
+animar();
+
+</script>
+<script src="asistente.js"></script>
+</body>
+</html>

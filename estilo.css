@@ -1,0 +1,200 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI', sans-serif;
+}
+
+body{
+    background:#020b16;
+    color:white;
+}
+
+
+/* PORTADA */
+
+.hero{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:space-around;
+    padding:50px;
+    background:
+    radial-gradient(circle at top, #063f5c, #020b16 60%);
+}
+
+
+.contenido{
+    max-width:600px;
+}
+
+
+.contenido h1{
+    font-size:70px;
+    color:#4dffb8;
+}
+
+
+.contenido h1 span{
+    color:#00c8ff;
+}
+
+
+.contenido h2{
+    font-size:35px;
+    margin:20px 0;
+}
+
+
+.contenido p{
+    font-size:20px;
+    line-height:1.6;
+    color:#d5e9ff;
+}
+
+
+button{
+    margin-top:30px;
+    padding:15px 35px;
+    border:none;
+    border-radius:30px;
+    background:linear-gradient(90deg,#00ff99,#00c8ff);
+    color:#00131f;
+    font-size:18px;
+    font-weight:bold;
+    cursor:pointer;
+    transition:.3s;
+}
+
+
+button:hover{
+    transform:scale(1.1);
+    box-shadow:0 0 25px #00ff99;
+}
+
+
+/* PLANETA */
+
+.planeta{
+    font-size:180px;
+    animation:girar 5s infinite linear;
+}
+
+
+@keyframes girar{
+
+    from{
+        transform:rotate(0deg);
+    }
+
+    to{
+        transform:rotate(360deg);
+    }
+
+}
+
+
+
+/* SECCIONES */
+
+section{
+    padding:70px 10%;
+    text-align:center;
+}
+
+
+section h2{
+    font-size:40px;
+    color:#4dffb8;
+    margin-bottom:40px;
+}
+
+
+
+/* TARJETAS */
+
+.contenedores{
+    display:flex;
+    justify-content:center;
+    gap:30px;
+    flex-wrap:wrap;
+}
+
+
+.box{
+    width:260px;
+    padding:30px;
+    background:#071d2d;
+    border-radius:20px;
+    border:1px solid #00c8ff;
+    box-shadow:0 0 20px rgba(0,200,255,.2);
+    transition:.4s;
+}
+
+
+.box:hover{
+    transform:translateY(-15px);
+    box-shadow:0 0 30px #00ff99;
+}
+
+
+.box h3{
+    color:#00c8ff;
+    font-size:25px;
+    margin-bottom:15px;
+}
+
+
+.box p{
+    color:#d8e8ff;
+}
+
+
+
+/* SIMULACIONES */
+
+.simulaciones{
+    background:
+    linear-gradient(135deg,#031525,#063f5c);
+}
+
+
+.simulaciones p{
+    font-size:22px;
+    margin-bottom:20px;
+}
+
+
+
+/* FOOTER */
+
+footer{
+    background:#01060d;
+    padding:25px;
+    text-align:center;
+    color:#8fbccc;
+}
+
+
+
+/* CELULAR */
+
+@media(max-width:800px){
+
+.hero{
+    flex-direction:column;
+    text-align:center;
+}
+
+
+.contenido h1{
+    font-size:50px;
+}
+
+
+.planeta{
+    font-size:100px;
+}
+
+
+}

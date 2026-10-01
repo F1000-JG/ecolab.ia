@@ -1,0 +1,2248 @@
+                                                                                                                                                                                      ```html
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="asistente.css">
+<title>Síntesis de Sales Binarias | EcoLab IA</title>
+
+<style>
+
+/* =====================================================
+   ESTILOS GENERALES
+===================================================== */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+    background: #071b22;
+}
+
+#laboratory {
+
+    position: relative;
+
+    width: 100vw;
+    height: 100vh;
+
+    overflow: hidden;
+
+    background:
+    linear-gradient(
+        to bottom,
+        #b9e5f2 0%,
+        #e8f6f8 55%,
+        #b7c9c9 56%,
+        #879b9d 100%
+    );
+}
+
+
+/* =====================================================
+   DECORACIÓN
+===================================================== */
+
+#lab-light {
+
+    position: absolute;
+
+    top: 45px;
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    width: 180px;
+    height: 180px;
+
+    border-radius: 50%;
+
+    background: rgba(255,255,255,.35);
+
+    box-shadow:
+    0 0 80px rgba(255,255,255,.6);
+}
+
+.shelf {
+
+    position: absolute;
+
+    bottom: 0;
+    left: 0;
+
+    width: 100%;
+    height: 145px;
+
+    background:
+    linear-gradient(
+        to bottom,
+        #795548,
+        #5d4037
+    );
+
+    border-top: 8px solid #422d27;
+
+    z-index: 1;
+}
+
+.bottle {
+
+    position: absolute;
+
+    width: 45px;
+    height: 70px;
+
+    border-radius: 8px 8px 12px 12px;
+
+    background: rgba(255,255,255,.65);
+
+    border: 3px solid rgba(255,255,255,.8);
+
+    bottom: 30px;
+
+    z-index: 2;
+}
+
+.bottle::before {
+
+    content: "";
+
+    position: absolute;
+
+    width: 22px;
+    height: 15px;
+
+    left: 8px;
+    top: -18px;
+
+    border-radius: 4px 4px 0 0;
+
+    background: #68777a;
+}
+
+
+/* =====================================================
+   TARJETA DE INFORMACIÓN
+===================================================== */
+
+#info-card {
+
+    position: absolute;
+
+    top: 20px;
+    left: 20px;
+
+    width: 285px;
+
+    padding: 18px;
+
+    border-radius: 15px;
+
+    background: rgba(4,20,25,.9);
+
+    color: white;
+
+    z-index: 30;
+
+    box-shadow:
+    0 8px 25px rgba(0,0,0,.4);
+}
+
+#info-card h2 {
+
+    margin: 0 0 12px;
+
+    color: #8cffd2;
+
+    font-size: 19px;
+}
+
+#info-card p {
+
+    margin: 8px 0;
+
+    font-size: 13px;
+
+    line-height: 1.45;
+}
+
+.dato {
+
+    color: #ffd84d;
+
+    font-weight: bold;
+}
+
+#observation {
+
+    margin-top: 12px;
+
+    padding: 10px;
+
+    border-radius: 10px;
+
+    background: rgba(255,255,255,.08);
+
+    color: #d9f0f0;
+
+    font-size: 12px;
+
+    line-height: 1.5;
+}
+
+
+/* =====================================================
+   PROGRESO
+===================================================== */
+
+#progress-container {
+
+    margin-top: 14px;
+
+    padding: 10px;
+
+    border-radius: 10px;
+
+    background: rgba(255,255,255,.06);
+
+    font-size: 11px;
+
+    text-align: center;
+}
+
+#progress-background {
+
+    width: 100%;
+    height: 8px;
+
+    margin-top: 8px;
+
+    border-radius: 10px;
+
+    overflow: hidden;
+
+    background: #27434a;
+}
+
+#progress {
+
+    width: 0%;
+
+    height: 100%;
+
+    background: #8cffd2;
+
+    transition: width .4s;
+}
+
+
+/* =====================================================
+   PANEL DE CONTROL
+===================================================== */
+
+#control-panel {
+
+    position: absolute;
+
+    top: 20px;
+    right: 20px;
+
+    width: 270px;
+
+    padding: 18px;
+
+    border-radius: 15px;
+
+    background: rgba(4,20,25,.92);
+
+    color: white;
+
+    z-index: 30;
+
+    box-shadow:
+    0 8px 25px rgba(0,0,0,.4);
+}
+
+#control-panel h2 {
+
+    margin: 0 0 10px;
+
+    text-align: center;
+
+    color: #ffd84d;
+
+    font-size: 18px;
+}
+
+#control-panel p {
+
+    font-size: 12px;
+
+    line-height: 1.5;
+
+    color: #d6e5e6;
+}
+
+button {
+
+    width: 100%;
+
+    margin-top: 9px;
+
+    padding: 11px;
+
+    border: none;
+
+    border-radius: 9px;
+
+    cursor: pointer;
+
+    font-weight: bold;
+
+    transition: .25s;
+}
+
+button:hover {
+
+    transform: translateY(-2px);
+}
+
+#hcl-button {
+
+    background: #75d6f5;
+
+    color: #07313b;
+}
+
+#metal-button {
+
+    background: #d7dde0;
+
+    color: #20292c;
+}
+
+#reset-button {
+
+    background: #eeeeee;
+
+    color: #173038;
+}
+
+#finish-button {
+
+    background: #ffd84d;
+
+    color: #2c2200;
+}
+
+button:disabled {
+
+    opacity: .4;
+
+    cursor: not-allowed;
+
+    transform: none;
+}
+
+
+/* =====================================================
+   ZONA DEL EXPERIMENTO
+===================================================== */
+
+#experiment-area {
+
+    position: absolute;
+
+    left: 50%;
+
+    top: 53%;
+
+    transform: translate(-50%, -50%);
+
+    width: 560px;
+
+    height: 390px;
+
+    z-index: 10;
+}
+
+
+/* =====================================================
+   GRADILLA
+===================================================== */
+
+#rack {
+
+    position: absolute;
+
+    bottom: 15px;
+
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    width: 490px;
+
+    height: 105px;
+
+    border-radius: 12px 12px 5px 5px;
+
+    background:
+    linear-gradient(
+        to bottom,
+        #b87c4b,
+        #8b572f
+    );
+
+    border: 5px solid #6b4126;
+
+    box-shadow:
+    0 12px 20px rgba(0,0,0,.3);
+}
+
+.rack-hole {
+
+    position: absolute;
+
+    top: 20px;
+
+    width: 155px;
+    height: 58px;
+
+    border-radius: 50%;
+
+    background: #4a3025;
+
+    box-shadow:
+    inset 0 5px 8px rgba(0,0,0,.5);
+}
+
+#hole-fe {
+
+    left: 55px;
+}
+
+#hole-zn {
+
+    right: 55px;
+}
+
+
+/* =====================================================
+   TUBOS
+===================================================== */
+
+.test-tube {
+
+    position: absolute;
+
+    width: 115px;
+    height: 270px;
+
+    bottom: 52px;
+
+    border-radius:
+    15px 15px 45px 45px;
+
+    border: 4px solid rgba(255,255,255,.75);
+
+    background:
+    linear-gradient(
+        to right,
+        rgba(255,255,255,.35),
+        rgba(255,255,255,.08),
+        rgba(255,255,255,.3)
+    );
+
+    overflow: visible;
+
+    box-shadow:
+    0 8px 20px rgba(0,0,0,.2);
+
+    transition: .3s;
+}
+
+#tube-fe {
+
+    left: 115px;
+}
+
+#tube-zn {
+
+    right: 115px;
+}
+
+
+/* =====================================================
+   BORDE DEL TUBO
+===================================================== */
+
+.test-tube::before {
+
+    content: "";
+
+    position: absolute;
+
+    top: -9px;
+    left: -4px;
+
+    width: 115px;
+    height: 14px;
+
+    border-radius: 8px;
+
+    border: 4px solid rgba(255,255,255,.8);
+
+    background: rgba(255,255,255,.25);
+}
+
+
+/* =====================================================
+   HCL
+===================================================== */
+
+.liquid {
+
+    position: absolute;
+
+    bottom: 0;
+
+    left: 3px;
+
+    width: 101px;
+
+    height: 0;
+
+    border-radius:
+    0 0 40px 40px;
+
+    background:
+    linear-gradient(
+        to right,
+        rgba(150,225,245,.7),
+        rgba(225,250,255,.9),
+        rgba(130,210,235,.7)
+    );
+
+    transition:
+    height 1s ease;
+}
+
+.liquid::after {
+
+    content: "";
+
+    position: absolute;
+
+    top: -4px;
+
+    left: 5px;
+
+    width: 91px;
+
+    height: 9px;
+
+    border-radius: 50%;
+
+    background: rgba(255,255,255,.5);
+}
+
+
+/* =====================================================
+   METALES
+===================================================== */
+
+.metal {
+
+    position: absolute;
+
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    opacity: 0;
+
+    transition: .6s;
+
+    z-index: 5;
+}
+
+.zinc {
+
+    bottom: 48px;
+
+    width: 32px;
+    height: 55px;
+
+    border-radius: 4px;
+
+    background:
+    linear-gradient(
+        to right,
+        #8c979b,
+        #e1e5e6,
+        #7d888c
+    );
+
+    border: 2px solid #687276;
+
+    box-shadow:
+    0 2px 5px rgba(0,0,0,.3);
+}
+
+.iron {
+
+    bottom: 48px;
+
+    width: 16px;
+    height: 75px;
+
+    border-radius: 4px;
+
+    background:
+    linear-gradient(
+        to right,
+        #454c4e,
+        #a9afb0,
+        #3d4446
+    );
+
+    border: 2px solid #303638;
+}
+
+
+/* =====================================================
+   ETIQUETAS
+===================================================== */
+
+.label {
+
+    position: absolute;
+
+    top: -48px;
+
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    padding: 7px 18px;
+
+    border-radius: 8px;
+
+    background: rgba(4,20,25,.9);
+
+    color: #ffd84d;
+
+    font-weight: bold;
+
+    font-size: 16px;
+
+    box-shadow:
+    0 4px 10px rgba(0,0,0,.3);
+
+    z-index: 20;
+}
+
+
+/* =====================================================
+   BURBUJAS
+===================================================== */
+
+.bubbles {
+
+    position: absolute;
+
+    inset: 0;
+
+    pointer-events: none;
+}
+
+.bubble {
+
+    position: absolute;
+
+    bottom: 25px;
+
+    width: 9px;
+    height: 9px;
+
+    border-radius: 50%;
+
+    border: 2px solid rgba(255,255,255,.7);
+
+    background: rgba(255,255,255,.3);
+
+    animation: rise 2s infinite ease-in;
+}
+
+@keyframes rise {
+
+    0% {
+
+        transform:
+        translateY(0)
+        scale(.7);
+
+        opacity: .2;
+    }
+
+    50% {
+
+        opacity: 1;
+    }
+
+    100% {
+
+        transform:
+        translateY(-180px)
+        scale(1.2);
+
+        opacity: 0;
+    }
+}
+
+
+/* =====================================================
+   GOTERO
+===================================================== */
+
+#dropper {
+
+    position: absolute;
+
+    top: -10px;
+    left: 50%;
+
+    transform:
+    translateX(-50%)
+    rotate(0deg);
+
+    width: 42px;
+    height: 110px;
+
+    opacity: 0;
+
+    transition: .5s;
+
+    z-index: 40;
+}
+
+.dropper-top {
+
+    width: 28px;
+    height: 25px;
+
+    margin: auto;
+
+    border-radius: 8px 8px 2px 2px;
+
+    background: #59676b;
+}
+
+.dropper-body {
+
+    width: 38px;
+    height: 62px;
+
+    margin: auto;
+
+    border-radius: 10px 10px 20px 20px;
+
+    background:
+    linear-gradient(
+        to right,
+        #d9f8ff,
+        #72c9e8,
+        #d9f8ff
+    );
+
+    border: 2px solid #679eac;
+}
+
+.dropper-tip {
+
+    width: 9px;
+    height: 28px;
+
+    margin: auto;
+
+    background: #8b9b9f;
+
+    clip-path: polygon(
+        25% 0,
+        75% 0,
+        100% 100%,
+        0 100%
+    );
+}
+
+
+/* =====================================================
+   GOTA
+===================================================== */
+
+.drop {
+
+    position: absolute;
+
+    width: 10px;
+    height: 14px;
+
+    border-radius: 50% 50% 50% 0;
+
+    background: #72d9f5;
+
+    transform: rotate(-45deg);
+
+    opacity: 0;
+
+    z-index: 35;
+}
+
+.drop.falling {
+
+    animation: fall .8s linear;
+}
+
+@keyframes fall {
+
+    0% {
+
+        opacity: 1;
+
+        transform:
+        translateY(0)
+        rotate(-45deg);
+    }
+
+    100% {
+
+        opacity: 0;
+
+        transform:
+        translateY(100px)
+        rotate(-45deg);
+    }
+}
+
+
+/* =====================================================
+   INFORMACIÓN INFERIOR
+===================================================== */
+
+#instruction {
+
+    position: absolute;
+
+    bottom: 22px;
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    padding: 12px 22px;
+
+    border-radius: 12px;
+
+    background: rgba(0,0,0,.72);
+
+    color: white;
+
+    font-size: 13px;
+
+    text-align: center;
+
+    z-index: 30;
+}
+
+#instruction span {
+
+    color: #ffd84d;
+
+    font-weight: bold;
+}
+
+
+/* =====================================================
+   MENSAJE DE REACCIÓN
+===================================================== */
+
+#reaction-message {
+
+    position: absolute;
+
+    left: 50%;
+
+    top: 10px;
+
+    transform: translateX(-50%);
+
+    padding: 12px 18px;
+
+    border-radius: 12px;
+
+    background: rgba(4,20,25,.92);
+
+    color: white;
+
+    font-size: 13px;
+
+    text-align: center;
+
+    width: 440px;
+
+    opacity: 0;
+
+    transition: .4s;
+
+    z-index: 30;
+
+    box-shadow:
+    0 5px 15px rgba(0,0,0,.3);
+}
+
+#reaction-message.show {
+
+    opacity: 1;
+}
+
+
+/* =====================================================
+   EVALUACIÓN
+===================================================== */
+
+#evaluation-screen {
+
+    position: fixed;
+
+    inset: 0;
+
+    display: none;
+
+    justify-content: center;
+
+    align-items: center;
+
+    padding: 20px;
+
+    background: rgba(2,10,14,.92);
+
+    z-index: 100;
+
+    color: white;
+}
+
+#evaluation-card {
+
+    width: min(650px,95vw);
+
+    max-height: 90vh;
+
+    overflow-y: auto;
+
+    padding: 30px;
+
+    border-radius: 25px;
+
+    background:
+    linear-gradient(
+        145deg,
+        #123c36,
+        #071b22
+    );
+
+    box-shadow:
+    0 20px 60px rgba(0,0,0,.7);
+}
+
+.evaluation-header {
+
+    text-align: center;
+}
+
+.evaluation-header h2 {
+
+    color: #8cffd2;
+
+    margin: 8px 0;
+}
+
+.evaluation-icon {
+
+    font-size: 45px;
+}
+
+#question-counter {
+
+    margin-top: 20px;
+
+    color: #ffd84d;
+
+    font-size: 13px;
+
+    font-weight: bold;
+}
+
+#question-text {
+
+    line-height: 1.5;
+
+    font-size: 18px;
+}
+
+.answer {
+
+    width: 100%;
+
+    margin-top: 10px;
+
+    padding: 14px;
+
+    border: 1px solid #456468;
+
+    border-radius: 10px;
+
+    background: rgba(255,255,255,.06);
+
+    color: white;
+
+    text-align: left;
+
+    cursor: pointer;
+}
+
+.answer:hover {
+
+    background: rgba(140,255,210,.1);
+
+    border-color: #8cffd2;
+}
+
+.answer.selected {
+
+    background: rgba(140,255,210,.2);
+
+    border-color: #8cffd2;
+}
+
+#next-question {
+
+    background: #8cffd2;
+
+    color: #06200d;
+}
+
+
+/* =====================================================
+   RESULTADO
+===================================================== */
+
+#result-screen {
+
+    display: none;
+
+    text-align: center;
+}
+
+.result-icon {
+
+    font-size: 60px;
+}
+
+#score {
+
+    font-size: 40px;
+
+    color: #ffd84d;
+
+    font-weight: bold;
+
+    margin: 20px 0;
+}
+
+#feedback {
+
+    line-height: 1.6;
+
+    color: #dce8e9;
+}
+
+#restart-quiz {
+
+    background: #ffd84d;
+
+    color: #2c2200;
+}
+
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media(max-width: 900px) {
+
+    #info-card {
+
+        width: 220px;
+    }
+
+    #control-panel {
+
+        width: 220px;
+    }
+
+    #experiment-area {
+
+        transform:
+        translate(-50%, -45%)
+        scale(.8);
+    }
+}
+
+@media(max-width: 650px) {
+
+    #info-card,
+    #control-panel {
+
+        transform: scale(.8);
+
+        transform-origin: top;
+    }
+
+    #experiment-area {
+
+        transform:
+        translate(-50%, -35%)
+        scale(.65);
+    }
+
+    #reaction-message {
+
+        width: 300px;
+
+        font-size: 11px;
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div id="laboratory">
+
+
+<!-- DECORACIÓN -->
+
+<div id="lab-light"></div>
+
+<div class="shelf"></div>
+
+<div class="bottle" style="left:5%;"></div>
+<div class="bottle" style="left:91%;"></div>
+
+
+<!-- =====================================================
+     INFORMACIÓN
+===================================================== -->
+
+<div id="info-card">
+
+<h2>🧪 Síntesis de Sales Binarias</h2>
+
+<p>
+⚗️ Paso:
+<span id="step-count" class="dato">0</span>
+/ 4
+</p>
+
+<p>
+🔬 Reacciones realizadas:
+<span id="reaction-count" class="dato">0</span>
+/ 2
+</p>
+
+<div id="observation">
+
+Primero agrega HCl a los dos tubos.
+Después añade el metal correspondiente.
+
+</div>
+
+<div id="progress-container">
+
+<span id="progress-text">
+
+0% de la práctica completada
+
+</span>
+
+<div id="progress-background">
+
+<div id="progress"></div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- =====================================================
+     PANEL DE CONTROL
+===================================================== -->
+
+<div id="control-panel">
+
+<h2>🔬 Procedimiento</h2>
+
+<p>
+1. Rotula los tubos como Zn y Fe.
+</p>
+
+<p>
+2. Agrega entre 2 y 3 mL de HCl.
+</p>
+
+<p>
+3. Añade el metal correspondiente.
+</p>
+
+<p>
+4. Observa las reacciones.
+</p>
+
+<button id="hcl-button">
+
+💧 Agregar HCl a los tubos
+
+</button>
+
+<button id="metal-button" disabled>
+
+🔩 Añadir metales
+
+</button>
+
+<button id="reset-button">
+
+↻ Reiniciar experimento
+
+</button>
+
+<button id="finish-button" disabled>
+
+📝 Realizar evaluación
+
+</button>
+
+</div>
+
+
+<!-- =====================================================
+     EXPERIMENTO
+===================================================== -->
+
+<div id="experiment-area">
+
+
+<div id="reaction-message">
+
+Observa lo que sucede en los tubos de ensayo.
+
+</div>
+
+
+<!-- GOTERO -->
+
+<div id="dropper">
+
+<div class="dropper-top"></div>
+
+<div class="dropper-body"></div>
+
+<div class="dropper-tip"></div>
+
+</div>
+
+
+<!-- TUBO Fe -->
+
+<div
+class="test-tube"
+id="tube-fe"
+>
+
+<div class="label">
+
+Fe
+
+</div>
+
+<div
+class="liquid"
+id="liquid-fe"
+></div>
+
+<div
+class="metal iron"
+id="iron"
+></div>
+
+<div
+class="bubbles"
+id="bubbles-fe"
+></div>
+
+</div>
+
+
+<!-- TUBO Zn -->
+
+<div
+class="test-tube"
+id="tube-zn"
+>
+
+<div class="label">
+
+Zn
+
+</div>
+
+<div
+class="liquid"
+id="liquid-zn"
+></div>
+
+<div
+class="metal zinc"
+id="zinc"
+></div>
+
+<div
+class="bubbles"
+id="bubbles-zn"
+></div>
+
+</div>
+
+
+<!-- GRADILLA -->
+
+<div id="rack">
+
+<div
+class="rack-hole"
+id="hole-fe"
+></div>
+
+<div
+class="rack-hole"
+id="hole-zn"
+></div>
+
+</div>
+
+
+</div>
+
+
+<!-- =====================================================
+     INSTRUCCIÓN
+===================================================== -->
+
+<div id="instruction">
+
+🧪 Sigue el procedimiento y observa
+<span>los cambios en cada tubo.</span>
+
+</div>
+
+
+<!-- =====================================================
+     EVALUACIÓN
+===================================================== -->
+
+<div id="evaluation-screen">
+
+<div id="evaluation-card">
+
+
+<div id="quiz-screen">
+
+<div class="evaluation-header">
+
+<div class="evaluation-icon">
+
+🧪
+
+</div>
+
+<h2>
+
+Evaluación del Experimento
+
+</h2>
+
+<p>
+
+Responde según lo observado en la síntesis
+de sales binarias.
+
+</p>
+
+</div>
+
+
+<div id="question-counter">
+
+Pregunta 1 de 5
+
+</div>
+
+
+<h3 id="question-text"></h3>
+
+
+<div id="answers-container"></div>
+
+
+<button
+id="next-question"
+disabled
+>
+
+Continuar →
+
+</button>
+
+</div>
+
+
+<!-- RESULTADO -->
+
+<div id="result-screen">
+
+<div class="result-icon">
+
+🏆
+
+</div>
+
+<h2>
+
+¡Evaluación terminada!
+
+</h2>
+
+<div id="score">
+
+0 / 5
+
+</div>
+
+<p id="feedback"></p>
+
+<button id="restart-quiz">
+
+🧪 Volver al experimento
+
+</button>
+
+</div>
+
+
+</div>
+
+</div>
+
+</div>
+
+
+<script>
+
+/* =====================================================
+   VARIABLES
+===================================================== */
+
+let hclAdded = false;
+
+let metalsAdded = false;
+
+let reactions = 0;
+
+let currentQuestion = 0;
+
+let score = 0;
+
+let selectedAnswer = null;
+
+
+/* =====================================================
+   ELEMENTOS
+===================================================== */
+
+const hclButton =
+document.getElementById("hcl-button");
+
+const metalButton =
+document.getElementById("metal-button");
+
+const finishButton =
+document.getElementById("finish-button");
+
+const resetButton =
+document.getElementById("reset-button");
+
+const liquidFe =
+document.getElementById("liquid-fe");
+
+const liquidZn =
+document.getElementById("liquid-zn");
+
+const iron =
+document.getElementById("iron");
+
+const zinc =
+document.getElementById("zinc");
+
+const dropper =
+document.getElementById("dropper");
+
+const reactionMessage =
+document.getElementById("reaction-message");
+
+
+/* =====================================================
+   ACTUALIZAR PROGRESO
+===================================================== */
+
+function updateProgress() {
+
+    let step = 0;
+
+    if (hclAdded)
+        step = 2;
+
+    if (metalsAdded)
+        step = 4;
+
+    document.getElementById(
+        "step-count"
+    ).innerText = step;
+
+    const percentage =
+    (step / 4) * 100;
+
+    document.getElementById(
+        "progress"
+    ).style.width =
+    percentage + "%";
+
+    document.getElementById(
+        "progress-text"
+    ).innerText =
+    Math.round(percentage) +
+    "% de la práctica completada";
+
+    document.getElementById(
+        "reaction-count"
+    ).innerText =
+    reactions;
+
+}
+
+
+/* =====================================================
+   MENSAJE
+===================================================== */
+
+function showMessage(text) {
+
+    reactionMessage.innerText = text;
+
+    reactionMessage.classList.add("show");
+
+    setTimeout(() => {
+
+        reactionMessage.classList.remove("show");
+
+    }, 5000);
+
+}
+
+
+/* =====================================================
+   AGREGAR HCL
+===================================================== */
+
+hclButton.addEventListener(
+"click",
+function() {
+
+    if (hclAdded)
+        return;
+
+
+    hclButton.disabled = true;
+
+
+    dropper.style.opacity = "1";
+
+
+    /* ANIMACIÓN DEL GOTERO */
+
+    dropper.style.top = "40px";
+
+    dropper.style.transform =
+    "translateX(-50%) rotate(-8deg)";
+
+
+    setTimeout(() => {
+
+        liquidFe.style.height = "105px";
+
+        liquidZn.style.height = "105px";
+
+    }, 700);
+
+
+    /* GOTAS */
+
+    createDrop("liquid-fe");
+
+    setTimeout(() => {
+
+        createDrop("liquid-zn");
+
+    }, 500);
+
+
+    setTimeout(() => {
+
+        dropper.style.opacity = "0";
+
+        dropper.style.top = "-10px";
+
+        dropper.style.transform =
+        "translateX(-50%) rotate(0deg)";
+
+        hclAdded = true;
+
+        metalButton.disabled = false;
+
+        updateProgress();
+
+        showMessage(
+        "💧 Se agregaron aproximadamente 2–3 mL de HCl a cada tubo. Ahora añade el metal correspondiente."
+        );
+
+        document.getElementById(
+            "observation"
+        ).innerText =
+        "HCl está presente en ambos tubos. Añade Zn al tubo Zn y Fe al tubo Fe.";
+
+    }, 1500);
+
+});
+
+
+/* =====================================================
+   CREAR GOTA
+===================================================== */
+
+function createDrop(target) {
+
+    const drop =
+    document.createElement("div");
+
+    drop.className = "drop falling";
+
+    const targetElement =
+    document.getElementById(target);
+
+    drop.style.left =
+    (
+        targetElement.offsetLeft +
+        targetElement.offsetWidth / 2
+    ) + "px";
+
+    drop.style.top = "90px";
+
+    document
+    .getElementById("experiment-area")
+    .appendChild(drop);
+
+
+    setTimeout(() => {
+
+        drop.remove();
+
+    }, 900);
+
+}
+
+
+/* =====================================================
+   AÑADIR METALES
+===================================================== */
+
+metalButton.addEventListener(
+"click",
+function() {
+
+    if (!hclAdded || metalsAdded)
+        return;
+
+
+    metalsAdded = true;
+
+    metalButton.disabled = true;
+
+
+    /* MOSTRAR METALES */
+
+    iron.style.opacity = "1";
+
+    zinc.style.opacity = "1";
+
+
+    setTimeout(() => {
+
+        startReaction(
+            "bubbles-fe",
+            7
+        );
+
+        startReaction(
+            "bubbles-zn",
+            11
+        );
+
+    }, 500);
+
+
+    setTimeout(() => {
+
+        reactions = 2;
+
+        updateProgress();
+
+
+        showMessage(
+        "🫧 ¡Se produjeron burbujas! El metal desplaza al hidrógeno del HCl. Se forman sales binarias y se libera H₂."
+        );
+
+
+        document.getElementById(
+            "observation"
+        ).innerText =
+        "Zn reacciona con HCl formando ZnCl₂ + H₂. Fe reacciona con HCl formando FeCl₂ + H₂.";
+
+        finishButton.disabled = false;
+
+    }, 1200);
+
+});
+
+
+/* =====================================================
+   BURBUJAS
+===================================================== */
+
+function startReaction(
+    containerId,
+    amount
+) {
+
+    const container =
+    document.getElementById(containerId);
+
+    container.innerHTML = "";
+
+
+    for (
+        let i = 0;
+        i < amount;
+        i++
+    ) {
+
+        const bubble =
+        document.createElement("div");
+
+        bubble.className =
+        "bubble";
+
+        bubble.style.left =
+        (10 + Math.random() * 80) + "%";
+
+        bubble.style.animationDelay =
+        (Math.random() * 2) + "s";
+
+        bubble.style.animationDuration =
+        (1.5 + Math.random() * 1.5) + "s";
+
+        container.appendChild(bubble);
+
+    }
+
+}
+
+
+/* =====================================================
+   REINICIAR
+===================================================== */
+
+resetButton.addEventListener(
+"click",
+function() {
+
+    hclAdded = false;
+
+    metalsAdded = false;
+
+    reactions = 0;
+
+
+    hclButton.disabled = false;
+
+    metalButton.disabled = true;
+
+    finishButton.disabled = true;
+
+
+    liquidFe.style.height = "0";
+
+    liquidZn.style.height = "0";
+
+
+    iron.style.opacity = "0";
+
+    zinc.style.opacity = "0";
+
+
+    document.getElementById(
+        "bubbles-fe"
+    ).innerHTML = "";
+
+    document.getElementById(
+        "bubbles-zn"
+    ).innerHTML = "";
+
+
+    document.getElementById(
+        "observation"
+    ).innerText =
+    "Primero agrega HCl a los dos tubos. Después añade el metal correspondiente.";
+
+
+    updateProgress();
+
+});
+
+
+/* =====================================================
+   EVALUACIÓN
+===================================================== */
+
+const questions = [
+
+{
+question:
+"¿Qué sustancia se agregó primero a los tubos de ensayo?",
+
+answers:
+[
+"Agua",
+"Ácido clorhídrico (HCl)",
+"Oxígeno",
+"Cloruro de sodio"
+],
+
+correct: 1
+},
+
+{
+question:
+"¿Qué ocurre cuando el zinc reacciona con el HCl?",
+
+answers:
+[
+"Se forma ZnCl₂ y se libera H₂",
+"No ocurre ninguna reacción",
+"Se forma agua únicamente",
+"El zinc desaparece sin producir sustancias"
+],
+
+correct: 0
+},
+
+{
+question:
+"¿Qué gas se libera durante la reacción?",
+
+answers:
+[
+"Oxígeno",
+"Nitrógeno",
+"Hidrógeno",
+"Dióxido de carbono"
+],
+
+correct: 2
+},
+
+{
+question:
+"¿Qué tipo de reacción representa esta actividad?",
+
+answers:
+[
+"Combustión",
+"Desplazamiento simple",
+"Neutralización",
+"Descomposición"
+],
+
+correct: 1
+},
+
+{
+question:
+"¿Cuál es uno de los productos de la reacción entre el zinc y el HCl?",
+
+answers:
+[
+"ZnCl₂",
+"O₂",
+"H₂O₂",
+"NaCl"
+],
+
+correct: 0
+}
+
+];
+
+
+/* =====================================================
+   INICIAR EVALUACIÓN
+===================================================== */
+
+finishButton.addEventListener(
+"click",
+function() {
+
+    document.getElementById(
+        "evaluation-screen"
+    ).style.display =
+    "flex";
+
+    startQuiz();
+
+});
+
+
+/* =====================================================
+   START QUIZ
+===================================================== */
+
+function startQuiz() {
+
+    currentQuestion = 0;
+
+    score = 0;
+
+    selectedAnswer = null;
+
+
+    document.getElementById(
+        "quiz-screen"
+    ).style.display =
+    "block";
+
+    document.getElementById(
+        "result-screen"
+    ).style.display =
+    "none";
+
+
+    showQuestion();
+
+}
+
+
+/* =====================================================
+   MOSTRAR PREGUNTA
+===================================================== */
+
+function showQuestion() {
+
+    selectedAnswer = null;
+
+
+    const question =
+    questions[currentQuestion];
+
+
+    document.getElementById(
+        "question-counter"
+    ).innerText =
+
+    "Pregunta " +
+    (currentQuestion + 1) +
+    " de " +
+    questions.length;
+
+
+    document.getElementById(
+        "question-text"
+    ).innerText =
+    question.question;
+
+
+    const container =
+    document.getElementById(
+        "answers-container"
+    );
+
+    container.innerHTML = "";
+
+
+    question.answers.forEach(
+    function(answer,index) {
+
+        const button =
+        document.createElement(
+            "button"
+        );
+
+
+        button.className =
+        "answer";
+
+
+        button.innerText =
+        String.fromCharCode(
+            65 + index
+        ) +
+        ". " +
+        answer;
+
+
+        button.addEventListener(
+        "click",
+        function() {
+
+
+            document
+            .querySelectorAll(
+                ".answer"
+            )
+            .forEach(option => {
+
+                option.classList.remove(
+                    "selected"
+                );
+
+            });
+
+
+            button.classList.add(
+                "selected"
+            );
+
+
+            selectedAnswer =
+            index;
+
+
+            document.getElementById(
+                "next-question"
+            ).disabled =
+            false;
+
+        });
+
+
+        container.appendChild(
+            button
+        );
+
+    });
+
+
+    const next =
+    document.getElementById(
+        "next-question"
+    );
+
+
+    next.disabled = true;
+
+
+    if (
+        currentQuestion ===
+        questions.length - 1
+    ) {
+
+        next.innerText =
+        "Finalizar evaluación ✓";
+
+    }
+
+    else {
+
+        next.innerText =
+        "Continuar →";
+
+    }
+
+}
+
+
+/* =====================================================
+   SIGUIENTE
+===================================================== */
+
+document.getElementById(
+"next-question"
+).addEventListener(
+"click",
+function() {
+
+    if (selectedAnswer === null)
+        return;
+
+
+    if (
+        selectedAnswer ===
+        questions[currentQuestion].correct
+    ) {
+
+        score++;
+
+    }
+
+
+    currentQuestion++;
+
+
+    if (
+        currentQuestion <
+        questions.length
+    ) {
+
+        showQuestion();
+
+    }
+
+    else {
+
+        showResult();
+
+    }
+
+});
+
+
+/* =====================================================
+   RESULTADO
+===================================================== */
+
+function showResult() {
+
+    document.getElementById(
+        "quiz-screen"
+    ).style.display =
+    "none";
+
+
+    document.getElementById(
+        "result-screen"
+    ).style.display =
+    "block";
+
+
+    document.getElementById(
+        "score"
+    ).innerText =
+    score +
+    " / " +
+    questions.length;
+
+
+    let message;
+
+
+    if (score === 5) {
+
+        message =
+        "🌟 ¡Excelente! Comprendiste cómo los metales reaccionan con el HCl y cómo se forman sales binarias mediante una reacción de desplazamiento.";
+
+    }
+
+    else if (score >= 4) {
+
+        message =
+        "👏 ¡Muy buen trabajo! Comprendiste la mayor parte del proceso y los productos de la reacción.";
+
+    }
+
+    else if (score >= 3) {
+
+        message =
+        "👍 Buen trabajo. Puedes repetir la simulación para observar nuevamente las reacciones.";
+
+    }
+
+    else {
+
+        message =
+        "📚 Te recomendamos repetir el experimento y observar con atención qué sustancias participan y qué productos se forman.";
+
+    }
+
+
+    document.getElementById(
+        "feedback"
+    ).innerText =
+    message;
+
+}
+
+
+/* =====================================================
+   VOLVER
+===================================================== */
+
+document.getElementById(
+"restart-quiz"
+).addEventListener(
+"click",
+function() {
+
+    document.getElementById(
+        "evaluation-screen"
+    ).style.display =
+    "none";
+
+});
+
+
+</script>
+<script src="asistente.js"> </script>
+</body>
+
+</html>

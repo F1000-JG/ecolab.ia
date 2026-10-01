@@ -1,0 +1,2189 @@
+
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Función de las hojas</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<link rel="stylesheet" href="asistente.css">
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    overflow:hidden;
+    font-family:Arial,sans-serif;
+    background:#06120b;
+}
+
+/* ================= INFORMACIÓN ================= */
+
+#info{
+    position:absolute;
+    left:16px;
+    top:16px;
+    width:350px;
+    padding:18px;
+    z-index:10;
+
+    background:rgba(0,0,0,.88);
+    border-radius:15px;
+
+    color:white;
+
+    box-shadow:0 5px 25px rgba(0,0,0,.5);
+}
+
+#info h2{
+    margin:0 0 15px;
+    color:#54e36d;
+    font-size:21px;
+}
+
+.dato{
+    color:#42ff78;
+    font-weight:bold;
+}
+
+.info-box{
+    padding:11px;
+    margin-top:10px;
+
+    background:rgba(255,255,255,.05);
+
+    border-left:3px solid #54e36d;
+    border-radius:6px;
+
+    font-size:13px;
+    line-height:1.55;
+}
+
+#fotosintesis{
+    color:#54ff78;
+    font-weight:bold;
+}
+
+#transpiracion{
+    color:#55cfff;
+    font-weight:bold;
+}
+
+#respiracion{
+    color:#ffc857;
+    font-weight:bold;
+}
+
+#estado{
+    color:#54e36d;
+    font-weight:bold;
+}
+
+#explicacion{
+    color:#aaa;
+    font-size:11px;
+}
+
+/* ================= CONTROLES ================= */
+
+#controles{
+    position:absolute;
+    right:16px;
+    top:16px;
+
+    width:270px;
+    padding:15px;
+
+    z-index:10;
+
+    background:rgba(22,22,22,.95);
+    border-radius:10px;
+
+    color:white;
+}
+
+#controles h3{
+    margin:0 0 15px;
+    color:#54e36d;
+    font-size:16px;
+}
+
+.control{
+    margin-bottom:15px;
+}
+
+.control label{
+    display:block;
+    font-size:12px;
+    margin-bottom:7px;
+}
+
+.valor{
+    float:right;
+    color:#54e36d;
+    font-weight:bold;
+}
+
+input[type="range"]{
+    width:100%;
+    cursor:pointer;
+}
+
+.botones{
+    display:flex;
+    gap:6px;
+}
+
+button{
+    flex:1;
+
+    border:none;
+    padding:10px 5px;
+
+    border-radius:6px;
+
+    background:#333;
+    color:white;
+
+    cursor:pointer;
+    font-weight:bold;
+}
+
+button:hover{
+    background:#444;
+}
+
+#estadoVisual{
+    margin-top:12px;
+
+    padding:10px;
+
+    text-align:center;
+
+    border:1px solid #444;
+    border-radius:7px;
+
+    color:#54e36d;
+    font-weight:bold;
+}
+
+/* ================= EVALUACIÓN ================= */
+
+#btnEvaluacion{
+    width:100%;
+    margin-top:10px;
+    background:#54e36d;
+    color:#06120b;
+}
+
+#btnEvaluacion:hover:not(:disabled){
+    background:#6cff83;
+}
+
+#btnEvaluacion:disabled{
+    background:#333;
+    color:#777;
+    cursor:not-allowed;
+}
+
+/* ================= MODAL EVALUACIÓN ================= */
+
+#modalEvaluacion{
+    display:none;
+    position:fixed;
+    inset:0;
+    z-index:100;
+
+    background:rgba(0,0,0,.82);
+
+    justify-content:center;
+    align-items:center;
+
+    padding:20px;
+}
+
+#contenidoEvaluacion{
+    width:650px;
+    max-width:95%;
+    max-height:90vh;
+
+    overflow-y:auto;
+
+    background:#101812;
+    color:white;
+
+    border:1px solid #54e36d;
+    border-radius:15px;
+
+    padding:25px;
+
+    box-shadow:0 10px 40px rgba(0,0,0,.7);
+}
+
+#contenidoEvaluacion h2{
+    margin-top:0;
+    color:#54e36d;
+    text-align:center;
+}
+
+.pregunta{
+    margin-bottom:20px;
+    padding:15px;
+
+    background:rgba(255,255,255,.05);
+
+    border-radius:9px;
+
+    border-left:3px solid #54e36d;
+}
+
+.pregunta p{
+    margin-top:0;
+    font-weight:bold;
+}
+
+.opcion{
+    display:block;
+    padding:8px;
+    margin:5px 0;
+
+    background:rgba(255,255,255,.04);
+    border-radius:6px;
+
+    cursor:pointer;
+}
+
+.opcion:hover{
+    background:rgba(84,227,109,.12);
+}
+
+#enviarEvaluacion{
+    width:100%;
+    background:#54e36d;
+    color:#06120b;
+    margin-top:5px;
+}
+
+#resultadoEvaluacion{
+    margin-top:15px;
+    padding:15px;
+
+    text-align:center;
+
+    border-radius:8px;
+
+    background:rgba(84,227,109,.1);
+
+    display:none;
+}
+
+.botonesEvaluacion{
+    display:flex;
+    gap:10px;
+    margin-top:15px;
+}
+
+.botonesEvaluacion button{
+    flex:1;
+}
+
+#repetirEvaluacion{
+    background:#333;
+}
+
+#cerrarEvaluacion{
+    background:#54e36d;
+    color:#06120b;
+}
+
+/* ================= INSTRUCCIÓN ================= */
+
+#instruction{
+    position:absolute;
+
+    bottom:18px;
+    left:50%;
+
+    transform:translateX(-50%);
+
+    z-index:10;
+
+    padding:11px 18px;
+
+    background:rgba(0,0,0,.85);
+    border-radius:10px;
+
+    color:white;
+
+    font-size:13px;
+    text-align:center;
+}
+
+#instruction span{
+    color:#54e36d;
+    font-weight:bold;
+}
+
+/* ================= LEYENDA ================= */
+
+#leyenda{
+    position:absolute;
+
+    left:50%;
+    bottom:62px;
+
+    transform:translateX(-50%);
+
+    z-index:8;
+
+    display:flex;
+    gap:15px;
+
+    padding:8px 15px;
+
+    background:rgba(0,0,0,.65);
+
+    border-radius:8px;
+
+    color:#ddd;
+
+    font-size:11px;
+}
+
+.punto{
+    display:inline-block;
+
+    width:9px;
+    height:9px;
+
+    border-radius:50%;
+
+    margin-right:4px;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- =====================================================
+     INFORMACIÓN
+===================================================== -->
+
+<div id="info">
+
+    <h2>🍃 Función de las hojas</h2>
+
+    <div class="info-box">
+
+        <b>Materiales representados:</b>
+
+        <br><br>
+
+        🍃 Hoja fresca
+
+        <br>
+
+        ☀️ Luz solar
+
+    </div>
+
+    <div class="info-box">
+
+        <b>Luz solar:</b>
+
+        <span
+            id="luzInfo"
+            class="dato"
+        >
+            70 %
+        </span>
+
+        <br><br>
+
+        <b>Fotosíntesis:</b>
+
+        <span id="fotosintesis">
+            Alta
+        </span>
+
+        <br>
+
+        <b>Transpiración:</b>
+
+        <span id="transpiracion">
+            Media
+        </span>
+
+        <br>
+
+        <b>Respiración:</b>
+
+        <span id="respiracion">
+            Activa
+        </span>
+
+    </div>
+
+    <div class="info-box">
+
+        <b>Estado:</b>
+
+        <span id="estado">
+            Hoja recibiendo luz
+        </span>
+
+    </div>
+
+    <div class="info-box">
+
+        <div id="explicacion">
+
+            La hoja utiliza la luz solar
+            como fuente de energía para
+            realizar la fotosíntesis.
+
+            <br><br>
+
+            También participa en la
+            respiración y en la transpiración.
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- =====================================================
+     CONTROLES
+===================================================== -->
+
+<div id="controles">
+
+    <h3>🌿 Control del experimento</h3>
+
+    <div class="control">
+
+        <label>
+
+            ☀️ Intensidad de luz
+
+            <span
+                class="valor"
+                id="luzValor"
+            >
+                70 %
+            </span>
+
+        </label>
+
+        <input
+            type="range"
+            id="luzRange"
+            min="0"
+            max="100"
+            value="70"
+        >
+
+    </div>
+
+    <div class="botones">
+
+        <button id="iniciar">
+            ▶ Iniciar
+        </button>
+
+        <button id="pausar">
+            ⏸ Pausar
+        </button>
+
+        <button id="reiniciar">
+            ↻ Reiniciar
+        </button>
+
+    </div>
+
+    <div id="estadoVisual">
+        FOTOSÍNTESIS ACTIVA
+    </div>
+
+    <!-- EVALUACIÓN AGREGADA -->
+    <button id="btnEvaluacion" type="button" disabled>
+        📝 Evaluación
+    </button>
+
+</div>
+
+<!-- =====================================================
+     LEYENDA
+===================================================== -->
+
+<div id="leyenda">
+
+    <span>
+
+        <span
+            class="punto"
+            style="background:#54ff78"
+        ></span>
+
+        O₂ producido
+
+    </span>
+
+    <span>
+
+        <span
+            class="punto"
+            style="background:#d5d5d5"
+        ></span>
+
+        CO₂
+
+    </span>
+
+    <span>
+
+        <span
+            class="punto"
+            style="background:#55cfff"
+        ></span>
+
+        Vapor de agua
+
+    </span>
+
+</div>
+
+<div id="instruction">
+
+    Ajusta la
+    <span>luz solar</span>
+    y observa las funciones de la hoja.
+
+</div>
+
+
+<!-- =====================================================
+     MODAL DE EVALUACIÓN
+===================================================== -->
+
+<div id="modalEvaluacion">
+
+    <div id="contenidoEvaluacion">
+
+        <h2>📝 Evaluación: Función de las hojas</h2>
+
+        <div class="pregunta">
+
+            <p>1. ¿Cuál es una de las principales funciones de las hojas?</p>
+
+            <label class="opcion">
+                <input type="radio" name="p1" value="a">
+                A) Absorber minerales directamente del suelo
+            </label>
+
+            <label class="opcion">
+                <input type="radio" name="p1" value="b">
+                B) Realizar la fotosíntesis
+            </label>
+
+            <label class="opcion">
+                <input type="radio" name="p1" value="c">
+                C) Producir semillas en todos los casos
+            </label>
+
+            <label class="opcion">
+                <input type="radio" name="p1" value="d">
+                D) Formar las raíces
+            </label>
+
+        </div>
+
+
+        <div class="pregunta">
+
+            <p>2. ¿Qué fuente de energía utiliza la hoja para realizar la fotosíntesis?</p>
+
+            <label class="opcion">
+                <input type="radio" name="p2" value="a">
+                A) La luz solar
+            </label>
+
+            <label class="opcion">
+                <input type="radio" name="p2" value="b">
+                B) El viento
+            </label>
+
+            <label class="opcion">
+                <input type="radio" name="p2" value="c">
+                C) El suelo
+            </label>
+
+            <label class="opcion">
+                <input type="radio" name="p2" value="d">
+                D) El vapor de agua
+            </label>
+
+        </div>
+
+
+        <div class="pregunta">
+
+            <p>3. ¿Qué gas se produce durante la fotosíntesis y se representa saliendo de la hoja?</p>
+
+            <label class="opcion">
+                <input type="radio" name="p3" value="a">
+                A) Dióxido de carbono (CO₂)
+            </label>
+
+            <label class="opcion">
+                <input type="radio" name="p3" value="b">
+                B) Oxígeno (O₂)
+            </label>
+
+            <label class="opcion">
+                <input type="radio" name="p3" value="c">
+                C) Nitrógeno (N₂)
+            </label>
+
+            <label class="opcion">
+                <input type="radio" name="p3" value="d">
+                D) Hidrógeno (H₂)
+            </label>
+
+        </div>
+
+
+        <div class="pregunta">
+
+            <p>4. ¿Qué proceso consiste en la pérdida de agua en forma de vapor por las hojas?</p>
+
+            <label class="opcion">
+                <input type="radio" name="p4" value="a">
+                A) Respiración
+            </label>
+
+            <label class="opcion">
+                <input type="radio" name="p4" value="b">
+                B) Fotosíntesis
+            </label>
+
+            <label class="opcion">
+                <input type="radio" name="p4" value="c">
+                C) Transpiración
+            </label>
+
+            <label class="opcion">
+                <input type="radio" name="p4" value="d">
+                D) Germinación
+            </label>
+
+        </div>
+
+
+        <div class="pregunta">
+
+            <p>5. ¿Qué ocurre generalmente cuando aumenta la intensidad de luz en la simulación?</p>
+
+            <label class="opcion">
+                <input type="radio" name="p5" value="a">
+                A) Disminuye la actividad fotosintética
+            </label>
+
+            <label class="opcion">
+                <input type="radio" name="p5" value="b">
+                B) Aumenta la actividad fotosintética
+            </label>
+
+            <label class="opcion">
+                <input type="radio" name="p5" value="c">
+                C) La hoja deja de respirar
+            </label>
+
+            <label class="opcion">
+                <input type="radio" name="p5" value="d">
+                D) Desaparece el vapor de agua
+            </label>
+
+        </div>
+
+
+        <button id="enviarEvaluacion">
+            ✅ Enviar evaluación
+        </button>
+
+
+        <div id="resultadoEvaluacion"></div>
+
+
+        <div class="botonesEvaluacion">
+
+            <button id="repetirEvaluacion">
+                ↻ Repetir evaluación
+            </button>
+
+            <button id="cerrarEvaluacion">
+                Cerrar evaluación
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* =====================================================
+   ESCENA
+===================================================== */
+
+const scene =
+    new THREE.Scene();
+
+scene.background =
+    new THREE.Color(0x06120b);
+
+
+/* =====================================================
+   CÁMARA
+===================================================== */
+
+const camera =
+    new THREE.PerspectiveCamera(
+        50,
+        window.innerWidth /
+        window.innerHeight,
+        .1,
+        1000
+    );
+
+camera.position.set(
+    7,
+    3,
+    12
+);
+
+
+/* =====================================================
+   RENDER
+===================================================== */
+
+const renderer =
+    new THREE.WebGLRenderer({
+        antialias:true
+    });
+
+renderer.setSize(
+    window.innerWidth,
+    window.innerHeight
+);
+
+renderer.setPixelRatio(
+    Math.min(
+        window.devicePixelRatio,
+        2
+    )
+);
+
+document.body.appendChild(
+    renderer.domElement
+);
+
+
+/* =====================================================
+   CONTROLES
+===================================================== */
+
+const controls =
+    new THREE.OrbitControls(
+        camera,
+        renderer.domElement
+    );
+
+controls.enableDamping = true;
+
+controls.target.set(
+    0,
+    1,
+    0
+);
+
+
+/* =====================================================
+   LUCES
+===================================================== */
+
+scene.add(
+    new THREE.AmbientLight(
+        0xffffff,
+        .65
+    )
+);
+
+const luzPrincipal =
+    new THREE.DirectionalLight(
+        0xffffff,
+        1
+    );
+
+luzPrincipal.position.set(
+    5,
+    8,
+    6
+);
+
+scene.add(
+    luzPrincipal
+);
+
+
+/* =====================================================
+   PISO
+===================================================== */
+
+const piso =
+    new THREE.Mesh(
+
+        new THREE.PlaneGeometry(
+            20,
+            20
+        ),
+
+        new THREE.MeshStandardMaterial({
+            color:0x102b19,
+            roughness:.8
+        })
+
+    );
+
+piso.rotation.x =
+    -Math.PI / 2;
+
+piso.position.y =
+    -3;
+
+scene.add(piso);
+
+
+/* =====================================================
+   TALLO
+===================================================== */
+
+const tallo =
+    new THREE.Mesh(
+
+        new THREE.CylinderGeometry(
+            .18,
+            .23,
+            5.5,
+            24
+        ),
+
+        new THREE.MeshStandardMaterial({
+            color:0x3c9b45,
+            roughness:.8
+        })
+
+    );
+
+tallo.position.y =
+    -.2;
+
+scene.add(tallo);
+
+
+/* =====================================================
+   GRUPO DE HOJA
+===================================================== */
+
+const hojaGrupo =
+    new THREE.Group();
+
+scene.add(
+    hojaGrupo
+);
+
+hojaGrupo.position.set(
+    0,
+    2.2,
+    0
+);
+
+
+/* =====================================================
+   FORMA DE HOJA
+===================================================== */
+
+const formaHoja =
+    new THREE.Shape();
+
+formaHoja.moveTo(
+    0,
+    0
+);
+
+formaHoja.bezierCurveTo(
+    1.4,
+    1.0,
+    3.0,
+    .9,
+    4.1,
+    0
+);
+
+formaHoja.bezierCurveTo(
+    3.0,
+    -1.0,
+    1.4,
+    -1.1,
+    0,
+    0
+);
+
+
+const geometriaHoja =
+    new THREE.ShapeGeometry(
+        formaHoja
+    );
+
+
+const materialHoja =
+    new THREE.MeshStandardMaterial({
+
+        color:0x32a852,
+
+        side:THREE.DoubleSide,
+
+        roughness:.75
+
+    });
+
+
+const hoja =
+    new THREE.Mesh(
+        geometriaHoja,
+        materialHoja
+    );
+
+hoja.rotation.z =
+    .08;
+
+hoja.rotation.x =
+    -.12;
+
+hojaGrupo.add(
+    hoja
+);
+
+
+/* =====================================================
+   NERVADURA CENTRAL
+===================================================== */
+
+const nervadura =
+    new THREE.Mesh(
+
+        new THREE.CylinderGeometry(
+            .035,
+            .035,
+            4,
+            10
+        ),
+
+        new THREE.MeshStandardMaterial({
+            color:0x9ee889
+        })
+
+    );
+
+nervadura.rotation.z =
+    Math.PI / 2;
+
+nervadura.position.set(
+    2,
+    0,
+    .03
+);
+
+hojaGrupo.add(
+    nervadura
+);
+
+
+/* =====================================================
+   NERVADURAS SECUNDARIAS
+===================================================== */
+
+for(
+    let i = 0;
+    i < 7;
+    i++
+){
+
+    const nervio =
+        new THREE.Mesh(
+
+            new THREE.CylinderGeometry(
+                .018,
+                .018,
+                1.6,
+                8
+            ),
+
+            new THREE.MeshStandardMaterial({
+                color:0x8fd67d
+            })
+
+        );
+
+    nervio.position.set(
+        .65 + i * .45,
+        .02,
+        .04
+    );
+
+    nervio.rotation.z =
+        Math.PI / 2.7;
+
+    hojaGrupo.add(
+        nervio
+    );
+}
+
+
+/* =====================================================
+   ESTOMAS
+===================================================== */
+
+const estomas =
+    new THREE.Group();
+
+hojaGrupo.add(
+    estomas
+);
+
+
+for(
+    let i = 0;
+    i < 8;
+    i++
+){
+
+    const estoma =
+        new THREE.Mesh(
+
+            new THREE.SphereGeometry(
+                .055,
+                12,
+                12
+            ),
+
+            new THREE.MeshStandardMaterial({
+                color:0x183b20
+            })
+
+        );
+
+    estoma.scale.set(
+        1.8,
+        .55,
+        .5
+    );
+
+    estoma.position.set(
+        .65 + i * .4,
+        -.35 + Math.sin(i) * .25,
+        .06
+    );
+
+    estomas.add(
+        estoma
+    );
+
+}
+
+
+/* =====================================================
+   SOL
+===================================================== */
+
+const sol =
+    new THREE.Mesh(
+
+        new THREE.SphereGeometry(
+            1.25,
+            32,
+            32
+        ),
+
+        new THREE.MeshBasicMaterial({
+            color:0xffdf55
+        })
+
+    );
+
+sol.position.set(
+    -5,
+    5,
+    1
+);
+
+scene.add(sol);
+
+
+/* =====================================================
+   RAYOS FIJOS
+===================================================== */
+
+const rayos =
+    new THREE.Group();
+
+scene.add(
+    rayos
+);
+
+
+for(
+    let i = 0;
+    i < 12;
+    i++
+){
+
+    const angulo =
+        (Math.PI * 2 / 12) * i;
+
+
+    const rayo =
+        new THREE.Mesh(
+
+            new THREE.CylinderGeometry(
+                .025,
+                .025,
+                1.3,
+                8
+            ),
+
+            new THREE.MeshBasicMaterial({
+                color:0xffe66b
+            })
+
+        );
+
+
+    rayo.position.set(
+
+        sol.position.x +
+        Math.cos(angulo) * 1.65,
+
+        sol.position.y +
+        Math.sin(angulo) * 1.65,
+
+        1
+
+    );
+
+
+    rayo.rotation.z =
+        -angulo;
+
+
+    rayos.add(
+        rayo
+    );
+
+}
+
+
+/* =====================================================
+   GRUPOS DE GASES
+===================================================== */
+
+const co2Grupo =
+    new THREE.Group();
+
+const o2Grupo =
+    new THREE.Group();
+
+const vaporGrupo =
+    new THREE.Group();
+
+scene.add(co2Grupo);
+scene.add(o2Grupo);
+scene.add(vaporGrupo);
+
+
+/* =====================================================
+   CREAR CO2
+===================================================== */
+
+function crearCO2(){
+
+    const esfera =
+        new THREE.Mesh(
+
+            new THREE.SphereGeometry(
+                .06,
+                16,
+                16
+            ),
+
+            new THREE.MeshBasicMaterial({
+                color:0xd5d5d5,
+                transparent:true,
+                opacity:.75
+            })
+
+        );
+
+    esfera.position.set(
+        4.7,
+        1.7 +
+        Math.random() * 1.3,
+        .3
+    );
+
+    esfera.userData.velocidad =
+        .012 +
+        Math.random() * .008;
+
+    co2Grupo.add(
+        esfera
+    );
+}
+
+
+for(
+    let i = 0;
+    i < 12;
+    i++
+){
+
+    crearCO2();
+
+}
+
+
+/* =====================================================
+   CREAR OXÍGENO
+===================================================== */
+
+function crearO2(){
+
+    const esfera =
+        new THREE.Mesh(
+
+            new THREE.SphereGeometry(
+                .055,
+                16,
+                16
+            ),
+
+            new THREE.MeshBasicMaterial({
+                color:0x54ff78,
+                transparent:true,
+                opacity:.8
+            })
+
+        );
+
+    esfera.position.set(
+        1.2 +
+        Math.random() * 2.5,
+
+        2 +
+        Math.random() * .7,
+
+        .35
+    );
+
+    esfera.userData.velocidad =
+        .014 +
+        Math.random() * .01;
+
+    o2Grupo.add(
+        esfera
+    );
+}
+
+
+for(
+    let i = 0;
+    i < 14;
+    i++
+){
+
+    crearO2();
+
+}
+
+
+/* =====================================================
+   CREAR VAPOR DE AGUA
+===================================================== */
+
+function crearVapor(){
+
+    const vapor =
+        new THREE.Mesh(
+
+            new THREE.SphereGeometry(
+                .075,
+                16,
+                16
+            ),
+
+            new THREE.MeshBasicMaterial({
+                color:0x55cfff,
+                transparent:true,
+                opacity:.22
+            })
+
+        );
+
+    vapor.position.set(
+
+        .7 +
+        Math.random() * 3,
+
+        2.0 +
+        Math.random() * .7,
+
+        .15
+
+    );
+
+    vapor.scale.set(
+        1.4,
+        2.5,
+        1
+    );
+
+    vapor.userData.velocidad =
+        .008 +
+        Math.random() * .012;
+
+    vaporGrupo.add(
+        vapor
+    );
+}
+
+
+for(
+    let i = 0;
+    i < 16;
+    i++
+){
+
+    crearVapor();
+
+}
+
+
+/* =====================================================
+   VARIABLES
+===================================================== */
+
+let luz = 70;
+
+let ejecutando = false;
+
+let tiempo = 0;
+
+
+/* =====================================================
+   VARIABLES DE EVALUACIÓN
+===================================================== */
+
+let evaluacionDisponible = false;
+
+const btnEvaluacion =
+    document.getElementById(
+        "btnEvaluacion"
+    );
+
+const modalEvaluacion =
+    document.getElementById(
+        "modalEvaluacion"
+    );
+
+const enviarEvaluacion =
+    document.getElementById(
+        "enviarEvaluacion"
+    );
+
+const resultadoEvaluacion =
+    document.getElementById(
+        "resultadoEvaluacion"
+    );
+
+const repetirEvaluacion =
+    document.getElementById(
+        "repetirEvaluacion"
+    );
+
+const cerrarEvaluacion =
+    document.getElementById(
+        "cerrarEvaluacion"
+    );
+
+
+/* =====================================================
+   INFORMACIÓN
+===================================================== */
+
+function actualizarInfo(){
+
+    document.getElementById(
+        "luzValor"
+    ).textContent =
+        luz + " %";
+
+
+    document.getElementById(
+        "luzInfo"
+    ).textContent =
+        luz + " %";
+
+
+    let foto;
+
+
+    if(
+        luz < 20
+    ){
+
+        foto = "Muy baja";
+
+    }
+    else if(
+        luz < 45
+    ){
+
+        foto = "Baja";
+
+    }
+    else if(
+        luz < 75
+    ){
+
+        foto = "Media";
+
+    }
+    else{
+
+        foto = "Alta";
+
+    }
+
+
+    document.getElementById(
+        "fotosintesis"
+    ).textContent =
+        foto;
+
+
+    let trans;
+
+
+    if(
+        luz < 25
+    ){
+
+        trans = "Baja";
+
+    }
+    else if(
+        luz < 65
+    ){
+
+        trans = "Media";
+
+    }
+    else{
+
+        trans = "Alta";
+
+    }
+
+
+    document.getElementById(
+        "transpiracion"
+    ).textContent =
+        trans;
+
+
+    document.getElementById(
+        "respiracion"
+    ).textContent =
+        "Activa";
+
+
+    if(
+        luz < 20
+    ){
+
+        document.getElementById(
+            "estado"
+        ).textContent =
+            "Poca luz";
+
+
+        document.getElementById(
+            "estadoVisual"
+        ).textContent =
+            "☁ POCA LUZ";
+
+
+        document.getElementById(
+            "estadoVisual"
+        ).style.color =
+            "#ffc857";
+
+
+        document.getElementById(
+            "explicacion"
+        ).innerHTML = `
+
+            La hoja recibe poca luz solar.
+
+            <br><br>
+
+            La fotosíntesis disminuye y
+            la transpiración es menor.
+
+            <br><br>
+
+            La respiración continúa.
+
+        `;
+
+    }
+
+
+    else if(
+        luz < 60
+    ){
+
+        document.getElementById(
+            "estado"
+        ).textContent =
+            "Hoja recibiendo luz";
+
+
+        document.getElementById(
+            "estadoVisual"
+        ).textContent =
+            "🌤 FOTOSÍNTESIS ACTIVA";
+
+
+        document.getElementById(
+            "estadoVisual"
+        ).style.color =
+            "#54e36d";
+
+
+        document.getElementById(
+            "explicacion"
+        ).innerHTML = `
+
+            La hoja recibe una cantidad
+            moderada de luz solar.
+
+            <br><br>
+
+            Se observa el intercambio de
+            gases y la salida de vapor de agua.
+
+        `;
+
+    }
+
+
+    else{
+
+        document.getElementById(
+            "estado"
+        ).textContent =
+            "Alta exposición a la luz";
+
+
+        document.getElementById(
+            "estadoVisual"
+        ).textContent =
+            "☀ FOTOSÍNTESIS ACTIVA";
+
+
+        document.getElementById(
+            "estadoVisual"
+        ).style.color =
+            "#54ff78";
+
+
+        document.getElementById(
+            "explicacion"
+        ).innerHTML = `
+
+            La hoja recibe abundante luz.
+
+            <br><br>
+
+            La actividad fotosintética
+            aumenta y se observa mayor
+            salida de vapor de agua.
+
+        `;
+
+    }
+
+}
+
+
+/* =====================================================
+   CONTROL DE LUZ
+===================================================== */
+
+document.getElementById(
+    "luzRange"
+).addEventListener(
+    "input",
+    function(){
+
+        ejecutando = false;
+
+        luz =
+            Number(
+                this.value
+            );
+
+        actualizarInfo();
+
+    }
+);
+
+
+/* =====================================================
+   INICIAR
+===================================================== */
+
+document.getElementById(
+    "iniciar"
+).addEventListener(
+    "click",
+    function(){
+
+        ejecutando = true;
+
+        /* HABILITAR EVALUACIÓN */
+        evaluacionDisponible = true;
+        btnEvaluacion.disabled = false;
+
+        document.getElementById(
+            "instruction"
+        ).innerHTML =
+
+        "Observa el intercambio de <span>gases</span> y la <span>transpiración</span>.";
+
+    }
+);
+
+
+/* =====================================================
+   PAUSAR
+===================================================== */
+
+document.getElementById(
+    "pausar"
+).addEventListener(
+    "click",
+    function(){
+
+        ejecutando = false;
+
+        document.getElementById(
+            "instruction"
+        ).textContent =
+            "La simulación está pausada.";
+
+    }
+);
+
+
+/* =====================================================
+   REINICIAR
+===================================================== */
+
+document.getElementById(
+    "reiniciar"
+).addEventListener(
+    "click",
+    function(){
+
+        ejecutando = false;
+
+        luz = 70;
+
+        tiempo = 0;
+
+        /* REINICIAR DISPONIBILIDAD DE EVALUACIÓN */
+        evaluacionDisponible = false;
+        btnEvaluacion.disabled = true;
+
+        document.getElementById(
+            "luzRange"
+        ).value = 70;
+
+        actualizarInfo();
+
+        document.getElementById(
+            "instruction"
+        ).innerHTML =
+
+        "Ajusta la <span>luz solar</span> y observa las funciones de la hoja.";
+
+    }
+);
+
+
+/* =====================================================
+   ANIMACIÓN DE GASES
+===================================================== */
+
+function animarGases(){
+
+    if(!ejecutando){
+        return;
+    }
+
+
+    /*
+       CO₂ entra hacia la hoja
+    */
+
+    co2Grupo.children.forEach(
+        particula => {
+
+            particula.position.x -=
+                particula.userData.velocidad
+                *
+                (0.5 + luz / 100);
+
+
+            if(
+                particula.position.x < 3.1
+            ){
+
+                particula.position.x = 4.7;
+
+                particula.position.y =
+                    1.7 +
+                    Math.random() * 1.3;
+
+            }
+
+        }
+    );
+
+
+    /*
+       O₂ sale de la hoja
+    */
+
+    o2Grupo.children.forEach(
+        particula => {
+
+            particula.position.x +=
+                particula.userData.velocidad
+                *
+                (0.5 + luz / 100);
+
+
+            particula.position.y +=
+                .002;
+
+
+            if(
+                particula.position.x > 5
+            ){
+
+                particula.position.x =
+                    1.2 +
+                    Math.random() * 1.2;
+
+                particula.position.y =
+                    2 +
+                    Math.random() * .7;
+
+            }
+
+        }
+    );
+
+
+    /*
+       Vapor de agua sube
+       desde la hoja
+    */
+
+    vaporGrupo.children.forEach(
+        vapor => {
+
+            vapor.position.y +=
+                vapor.userData.velocidad
+                *
+                (0.4 + luz / 80);
+
+
+            vapor.position.x +=
+                Math.sin(
+                    tiempo * 2 +
+                    vapor.position.y
+                ) * .0015;
+
+
+            if(
+                vapor.position.y > 5
+            ){
+
+                vapor.position.y =
+                    2 +
+                    Math.random() * .5;
+
+                vapor.position.x =
+                    .7 +
+                    Math.random() * 3;
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   ANIMACIÓN GENERAL
+===================================================== */
+
+function animar(){
+
+    requestAnimationFrame(
+        animar
+    );
+
+
+    if(
+        ejecutando
+    ){
+
+        tiempo += .02;
+
+
+        /*
+         * Movimiento muy ligero
+         * de la hoja.
+         */
+
+        hojaGrupo.rotation.z =
+            Math.sin(
+                tiempo * 2
+            ) * .018;
+
+
+        animarGases();
+
+    }
+
+
+    controls.update();
+
+
+    renderer.render(
+        scene,
+        camera
+    );
+
+}
+
+
+/* =====================================================
+   EVALUACIÓN
+===================================================== */
+
+btnEvaluacion.addEventListener(
+    "click",
+    function(){
+
+        if(!evaluacionDisponible){
+            return;
+        }
+
+        modalEvaluacion.style.display = "flex";
+
+        resultadoEvaluacion.style.display = "none";
+        resultadoEvaluacion.innerHTML = "";
+
+        document.querySelectorAll(
+            '#modalEvaluacion input[type="radio"]'
+        ).forEach(
+            input => {
+                input.disabled = false;
+                input.checked = false;
+            }
+        );
+
+        enviarEvaluacion.style.display = "block";
+
+        repetirEvaluacion.style.display = "none";
+        cerrarEvaluacion.style.display = "none";
+
+    }
+);
+
+
+/* =====================================================
+   ENVIAR EVALUACIÓN
+===================================================== */
+
+enviarEvaluacion.addEventListener(
+    "click",
+    function(){
+
+        const respuestas = [
+            "p1",
+            "p2",
+            "p3",
+            "p4",
+            "p5"
+        ];
+
+        const correctas = [
+            "b",
+            "a",
+            "b",
+            "c",
+            "b"
+        ];
+
+        let puntuacion = 0;
+
+        let todasRespondidas = true;
+
+        respuestas.forEach(
+            (pregunta, indice) => {
+
+                const seleccionada =
+                    document.querySelector(
+                        `input[name="${pregunta}"]:checked`
+                    );
+
+                if(!seleccionada){
+
+                    todasRespondidas = false;
+
+                }
+                else if(
+                    seleccionada.value === correctas[indice]
+                ){
+
+                    puntuacion += 2;
+
+                }
+
+            }
+        );
+
+
+        if(!todasRespondidas){
+
+            alert(
+                "⚠️ Debes responder las 5 preguntas antes de enviar la evaluación."
+            );
+
+            return;
+
+        }
+
+
+        const porcentaje =
+            puntuacion * 10;
+
+
+        let mensaje = "";
+
+
+        if(puntuacion === 10){
+
+            mensaje =
+                "🎉 ¡Excelente trabajo! Dominas las funciones principales de las hojas.";
+
+        }
+        else if(puntuacion >= 8){
+
+            mensaje =
+                "👏 ¡Muy bien! Comprendes la mayoría de los conceptos.";
+
+        }
+        else if(puntuacion >= 6){
+
+            mensaje =
+                "👍 Buen trabajo. Puedes repasar algunos conceptos.";
+
+        }
+        else{
+
+            mensaje =
+                "📚 Te recomendamos repasar el funcionamiento de las hojas y volver a intentarlo.";
+
+        }
+
+
+        resultadoEvaluacion.innerHTML = `
+
+            <h3>Resultado</h3>
+
+            <div style="font-size:28px;font-weight:bold;color:#54e36d;">
+                ${puntuacion}/10
+            </div>
+
+            <p>
+                Porcentaje: <b>${porcentaje}%</b>
+            </p>
+
+            <p>
+                ${mensaje}
+            </p>
+
+        `;
+
+        resultadoEvaluacion.style.display = "block";
+
+
+        document.querySelectorAll(
+            '#modalEvaluacion input[type="radio"]'
+        ).forEach(
+            input => {
+                input.disabled = true;
+            }
+        );
+
+
+        enviarEvaluacion.style.display = "none";
+
+        repetirEvaluacion.style.display = "block";
+        cerrarEvaluacion.style.display = "block";
+
+    }
+);
+
+
+/* =====================================================
+   REPETIR EVALUACIÓN
+===================================================== */
+
+repetirEvaluacion.addEventListener(
+    "click",
+    function(){
+
+        document.querySelectorAll(
+            '#modalEvaluacion input[type="radio"]'
+        ).forEach(
+            input => {
+
+                input.disabled = false;
+                input.checked = false;
+
+            }
+        );
+
+
+        resultadoEvaluacion.style.display = "none";
+        resultadoEvaluacion.innerHTML = "";
+
+        enviarEvaluacion.style.display = "block";
+
+        repetirEvaluacion.style.display = "none";
+        cerrarEvaluacion.style.display = "none";
+
+    }
+);
+
+
+/* =====================================================
+   CERRAR EVALUACIÓN
+===================================================== */
+
+cerrarEvaluacion.addEventListener(
+    "click",
+    function(){
+
+        modalEvaluacion.style.display = "none";
+
+    }
+);
+
+
+/* =====================================================
+   CERRAR AL HACER CLIC FUERA
+===================================================== */
+
+modalEvaluacion.addEventListener(
+    "click",
+    function(event){
+
+        if(
+            event.target === modalEvaluacion
+        ){
+
+            modalEvaluacion.style.display = "none";
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   INICIO
+===================================================== */
+
+actualizarInfo();
+
+animar();
+
+
+/* =====================================================
+   REDIMENSIONAR
+===================================================== */
+
+window.addEventListener(
+    "resize",
+    function(){
+
+        camera.aspect =
+            window.innerWidth /
+            window.innerHeight;
+
+        camera.updateProjectionMatrix();
+
+        renderer.setSize(
+            window.innerWidth,
+            window.innerHeight
+        );
+
+    }
+);
+
+</script>
+<script src="asistente.js"></script>
+</body>
+</html>

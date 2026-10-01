@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="asistente.css">
+    <title>Laboratorio Pro 3D: Biología Molecular - ADN</title>
+    <style>
+        :root {
+            --bg-dark: #0a0e17;
+            --panel-bg: rgba(16, 24, 38, 0.85);
+            --border-color: rgba(0, 210, 255, 0.25);
+            --accent-cyan: #00f0ff;
+            --accent-green: #00ff88;
+            --text-main: #e0f2fe;
+            --text-muted: #94a3b8;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        #canvas-container {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+
+        /* UI overlay pro */
+        .overlay-panel {
+            position: absolute;
+            z-index: 10;
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 15px rgba(0, 240, 255, 0.1);
+            pointer-events: auto;
+        }
+
+        /* Enlace/Botón de Volver */
+        #back-btn {
+            top: 20px;
+            left: 20px;
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            color: var(--accent-cyan);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.25s ease;
+            text-decoration: none;
+        }
+
+        #back-btn:hover {
+            background: rgba(0, 240, 255, 0.15);
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 12px rgba(0, 240, 255, 0.3);
+            transform: translateY(-1px);
+        }
+
+        /* Panel Superior - Título e Indicadores */
+        #header-panel {
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        h1 {
+            font-size: 1.1rem;
+            color: var(--accent-cyan);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 700;
+        }
+
+        .status-badge {
+            font-size: 0.75rem;
+            padding: 4px 10px;
+            border-radius: 20px;
+            background: rgba(0, 255, 136, 0.15);
+            color: var(--accent-green);
+            border: 1px solid var(--accent-green);
+            font-weight: 600;
+        }
+
+        /* Panel Lateral Izquierdo - Controles y Teoría */
+        #left-panel {
+            top: 70px;
+            left: 20px;
+            width: 340px;
+            max-height: calc(100vh - 90px);
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        h2 {
+            font-size: 0.95rem;
+            color: var(--accent-cyan);
+            margin-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        p.text-body {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        /* Leyenda de Bases Nitrogenadas */
+        .legend-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 18px;
+        }
+
+        .legend-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 8px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.78rem;
+        }
+
+        .color-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            box-shadow: 0 0 8px currentColor;
+        }
+
+        /* Controles */
+        .control-group {
+            margin-bottom: 12px;
+        }
+
+        label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            margin-bottom: 5px;
+            color: var(--text-main);
+        }
+
+        input[type=range] {
+            width: 100%;
+            accent-color: var(--accent-cyan);
+            cursor: pointer;
+        }
+
+        .btn-action {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--accent-cyan);
+            background: rgba(0, 240, 255, 0.1);
+            color: var(--accent-cyan);
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.5px;
+            margin-top: 10px;
+        }
+
+        .btn-action:hover {
+            background: var(--accent-cyan);
+            color: var(--bg-dark);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.5);
+        }
+
+        /* Botón de Evaluación Personalizado */
+        .btn-eval {
+            border-color: var(--accent-green);
+            color: var(--accent-green);
+            background: rgba(0, 255, 136, 0.1);
+        }
+
+        .btn-eval:hover {
+            background: var(--accent-green);
+            color: var(--bg-dark);
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.5);
+        }
+
+        /* Tarjeta Informativa Flotante en la esquina inferior */
+        #info-card {
+            bottom: 20px;
+            right: 20px;
+            width: 300px;
+            padding: 15px;
+        }
+
+        .info-title {
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: var(--accent-green);
+            margin-bottom: 5px;
+        }
+
+        .info-desc {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        /* --- ESTILOS DEL MODAL DE EVALUACIÓN --- */
+        #eval-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(10, 14, 23, 0.75);
+            backdrop-filter: blur(8px);
+            z-index: 100;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #eval-modal {
+            width: 90%;
+            max-width: 550px;
+            max-height: 85vh;
+            padding: 25px;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .eval-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        .eval-title {
+            font-size: 1.1rem;
+            color: var(--accent-cyan);
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .close-btn:hover {
+            color: var(--accent-cyan);
+        }
+
+        .question-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 15px;
+            transition: border-color 0.3s;
+        }
+
+        .question-card.incomplete {
+            border-color: #ff2a6d;
+            background: rgba(255, 42, 109, 0.05);
+        }
+
+        .question-text {
+            font-size: 0.85rem;
+            color: var(--text-main);
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .option-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            padding: 6px 10px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.03);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .option-label:hover {
+            background: rgba(0, 240, 255, 0.1);
+            color: var(--text-main);
+        }
+
+        .option-label input[type="radio"] {
+            accent-color: var(--accent-cyan);
+        }
+
+        /* Banner de advertencia */
+        #eval-warning {
+            display: none;
+            color: #ff2a6d;
+            background: rgba(255, 42, 109, 0.1);
+            border: 1px solid #ff2a6d;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            text-align: center;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        #eval-results {
+            display: none;
+            text-align: center;
+            padding: 15px;
+            background: rgba(0, 240, 255, 0.05);
+            border: 1px solid var(--accent-cyan);
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .results-score {
+            font-size: 1.2rem;
+            color: var(--accent-green);
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+    </style>
+    <!-- Library Import -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+
+    <div id="canvas-container"></div>
+
+    <!-- Enlace con href -->
+    <a href="noveno.html" id="back-btn" class="overlay-panel">
+        &#8592; Volver
+    </a>
+
+    <!-- Panel Superior -->
+    <div id="header-panel" class="overlay-panel">
+        <h1>Laboratorio de Genética Molecular</h1>
+        <span class="status-badge" id="status-tag">Cadena Intacta</span>
+    </div>
+
+    <!-- Panel de Control y Teoría Izquierdo -->
+    <div id="left-panel" class="overlay-panel">
+        <h2>Estructura del ADN</h2>
+        <p class="text-body">
+            El <b>Ácido Desoxirribonucleico (ADN)</b> almacena la información genética. Consiste en dos cadenas antiparalelas en forma de doble hélice unidas por bases nitrogenadas complementarias.
+        </p>
+
+        <h2>Bases Nitrogenadas</h2>
+        <div class="legend-grid">
+            <div class="legend-card">
+                <div class="color-dot" style="background:#ff2a6d; color:#ff2a6d;"></div>
+                <span>Adenina (A)</span>
+            </div>
+            <div class="legend-card">
+                <div class="color-dot" style="background:#05d9e8; color:#05d9e8;"></div>
+                <span>Timina (T)</span>
+            </div>
+            <div class="legend-card">
+                <div class="color-dot" style="background:#00ff88; color:#00ff88;"></div>
+                <span>Citosina (C)</span>
+            </div>
+            <div class="legend-card">
+                <div class="color-dot" style="background:#ffb800; color:#ffb800;"></div>
+                <span>Guanina (G)</span>
+            </div>
+        </div>
+
+        <h2>Parámetros de Simulación</h2>
+        
+        <div class="control-group">
+            <label>Velocidad de Rotación: <span id="speed-val">1.0x</span></label>
+            <input type="range" id="speed-slider" min="0" max="3" step="0.1" value="1">
+        </div>
+
+        <div class="control-group">
+            <label>Apertura Enzimática: <span id="split-val">0%</span></label>
+            <input type="range" id="split-slider" min="0" max="100" value="0">
+        </div>
+
+        <button class="btn-action" id="animate-split-btn">Acción de la Helicasa</button>
+        <button class="btn-action btn-eval" id="open-eval-btn">Evaluación</button>
+    </div>
+
+    <!-- Tarjeta Explicativa Inferior -->
+    <div id="info-card" class="overlay-panel">
+        <div class="info-title" id="info-title">Regla de Complementariedad</div>
+        <div class="info-desc" id="info-desc">
+            La <b>Adenina (A)</b> siempre se aparea con la <b>Timina (T)</b> mediante 2 puentes de hidrógeno, y la <b>Citosina (C)</b> con la <b>Guanina (G)</b> mediante 3 puentes de hidrógeno.
+        </div>
+    </div>
+
+    <!-- Modal de Evaluación Flotante -->
+    <div id="eval-modal-overlay">
+        <div id="eval-modal" class="overlay-panel">
+            <div class="eval-header">
+                <div class="eval-title">Evaluación del Experimento</div>
+                <button class="close-btn" id="close-eval-btn">&times;</button>
+            </div>
+            <form id="eval-form">
+                <div id="eval-warning">⚠ Por favor, responde todas las preguntas antes de enviar.</div>
+                <div id="questions-container"></div>
+                <button type="button" class="btn-action btn-eval" id="submit-eval-btn">Enviar Respuestas</button>
+            </form>
+            <div id="eval-results">
+                <div class="results-score" id="results-score">Puntuación: 0/5</div>
+                <p class="info-desc" id="results-text"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- CONFIGURACIÓN DE ESCENA THREE.JS ---
+        const container = document.getElementById('canvas-container');
+        const scene = new THREE.Scene();
+        scene.fog = new THREE.FogExp2(0x0a0e17, 0.018);
+
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 0, 16);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        container.appendChild(renderer.domElement);
+
+        // --- ILUMINACIÓN PROFESIONAL ---
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+        scene.add(ambientLight);
+
+        // Luz puntual cian desde la izquierda
+        const lightLeft = new THREE.PointLight(0x00f0ff, 1.5, 30);
+        lightLeft.position.set(-8, 5, 5);
+        scene.add(lightLeft);
+
+        // Luz puntual dorada/naranja desde la derecha
+        const lightRight = new THREE.PointLight(0xffb800, 1.2, 30);
+        lightRight.position.set(8, -5, 5);
+        scene.add(lightRight);
+
+        // --- MODELADO DE LA MOLECULA DE ADN ---
+        const dnaGroup = new THREE.Group();
+        const strandNodesA = [];
+        const strandNodesB = [];
+        const basePairs = [];
+
+        const pairsCount = 30;
+        const radius = 2.4;
+        const verticalGap = 0.42;
+        const twistRate = 0.32;
+
+        // Geometrías compartidas
+        const phosphateGeo = new THREE.SphereGeometry(0.22, 16, 16);
+        const baseGeo = new THREE.CylinderGeometry(0.07, 0.07, 1, 12);
+
+        // Material del esqueleto (Fosfato / Desoxirribosa)
+        const backboneMat = new THREE.MeshStandardMaterial({
+            color: 0x94a3b8,
+            roughness: 0.2,
+            metalness: 0.5
+        });
+
+        // Colores Neón para las 4 Bases
+        const baseColors = [
+            0xff2a6d, // A - Rojo Neón
+            0x05d9e8, // T - Cian
+            0x00ff88, // C - Verde
+            0xffb800  // G - Amarillo
+        ];
+
+        for (let i = 0; i < pairsCount; i++) {
+            const y = (i - pairsCount / 2) * verticalGap;
+            const angle = i * twistRate;
+
+            // Coordenadas esqueleto A
+            const xA = Math.cos(angle) * radius;
+            const zA = Math.sin(angle) * radius;
+
+            // Coordenadas esqueleto B (opuesto 180 deg)
+            const xB = Math.cos(angle + Math.PI) * radius;
+            const zB = Math.sin(angle + Math.PI) * radius;
+
+            // Nodos Esqueleto Fosfato
+            const nodeA = new THREE.Mesh(phosphateGeo, backboneMat);
+            nodeA.position.set(xA, y, zA);
+            dnaGroup.add(nodeA);
+            strandNodesA.push({ mesh: nodeA, origX: xA, origZ: zA, angle: angle });
+
+            const nodeB = new THREE.Mesh(phosphateGeo, backboneMat);
+            nodeB.position.set(xB, y, zB);
+            dnaGroup.add(nodeB);
+            strandNodesB.push({ mesh: nodeB, origX: xB, origZ: zB, angle: angle + Math.PI });
+
+            // Peldaños: Par de Bases
+            const colorIdx = i % 4;
+            const baseMat = new THREE.MeshStandardMaterial({
+                color: baseColors[colorIdx],
+                roughness: 0.1,
+                metalness: 0.2,
+                emissive: baseColors[colorIdx],
+                emissiveIntensity: 0.25
+            });
+
+            const pairMesh = new THREE.Mesh(baseGeo, baseMat);
+            pairMesh.position.set(0, y, 0);
+            pairMesh.scale.set(1, radius * 2, 1);
+            pairMesh.rotation.z = Math.PI / 2;
+            pairMesh.rotation.y = -angle;
+
+            dnaGroup.add(pairMesh);
+            basePairs.push({ mesh: pairMesh, y: y, angle: angle, origScaleY: radius * 2 });
+        }
+
+        scene.add(dnaGroup);
+
+        // --- SISTEMA DE PARTÍCULAS DE FONDO (ENTORNO MOLECULAR) ---
+        const particleGeo = new THREE.BufferGeometry();
+        const particleCount = 200;
+        const posArray = new Float32Array(particleCount * 3);
+
+        for(let i=0; i < particleCount * 3; i++) {
+            posArray[i] = (Math.random() - 0.5) * 35;
+        }
+
+        particleGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+        const particleMat = new THREE.PointsMaterial({
+            size: 0.08,
+            color: 0x00f0ff,
+            transparent: true,
+            opacity: 0.4
+        });
+
+        const particleSystem = new THREE.Points(particleGeo, particleMat);
+        scene.add(particleSystem);
+
+        // --- LÓGICA DE INTERACCIÓN Y CONTROLES ---
+        let rotationSpeed = 1.0;
+        let splitProgress = 0.0;
+        let isAutoSplitting = false;
+
+        const speedSlider = document.getElementById('speed-slider');
+        const splitSlider = document.getElementById('split-slider');
+        const speedVal = document.getElementById('speed-val');
+        const splitVal = document.getElementById('split-val');
+        const btnAnimate = document.getElementById('animate-split-btn');
+        const statusTag = document.getElementById('status-tag');
+        const infoTitle = document.getElementById('info-title');
+        const infoDesc = document.getElementById('info-desc');
+
+        speedSlider.addEventListener('input', (e) => {
+            rotationSpeed = parseFloat(e.target.value);
+            speedVal.innerText = `${rotationSpeed.toFixed(1)}x`;
+        });
+
+        splitSlider.addEventListener('input', (e) => {
+            splitProgress = parseFloat(e.target.value) / 100;
+            splitVal.innerText = `${e.target.value}%`;
+            updateSplitState();
+        });
+
+        btnAnimate.addEventListener('click', () => {
+            isAutoSplitting = !isAutoSplitting;
+            btnAnimate.innerText = isAutoSplitting ? "Restaurar Cadena" : "Acción de la Helicasa";
+        });
+
+        function updateSplitState() {
+            // Actualizar etiquetas teóricas según estado
+            if (splitProgress > 0.6) {
+                statusTag.innerText = "Replicación Activa";
+                statusTag.style.borderColor = "#00f0ff";
+                statusTag.style.color = "#00f0ff";
+                statusTag.style.background = "rgba(0, 240, 255, 0.15)";
+                
+                infoTitle.innerText = "Acción Enzimática: Helicasa";
+                infoDesc.innerHTML = "La enzima <b>Helicasa</b> rompe los puentes de hidrógeno que unen las bases nitrogenadas, separando las dos hebras de ADN para permitir la copia del material genético.";
+            } else {
+                statusTag.innerText = "Cadena Intacta";
+                statusTag.style.borderColor = "#00ff88";
+                statusTag.style.color = "#00ff88";
+                statusTag.style.background = "rgba(0, 255, 136, 0.15)";
+
+                infoTitle.innerText = "Regla de Complementariedad";
+                infoDesc.innerHTML = "La <b>Adenina (A)</b> se aparea con la <b>Timina (T)</b>, y la <b>Citosina (C)</b> con la <b>Guanina (G)</b>. Las hebras corren en direcciones opuestas (3' a 5' y 5' a 3').";
+            }
+        }
+
+        // --- SISTEMA DE BANCO DE PREGUNTAS Y MODAL DINÁMICO ---
+        const questionBank = [
+            {
+                q: "¿Qué enzima es la encargada de romper los puentes de hidrógeno para separar las hebras de ADN?",
+                options: ["ADN Polimerasa", "Helicasa", "ARN Primasa", "Ligasa"],
+                answer: 1
+            },
+            {
+                q: "Según la regla de complementariedad, ¿con qué base se aparea la Adenina (A) en el ADN?",
+                options: ["Guanina (G)", "Citosina (C)", "Timina (T)", "Uracilo (U)"],
+                answer: 2
+            },
+            {
+                q: "¿Cuántos puentes de hidrógeno unen al par Citosina - Guanina (C-G)?",
+                options: ["1 puente", "2 puentes", "3 puentes", "4 puentes"],
+                answer: 2
+            },
+            {
+                q: "¿Qué estructura constituye el esqueleto exterior de la molécula de ADN?",
+                options: ["Bases nitrogenadas y aminoácidos", "Grupo fosfato y desoxirribosa", "Proteínas histonas", "Enlaces peptídicos"],
+                answer: 1
+            },
+            {
+                q: "¿Qué término describe el hecho de que las dos hebras del ADN corren en direcciones opuestas?",
+                options: ["Paralelas", "Antiparalelas", "Semiconservativas", "Simétricas"],
+                answer: 1
+            },
+            {
+                q: "¿Qué tipo de enlace une a las bases nitrogenadas entre sí en el centro de la hélice?",
+                options: ["Enlaces covalentes", "Puentes de hidrógeno", "Enlaces iónicos", "Puentes disulfuro"],
+                answer: 1
+            },
+            {
+                q: "En el modelo 3D visualizado, ¿qué representan las esferas grises del esqueleto externo?",
+                options: ["Bases nitrogenadas", "Nodos de Fosfato / Desoxirribosa", "Enzimas Helicasas", "Moléculas de agua"],
+                answer: 1
+            },
+            {
+                q: "Si la hebra de ADN se separa al 100% durante el experimento, ¿qué proceso biológico inicia?",
+                options: ["Traducción proteica", "Replicación del ADN", "Síntesis de lípidos", "Glucólisis"],
+                answer: 1
+            },
+            {
+                q: "¿Con cuál base se aparea la Guanina (G)?",
+                options: ["Adenina (A)", "Timina (T)", "Citosina (C)", "Uracilo (U)"],
+                answer: 2
+            },
+            {
+                q: "¿Cuál es la forma geométrica característica de la molécula de ADN?",
+                options: ["Hélice simple", "Doble hélice", "Anillo plano", "Cadena lineal plegada"],
+                answer: 1
+            }
+        ];
+
+        let currentActiveQuestions = [];
+
+        const openEvalBtn = document.getElementById('open-eval-btn');
+        const closeEvalBtn = document.getElementById('close-eval-btn');
+        const evalOverlay = document.getElementById('eval-modal-overlay');
+        const questionsContainer = document.getElementById('questions-container');
+        const submitEvalBtn = document.getElementById('submit-eval-btn');
+        const evalResults = document.getElementById('eval-results');
+        const resultsScore = document.getElementById('results-score');
+        const resultsText = document.getElementById('results-text');
+        const evalWarning = document.getElementById('eval-warning');
+
+        openEvalBtn.addEventListener('click', () => {
+            // Seleccionar 5 preguntas aleatorias del banco cada vez que se abre
+            const shuffled = [...questionBank].sort(() => 0.5 - Math.random());
+            currentActiveQuestions = shuffled.slice(0, 5);
+
+            // Renderizar preguntas
+            questionsContainer.innerHTML = '';
+            evalResults.style.display = 'none';
+            evalWarning.style.display = 'none';
+            submitEvalBtn.style.display = 'block';
+
+            currentActiveQuestions.forEach((qObj, index) => {
+                const qCard = document.createElement('div');
+                qCard.className = 'question-card';
+                qCard.id = `q-card-${index}`;
+
+                let optionsHTML = '';
+                qObj.options.forEach((opt, optIndex) => {
+                    optionsHTML += `
+                        <label class="option-label">
+                            <input type="radio" name="question_${index}" value="${optIndex}">
+                            ${opt}
+                        </label>
+                    `;
+                });
+
+                qCard.innerHTML = `
+                    <div class="question-text">${index + 1}. ${qObj.q}</div>
+                    <div class="options-list">${optionsHTML}</div>
+                `;
+                questionsContainer.appendChild(qCard);
+            });
+
+            evalOverlay.style.display = 'flex';
+        });
+
+        closeEvalBtn.addEventListener('click', () => {
+            evalOverlay.style.display = 'none';
+        });
+
+        submitEvalBtn.addEventListener('click', () => {
+            let score = 0;
+            let allAnswered = true;
+
+            // Validar que todas las preguntas estén respondidas
+            currentActiveQuestions.forEach((qObj, index) => {
+                const selected = document.querySelector(`input[name="question_${index}"]:checked`);
+                const card = document.getElementById(`q-card-${index}`);
+
+                if (!selected) {
+                    allAnswered = false;
+                    card.classList.add('incomplete');
+                } else {
+                    card.classList.remove('incomplete');
+                }
+            });
+
+            // Si falta alguna respuesta, mostrar la advertencia y cancelar envío
+            if (!allAnswered) {
+                evalWarning.style.display = 'block';
+                return;
+            }
+
+            // Ocultar advertencia si ya todo está completo
+            evalWarning.style.display = 'none';
+
+            // Calcular puntaje
+            currentActiveQuestions.forEach((qObj, index) => {
+                const selected = document.querySelector(`input[name="question_${index}"]:checked`);
+                if (selected && parseInt(selected.value) === qObj.answer) {
+                    score++;
+                }
+            });
+
+            resultsScore.innerText = `Puntuación: ${score} / 5`;
+            if (score === 5) {
+                resultsText.innerText = "¡Excelente! Has demostrado un dominio completo de la estructura y replicación del ADN.";
+            } else if (score >= 3) {
+                resultsText.innerText = "¡Buen trabajo! Tienes claros los conceptos fundamentales sobre el ADN.";
+            } else {
+                resultsText.innerText = "Te sugerimos interactuar más con la simulación 3D y revisar la información de las bases para repasar.";
+            }
+
+            evalResults.style.display = 'block';
+            submitEvalBtn.style.display = 'none';
+        });
+
+        // --- BUCLE DE ANIMACIÓN ---
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // Rotación global
+            dnaGroup.rotation.y += 0.005 * rotationSpeed;
+            particleSystem.rotation.y -= 0.0008;
+
+            // Transición automática de separación si está activada
+            if (isAutoSplitting && splitProgress < 1.0) {
+                splitProgress += 0.015;
+                if (splitProgress > 1.0) splitProgress = 1.0;
+                splitSlider.value = Math.round(splitProgress * 100);
+                splitVal.innerText = `${splitSlider.value}%`;
+                updateSplitState();
+            } else if (!isAutoSplitting && splitProgress > 0.0) {
+                splitProgress -= 0.015;
+                if (splitProgress < 0.0) splitProgress = 0.0;
+                splitSlider.value = Math.round(splitProgress * 100);
+                splitVal.innerText = `${splitSlider.value}%`;
+                updateSplitState();
+            }
+
+            // Aplicar separación tridimensional a la cadena
+            strandNodesA.forEach((node, i) => {
+                const offset = splitProgress * 1.8;
+                node.mesh.position.x = node.origX + Math.cos(node.angle) * offset;
+                node.mesh.position.z = node.origZ + Math.sin(node.angle) * offset;
+            });
+
+            strandNodesB.forEach((node, i) => {
+                const offset = splitProgress * 1.8;
+                node.mesh.position.x = node.origX + Math.cos(node.angle) * offset;
+                node.mesh.position.z = node.origZ + Math.sin(node.angle) * offset;
+            });
+
+            // Reducir visibilidad/escala de los puentes de hidrógeno al romperse
+            basePairs.forEach(pair => {
+                const factor = 1 - (splitProgress * 0.85);
+                pair.mesh.scale.set(1, pair.origScaleY * factor, 1);
+                pair.mesh.material.opacity = 1 - (splitProgress * 0.6);
+                pair.mesh.material.transparent = true;
+            });
+
+            renderer.render(scene, camera);
+        }
+
+        // Responsive adjustment
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        animate();
+    </script>
+</body>
+<script src="asistente.js"></script>
+</html>
